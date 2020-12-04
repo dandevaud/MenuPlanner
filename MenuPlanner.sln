@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MenuPlanner.Server", "MenuPlanner\Server\MenuPlanner.Server.csproj", "{AFFD320D-304F-4745-9BB6-A1DD64018AEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MenuPlanner.Server", "MenuPlanner\Server\MenuPlanner.Server.csproj", "{AFFD320D-304F-4745-9BB6-A1DD64018AEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MenuPlanner.Client", "MenuPlanner\Client\MenuPlanner.Client.csproj", "{D2201159-075A-4759-89E6-60231A878383}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MenuPlanner.Client", "MenuPlanner\Client\MenuPlanner.Client.csproj", "{D2201159-075A-4759-89E6-60231A878383}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MenuPlanner.Shared", "MenuPlanner\Shared\MenuPlanner.Shared.csproj", "{D37A95BB-65ED-48B4-B244-DC6E8CCDCAC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MenuPlanner.Shared", "MenuPlanner\Shared\MenuPlanner.Shared.csproj", "{D37A95BB-65ED-48B4-B244-DC6E8CCDCAC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
