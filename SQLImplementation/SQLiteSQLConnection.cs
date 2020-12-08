@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿// <copyright file="SQLiteSQLConnection.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using System;
+using System.Data.Common;
 using System.Data.SQLite;
 using System.IO;
-using System.Data.Common;
 using SQLImplementation.contracts;
 
 namespace SQLImplementation
 {
-    public class SQLiteSQLConnection : ISQLConnection
+    public class SqLiteSqlConnection : ISqlConnection
     {
         private String dataBaseLocation;
         /// <summary>
@@ -23,7 +24,7 @@ namespace SQLImplementation
 
         private SQLiteConnection connection;
 
-        public SQLiteSQLConnection(String databaseLocation)
+        public SqLiteSqlConnection(String databaseLocation)
         {
             DataBaseLocation = ValidateLocation(databaseLocation);
         }
@@ -52,7 +53,7 @@ namespace SQLImplementation
                     $"The input was null, please provide a database location input");
                 PrintMessageAndStackTrace(ex1);
             }
-           
+
             return toRet;
 
         }
@@ -63,10 +64,10 @@ namespace SQLImplementation
             Console.Error.WriteLine(ex.StackTrace);
         }
 
-       
-        public ISQLConnection InitializeConnection()
+
+        public ISqlConnection InitializeConnection()
         {
-            if (dataBaseLocation==null)
+            if (dataBaseLocation == null)
             {
                 Console.Error.WriteLine("Database location is not initialized, cannot connect to database");
             }
@@ -78,14 +79,14 @@ namespace SQLImplementation
             return this;
         }
 
-        public ISQLConnection Connect()
+        public ISqlConnection Connect()
         {
             if (connection == null)
             {
                 InitializeConnection();
             }
             connection?.Open();
-          return this;
+            return this;
         }
 
         public DbConnection GetConnection()

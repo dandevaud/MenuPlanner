@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// <copyright file="ISQLCreateIndex.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
 
-namespace SQLImplementation
+using System;
+
+namespace SQLImplementation.contracts.sqlQuery
 {
-    public interface ISQLCreateIndex
+    public interface ISqlCreateIndex
     {
         public String On(String tableName, params String[] columns);
     }

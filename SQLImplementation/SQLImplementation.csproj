@@ -10,6 +10,13 @@
     <PackageReference Include="sqlite" Version="3.13.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.103" />
+    <PackageReference Include="Unity.Container" Version="5.x.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Update="C:\Users\Dan\Source\Repos\MenuPlanner\SQLImplementation\.editorconfig">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EditorConfigFiles>
   </ItemGroup>
 
 </Project>
