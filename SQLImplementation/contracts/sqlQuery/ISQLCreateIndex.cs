@@ -3,11 +3,12 @@
 // </copyright>
 
 using System;
+using SQLImplementation.contracts.sqlQuery.queryparts;
 
 namespace SQLImplementation.contracts.sqlQuery
 {
     public interface ISqlCreateIndex
     {
-        public String On(String tableName, params String[] columns);
+        public ISqlQueryOn On(String tableName, params String[] columns);
     }
 }
