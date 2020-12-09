@@ -8,7 +8,7 @@ using System.Data.SQLite;
 using System.IO;
 using SQLImplementation.contracts;
 
-namespace SQLImplementation
+namespace SQLImplementation.Implementation
 {
     public class SqLiteSqlConnection : ISqlConnection
     {

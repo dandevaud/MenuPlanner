@@ -10,7 +10,7 @@
     <PackageReference Include="sqlite" Version="3.13.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.103" />
-    <PackageReference Include="Unity.Container" Version="5.x.*" />
+    <PackageReference Include="Unity" Version="5.11.9" />
   </ItemGroup>
 
   <ItemGroup>
