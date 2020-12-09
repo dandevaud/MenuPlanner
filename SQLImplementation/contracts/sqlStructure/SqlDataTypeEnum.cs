@@ -4,8 +4,13 @@
 
 namespace SQLImplementation.contracts.sqlStructure
 {
+    
+    /// <summary>
+    /// Basic SQL DataTypes 
+    /// </summary>
     public enum SqlDataTypeEnum
     {
+        //From https://www.journaldev.com/16774/sql-data-types
         Bit, 
         Tinyint, 
         Smallint, 

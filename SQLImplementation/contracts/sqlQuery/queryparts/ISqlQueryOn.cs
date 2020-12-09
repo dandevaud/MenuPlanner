@@ -8,6 +8,11 @@ namespace SQLImplementation.contracts.sqlQuery.queryparts
 {
     public interface ISqlQueryOn : ISqlStatementEnd
     {
-        public ISqlStatementEnd where(String expression);
+        /// <summary>
+        /// Adds a Where clause to the Statement. Please use the correct Syntax for the Expression
+        /// </summary>
+        /// <param name="expression">String, expression of the where clause (without 'where')</param>
+        /// <returns><see cref="ISqlQueryWhere"/>, allows to add additional information to the query</returns>
+        public ISqlStatementEnd Where(String expression);
     }
 }

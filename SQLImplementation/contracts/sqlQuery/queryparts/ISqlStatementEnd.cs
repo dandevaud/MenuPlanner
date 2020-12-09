@@ -6,8 +6,15 @@ using System;
 
 namespace SQLImplementation.contracts.sqlQuery.queryparts
 {
+    /// <summary>
+    /// This interface oblige the coder to write a CreateStatement method wherever necessary
+    /// </summary>
     public interface ISqlStatementEnd
     {
+       /// <summary>
+       /// Converts the preceding statement to a String
+       /// </summary>
+       /// <returns><see cref="String"/>, consisting of the build statement </returns>
         public String CreateStatement();
     }
 }
