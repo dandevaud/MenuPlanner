@@ -6,7 +6,7 @@ namespace MenuPlanner.Shared.models
     public class Image
     {
         public Guid Id;
-        public string alternativeName;
-        public Uri path;
+        public string AlternativeName;
+        public Uri Path;
     }
 }
