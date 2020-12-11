@@ -8,15 +8,15 @@ using System.Data.SQLite;
 using System.IO;
 using SQLImplementation.contracts;
 
-namespace SQLImplementation.Implementation
+namespace SQLImplementation.Implementation.sqLite
 {
     public class SqLiteSqlConnection : ISqlConnection
     {
-        private String dataBaseLocation;
+        private string dataBaseLocation;
         /// <summary>
         /// DatabaseLocation (.db-File) will be checked if valid and exists.
         /// </summary>
-        public String DataBaseLocation
+        public string DataBaseLocation
         {
             get => dataBaseLocation;
             set => dataBaseLocation = ValidateLocation(value);
@@ -29,9 +29,9 @@ namespace SQLImplementation.Implementation
             DataBaseLocation = ValidateLocation(databaseLocation);
         }
 
-        private String ValidateLocation(String location)
+        private string ValidateLocation(String location)
         {
-            String toRet = null;
+            string toRet = null;
             try
             {
 

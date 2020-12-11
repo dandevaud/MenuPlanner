@@ -14,7 +14,6 @@ charset = utf-8-bom
 ###############################
 # Custom Rules                #
 ###############################
-
 file_header_template = <copyright file="{fileName}" company="Alessandro Marra & Daniel Devaud">\nCopyright (c) Alessandro Marra & Daniel Devaud.\n</copyright>
 ###############################
 # .NET Coding Conventions     #

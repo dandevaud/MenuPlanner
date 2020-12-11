@@ -23,5 +23,12 @@ namespace SQLImplementation.contracts.sqlQuery.queryparts
         /// </summary>
         /// <returns><see cref="ISqlQuerySelect"/>, allows to continue with the query</returns>
         public ISqlQuerySelect Distinct();
+
+        /// <summary>
+        /// Adds the Top 
+        /// </summary>
+        /// <param name="amount"><see cref="int"/> amount of lines to be returned</param>
+        /// <returns><see cref="ISqlQuerySelect"/>, allows to continue with the query</returns>
+        public ISqlQuerySelect Top(int amount);
     }
 }
