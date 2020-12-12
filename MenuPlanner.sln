@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MenuPlanner.Client", "MenuP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MenuPlanner.Shared", "MenuPlanner\Shared\MenuPlanner.Shared.csproj", "{D37A95BB-65ED-48B4-B244-DC6E8CCDCAC3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SQLImplementation", "SQLImplementation\SQLImplementation.csproj", "{0CFF9D02-FA35-4429-A09A-7018C2C3B12C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{D37A95BB-65ED-48B4-B244-DC6E8CCDCAC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D37A95BB-65ED-48B4-B244-DC6E8CCDCAC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D37A95BB-65ED-48B4-B244-DC6E8CCDCAC3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0CFF9D02-FA35-4429-A09A-7018C2C3B12C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0CFF9D02-FA35-4429-A09A-7018C2C3B12C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0CFF9D02-FA35-4429-A09A-7018C2C3B12C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0CFF9D02-FA35-4429-A09A-7018C2C3B12C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
