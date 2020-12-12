@@ -82,9 +82,9 @@ namespace MenuPlanner.Server.Controllers
         public async Task<ActionResult<Ingredient>> PostIngredient(Ingredient ingredient)
         {
 
-            if (_context.Ingredients.Any(x => x.Name.Equals(ingredient.Name)))
+            if (await _context.Ingredients.AnyAsync(x => x.Name.Equals(ingredient.Name)))
             {
-                var existing = _context.Ingredients.First(x => x.Name.Equals(ingredient.Name));
+                var existing = await _context.Ingredients.FirstAsync(x => x.Name.Equals(ingredient.Name));
                 ingredient.IngredientId = existing.IngredientId;
                 _context.Entry(existing).CurrentValues.SetValues(ingredient);
             }
