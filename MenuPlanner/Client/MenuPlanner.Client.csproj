@@ -10,9 +10,6 @@
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
   </ItemGroup>
     <ItemGroup>
-        <GlobalAnalyzerConfigFiles Include="..\..\.editorconfig" />
-    </ItemGroup>
-    <ItemGroup>
         <None Remove="..\..\.editorconfig" />
     </ItemGroup>
 

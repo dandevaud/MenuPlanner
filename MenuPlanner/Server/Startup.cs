@@ -32,7 +32,7 @@ namespace MenuPlanner.Server
             ioCContainer.BindIoC(services);
             if (Configuration["DataBase:DataBaseUsed"].Equals("SQLite"))
             {
-                services.AddDbContextFactory<MenuPlannerContext>(opt =>
+                services.AddDbContext<MenuPlannerContext>(opt =>
                     opt.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}"));
             }
            

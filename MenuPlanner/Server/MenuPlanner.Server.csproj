@@ -6,16 +6,14 @@
 
 
   <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.6" />
-    <PackageReference Include="Unity" Version="5.11.9" />
   </ItemGroup>
-	<ItemGroup>
-		<GlobalAnalyzerConfigFiles Include="..\..\.editorconfig" />
-	</ItemGroup>
 	<ItemGroup>
 		<None Remove="..\..\.editorconfig" />
 	</ItemGroup>
@@ -23,7 +21,6 @@
     <ProjectReference Include="..\Client\MenuPlanner.Client.csproj" />
     <ProjectReference Include="..\Shared\MenuPlanner.Shared.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="Databases\" />
   </ItemGroup>
