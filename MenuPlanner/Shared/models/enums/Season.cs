@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="Season.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using System;
 
 namespace MenuPlanner.Shared.models.enums
 {

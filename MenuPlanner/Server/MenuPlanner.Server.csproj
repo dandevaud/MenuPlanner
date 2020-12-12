@@ -13,7 +13,12 @@
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.6" />
     <PackageReference Include="Unity" Version="5.11.9" />
   </ItemGroup>
-
+	<ItemGroup>
+		<GlobalAnalyzerConfigFiles Include="..\..\.editorconfig" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Remove="..\..\.editorconfig" />
+	</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Client\MenuPlanner.Client.csproj" />
     <ProjectReference Include="..\Shared\MenuPlanner.Shared.csproj" />
