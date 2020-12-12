@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MenuPlanner.Shared.models.@enum;
+﻿// <copyright file="Quantity.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using MenuPlanner.Shared.models.enums;
 
 namespace MenuPlanner.Shared.models
 {
     public class Quantity
     {
-        public UnitEnum unit;
-        public double QuantityValue;
+        public UnitEnum unit { get; set; }
+        public double QuantityValue { get; set; }
     }
 }
