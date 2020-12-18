@@ -8,9 +8,6 @@
     <SupportedPlatform Include="browser" />
   </ItemGroup>
     <ItemGroup>
-        <GlobalAnalyzerConfigFiles Include="..\..\.editorconfig" />
-    </ItemGroup>
-    <ItemGroup>
         <None Remove="..\..\.editorconfig" />
     </ItemGroup>
 </Project>

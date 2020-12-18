@@ -1,0 +1,43 @@
+﻿@page "/ingredientList"
+@using MenuPlanner.Shared.models
+@inject HttpClient Http
+<h3>Ingredients</h3>
+
+@if (ingredients == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Calories</th>
+            <th>Price</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var ingredient in ingredients)
+        {
+            <tr>
+                <td>@ingredient.Name</td>
+                <td>@ingredient.Category</td>
+                <td>@ingredient.Calories</td>
+                <td>@ingredient.Price</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Ingredient[] ingredients;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ingredients = await Http.GetFromJsonAsync<Ingredient[]>("api/Ingredients");
+    }
+
+}

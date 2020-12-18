@@ -3,14 +3,23 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MenuPlanner.Shared.models
 {
     public class User
     {
-        public Guid Id { get; }
-        public string Name { get; set; }
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid UserId { get; set; }
+        [Required]
+        public string FirstName { get; set; }
+        [Required]
+        public string LastName { get; set; }
         public string Email { get; set; }
+
+        public List<Menu> Favorites { get; set; }
 
     }
 }

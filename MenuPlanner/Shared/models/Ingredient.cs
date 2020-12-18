@@ -4,20 +4,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using MenuPlanner.Shared.models.enums;
+
 
 namespace MenuPlanner.Shared.models
 {
     public class Ingredient
     {
-        public Guid Id { get; }
+        [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid IngredientId { get; set; }
+        [Required]
         public string Name { get; set; }
-        public Ingredient ParentIngredient { get; set; }
+        public List<Ingredient> ParentIngredients { get; set; }
         public List<Ingredient> ChildIngredients { get; set; }
         public IngredientCategory Category { get; set; }
-
         public int Calories { get; set; }
-        public int Price { get; set; }
+        public double Price { get; set; }
 
 
     }

@@ -3,12 +3,15 @@
 // </copyright>
 
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MenuPlanner.Shared.models
 {
     public class Image
     {
-        public Guid Id { get; }
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid ImageId { get; set; }
         public string AlternativeName { get; set; }
         public Uri Path { get; set; }
         public byte[] ImageBytes { get; set; }
