@@ -17,8 +17,8 @@ namespace MenuPlanner.Shared.models
         public Guid IngredientId { get; set; }
         [Required]
         public string Name { get; set; }
-        public List<Ingredient> ParentIngredients { get; set; }
-        public List<Ingredient> ChildIngredients { get; set; }
+        public ICollection<Ingredient> ParentIngredients { get; set; }
+        public ICollection<Ingredient> ChildIngredients { get; set; }
         public IngredientCategory Category { get; set; }
         public int Calories { get; set; }
         public double Price { get; set; }

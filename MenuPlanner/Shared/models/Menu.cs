@@ -21,29 +21,15 @@ namespace MenuPlanner.Shared.models
         public int Season { get; set; } //Flags
         [Required]
         public string Description { get; set; }
-        public List<string> Steps { get; set; }
-        [NotMapped]
-        public Dictionary<Ingredient, Quantity> Ingredients { get; set; }
-
-        [Required]
-        //https://stackoverflow.com/questions/8973027/ef-code-first-map-dictionary-or-custom-type-as-an-nvarchar
-        public string IngredientsAsJson
-        {
-            get
-            {
-                return JsonSerializer.Serialize(Ingredients);
-            }
-            set
-            {
-                Ingredients = JsonSerializer.Deserialize<Dictionary<Ingredient, Quantity>>(value);
-            }
-        }
-        public List<Comment> Comments { get; set; }
+        public ICollection<string> Steps { get; set; }
+       
+        public ICollection<MenuIngredient> Ingredients { get; set; }
+        public ICollection<Comment> Comments { get; set; }
         public double AverageRating { get; set; }
         public int Votes { get; set; }
 
         public int MenuCategory { get; set; } //Flags
-        public List<Image> Images { get; set; }
+        public ICollection<Image> Images { get; set; }
         public Uri Video { get; set; }
     }
 }

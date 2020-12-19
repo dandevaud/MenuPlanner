@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using MenuPlanner.Shared.models;
 using Microsoft.EntityFrameworkCore;
+using DbContext = Microsoft.EntityFrameworkCore.DbContext;
 
 
 namespace MenuPlanner.Server.SqlImplementation
@@ -14,6 +15,7 @@ namespace MenuPlanner.Server.SqlImplementation
     {
         public DbSet<Menu> Menus { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
+        public DbSet<MenuIngredient> MenuIngredients { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<User> Users { get; set; }
 
@@ -44,6 +46,10 @@ namespace MenuPlanner.Server.SqlImplementation
                 .Entity<Menu>()
                 .HasIndex(i => i.Name)
                 .IsUnique();
+            modelBuilder
+                .Entity<Quantity>()
+                .HasNoKey();
+
 
         }
     }

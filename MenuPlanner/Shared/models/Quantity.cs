@@ -2,13 +2,15 @@
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
+using System;
 using MenuPlanner.Shared.models.enums;
 
 namespace MenuPlanner.Shared.models
 {
-    public class Quantity
+   [Serializable]
+   public class Quantity
     {
-        public UnitEnum unit { get; set; }
+        public UnitEnum Unit { get; set; }
         public double QuantityValue { get; set; }
     }
 }
