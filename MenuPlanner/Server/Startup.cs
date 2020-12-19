@@ -1,14 +1,17 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using MenuPlanner.Server.Data;
+using MenuPlanner.Server.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
 using MenuPlanner.Server.IoC;
 using MenuPlanner.Server.SqlImplementation;
-using Microsoft.EntityFrameworkCore;
 
 namespace MenuPlanner.Server
 {
@@ -25,6 +28,21 @@ namespace MenuPlanner.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDatabaseDeveloperPageExceptionFilter();
+
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddIdentityServer()
+                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+
+            services.AddAuthentication()
+                .AddIdentityServerJwt();
+
             services.AddControllersWithViews();
             services.AddRazorPages();
             //Bind IoC
@@ -32,10 +50,11 @@ namespace MenuPlanner.Server
             ioCContainer.BindIoC(services);
             if (Configuration["DataBase:DataBaseUsed"].Equals("SQLite"))
             {
+                //services.AddDbContext<ApplicationDbContext>(options =>
+                //             options.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}"));
                 services.AddDbContext<MenuPlannerContext>(opt =>
                     opt.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}"));
             }
-           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +63,7 @@ namespace MenuPlanner.Server
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseMigrationsEndPoint();
                 app.UseWebAssemblyDebugging();
             }
             else
@@ -58,6 +78,10 @@ namespace MenuPlanner.Server
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseIdentityServer();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
