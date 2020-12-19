@@ -1,8 +1,6 @@
-﻿// <copyright file="WeatherForecast.cs" company="Alessandro Marra & Daniel Devaud">
-// Copyright (c) Alessandro Marra & Daniel Devaud.
-// </copyright>
-
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace MenuPlanner.Shared
 {

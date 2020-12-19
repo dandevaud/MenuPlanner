@@ -8,11 +8,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using MenuPlanner.Server.SqlImplementation;
 using MenuPlanner.Shared.models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace MenuPlanner.Server.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class IngredientsController : ControllerBase

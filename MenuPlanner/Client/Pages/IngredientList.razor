@@ -1,6 +1,9 @@
 ﻿@page "/ingredientList"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using MenuPlanner.Shared.models
 @inject HttpClient Http
+@attribute [Authorize]
 <h3>Ingredients</h3>
 
 @if (ingredients == null)
@@ -11,23 +14,23 @@ else
 {
     <table class="table">
         <thead>
-        <tr>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Calories</th>
-            <th>Price</th>
-        </tr>
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Calories</th>
+                <th>Price</th>
+            </tr>
         </thead>
         <tbody>
-        @foreach (var ingredient in ingredients)
-        {
-            <tr>
-                <td>@ingredient.Name</td>
-                <td>@ingredient.Category</td>
-                <td>@ingredient.Calories</td>
-                <td>@ingredient.Price</td>
-            </tr>
-        }
+            @foreach (var ingredient in ingredients)
+            {
+                <tr>
+                    <td>@ingredient.Name</td>
+                    <td>@ingredient.Category</td>
+                    <td>@ingredient.Calories</td>
+                    <td>@ingredient.Price</td>
+                </tr>
+            }
         </tbody>
     </table>
 }
@@ -37,7 +40,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        ingredients = await Http.GetFromJsonAsync<Ingredient[]>("api/Ingredients");
+        try
+        {
+            ingredients = await Http.GetFromJsonAsync<Ingredient[]>("api/Ingredients");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
     }
 
 }
