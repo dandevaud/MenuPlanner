@@ -17,7 +17,7 @@ namespace MenuPlanner.Shared.models
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-
+        [Required]
         public Ingredient Ingredient { get; set; }
         [NotMapped]
         public Quantity Quantity { get; set; }
@@ -32,7 +32,9 @@ namespace MenuPlanner.Shared.models
             }
             set
             {
-                Quantity = JsonSerializer.Deserialize<Quantity>(value);
+
+                Quantity = value != null ? JsonSerializer.Deserialize<Quantity>(value):null;
+
             }
         }
     }
