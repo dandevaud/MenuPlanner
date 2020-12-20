@@ -82,6 +82,18 @@ namespace MenuPlanner.Server.Controllers
         public async Task<ActionResult<Ingredient>> PostIngredient(Ingredient ingredient)
         {
 
+            await CheckIfIngredientExistsAndUpdateOrAdd(ingredient);
+
+            await _context.SaveChangesAsync();
+            return CreatedAtAction("GetIngredient", new { id = ingredient.IngredientId }, ingredient);
+        }
+
+        /// <summary>
+        /// Checks if ingredient exists and update it if yes or adds a new if not.
+        /// </summary>
+        /// <param name="ingredient">The ingredient.</param>
+        public async Task CheckIfIngredientExistsAndUpdateOrAdd(Ingredient ingredient)
+        {
             if (await _context.Ingredients.AnyAsync(x => x.Name.Equals(ingredient.Name)))
             {
                 var existing = await _context.Ingredients.FirstAsync(x => x.Name.Equals(ingredient.Name));
@@ -92,9 +104,6 @@ namespace MenuPlanner.Server.Controllers
             {
                 _context.Ingredients.Add(ingredient);
             }
-
-            await _context.SaveChangesAsync();
-            return CreatedAtAction("GetIngredient", new { id = ingredient.IngredientId }, ingredient);
         }
 
         // DELETE: api/Ingredients/5

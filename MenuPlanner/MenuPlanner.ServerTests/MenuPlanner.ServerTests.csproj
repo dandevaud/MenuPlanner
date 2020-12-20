@@ -1,0 +1,25 @@
+﻿ <Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+    <PackageReference Include="Moq" Version="4.15.2" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
+    <PackageReference Include="coverlet.collector" Version="1.3.0" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
+  </ItemGroup>
+     <ItemGroup>
+         <None Remove="..\..\.editorconfig" />
+     </ItemGroup>
+     <ItemGroup>
+         <ProjectReference Include="..\Server\MenuPlanner.Server.csproj" />
+         <ProjectReference Include="..\Shared\MenuPlanner.Shared.csproj" />
+     </ItemGroup>
+</Project>
