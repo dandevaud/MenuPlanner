@@ -16,6 +16,7 @@ namespace MenuPlanner.Server.Data
             DbContextOptions<ApplicationDbContext> options,
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
+            Database.EnsureCreated();
         }
     }
 }

@@ -28,9 +28,20 @@ namespace MenuPlanner.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+
+            //Bind IoC
+            IoCContainer ioCContainer = new IoCContainer(Configuration);
+            ioCContainer.BindIoC(services);
+            if (Configuration["DataBase:DataBaseUsed"].Equals("SQLite"))
+            {
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}"));
+                services.AddDbContext<MenuPlannerContext>(opt =>
+                    opt.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}"));
+            }
+            //services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseSqlServer(
+            //        Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -45,16 +56,7 @@ namespace MenuPlanner.Server
 
             services.AddControllersWithViews();
             services.AddRazorPages();
-            //Bind IoC
-            IoCContainer ioCContainer = new IoCContainer(Configuration);
-            ioCContainer.BindIoC(services);
-            if (Configuration["DataBase:DataBaseUsed"].Equals("SQLite"))
-            {
-                //services.AddDbContext<ApplicationDbContext>(options =>
-                //             options.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}"));
-                services.AddDbContext<MenuPlannerContext>(opt =>
-                    opt.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}"));
-            }
+           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
