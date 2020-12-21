@@ -1,0 +1,54 @@
+﻿@page "/menuList"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using MenuPlanner.Shared.models
+@inject HttpClient Http
+@attribute [Authorize]
+<h3>Menus</h3>
+
+@if (menus == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ingredient in menus)
+            {
+                <tr>
+                    <td>@ingredient.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Menu[] menus;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            menus = await Http.GetFromJsonAsync<Menu[]>("api/Menus");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+}
+

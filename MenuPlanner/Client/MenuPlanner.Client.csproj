@@ -5,10 +5,19 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Blazorise.Bootstrap" Version="0.9.2.4" />
+        <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.2.4" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.1" PrivateAssets="all" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="5.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.1">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.1" />
         <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
     </ItemGroup>
     <ItemGroup>
@@ -17,6 +26,10 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Shared\MenuPlanner.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\css\fontawesome\" />
     </ItemGroup>
 
 </Project>

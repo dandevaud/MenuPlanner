@@ -1,17 +1,17 @@
-﻿using MenuPlanner.Server.Data;
+﻿using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
+using MenuPlanner.Server.Data;
+using MenuPlanner.Server.IoC;
 using MenuPlanner.Server.Models;
+using MenuPlanner.Server.SqlImplementation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
-using MenuPlanner.Server.IoC;
-using MenuPlanner.Server.SqlImplementation;
 
 namespace MenuPlanner.Server
 {
@@ -29,6 +29,13 @@ namespace MenuPlanner.Server
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddBlazorise(options =>
+            {
+                options.ChangeTextOnKeyPress = true; // optional
+            })
+                .AddBootstrapProviders()
+                .AddFontAwesomeIcons();
+
             //Bind IoC
             IoCContainer ioCContainer = new IoCContainer(Configuration);
             ioCContainer.BindIoC(services);
@@ -36,8 +43,8 @@ namespace MenuPlanner.Server
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}"));
-                services.AddDbContext<MenuPlannerContext>(opt =>
-                    opt.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}"));
+                services.AddDbContext<MenuPlannerContext>(options =>
+                    options.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}"));
             }
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseSqlServer(
@@ -56,7 +63,7 @@ namespace MenuPlanner.Server
 
             services.AddControllersWithViews();
             services.AddRazorPages();
-           
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -84,6 +91,8 @@ namespace MenuPlanner.Server
             app.UseIdentityServer();
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.ApplicationServices.UseBootstrapProviders().UseFontAwesomeIcons();
 
             app.UseEndpoints(endpoints =>
             {
