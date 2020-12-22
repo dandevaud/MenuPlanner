@@ -4,6 +4,11 @@
 @using MenuPlanner.Shared.models
 @inject HttpClient Http
 @attribute [Authorize]
+
+<button class="btn btn-primary" @onclick="AddIngredient">
+    Add Ingredient
+</button>
+
 <h3>Ingredients</h3>
 
 @if (ingredients == null)
@@ -12,6 +17,7 @@
 }
 else
 {
+
     <table class="table">
         <thead>
             <tr>
@@ -50,4 +56,11 @@ else
         }
     }
 
+}
+
+@code {
+    private async Task AddIngredient(MouseEventArgs e)
+    {
+        await Http.PostAsJsonAsync<Ingredient>("api/Ingredients", new Ingredient { Name = "Test Ingredient" });
+    }
 }

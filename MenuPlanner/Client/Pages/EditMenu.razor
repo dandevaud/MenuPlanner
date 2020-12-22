@@ -1,0 +1,83 @@
+﻿@page "/editMenu/{Id:guid}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using MenuPlanner.Shared.models
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@attribute [Authorize]
+
+<h4>Id : @Id </h4>
+
+<h3>Edit Menu</h3>
+
+<div class="row">
+    <EditForm Model="@menu" OnValidSubmit="@UpdateMenu">
+        <DataAnnotationsValidator />
+        <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
+
+        <div class="form-group">
+            Name: <InputNumber id="name" @bind-Value="menu.Name" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            Description: <InputText id="description" @bind-Value="menu.Description" class="form-control" />
+        </div>
+
+        <br />
+
+        <button type="submit" class="btn btn-success">Update</button>
+    </EditForm>
+
+</div>
+
+<br />
+<br />
+<a href="/Accounts">Back to List</a>
+
+@code {
+
+    [Parameter]
+    public Guid? Id { get; set; }
+
+    private Menu menu = new Menu();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id == null)
+        {
+            NavigationManager.NavigateTo("MenuLists");
+        }
+
+        /*
+        var response = await Http.GetAsync($"api/Menus/Get/{Id}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var foundMenu = await response.Content.ReadFromJsonAsync<Menu>();
+            menu.Name = foundMenu.Name;
+            menu.Description = foundMenu.Description;
+        }
+        else
+        {
+            NavigationManager.NavigateTo("MenuList");
+        }
+        */
+    }
+
+    private async Task UpdateMenu()
+    {
+        Menu m = new Menu()
+        {
+            MenuId = Id.Value,
+            Name = menu.Name,
+            Description = menu.Description
+        };
+
+        await Http.PutAsJsonAsync<Menu>($"api/Menus/{Id.Value}", menu);
+        NavigationManager.NavigateTo("MenuList");
+    }
+
+
+
+}

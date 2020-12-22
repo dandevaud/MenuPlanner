@@ -21,9 +21,9 @@ namespace MenuPlanner.Shared.models
         public int Season { get; set; } //Flags
         [Required]
         public string Description { get; set; }
-        [Required]
+        //[Required]
         public ICollection<string> Steps { get; set; }
-        [Required]
+        //[Required]
         public ICollection<MenuIngredient> Ingredients { get; set; }
         public ICollection<Comment> Comments { get; set; }
         public double AverageRating { get; set; }

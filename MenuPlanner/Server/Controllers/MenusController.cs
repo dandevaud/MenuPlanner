@@ -34,22 +34,18 @@ namespace MenuPlanner.Server.Controllers
             return await _context.Menus.ToListAsync();
         }
 
-        // GET: Menus/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        // GET: api/Menus/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Menu>> Details(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var menu = await _context.Menus.FindAsync(id);
 
-            var menu = await _context.Menus
-                .FirstOrDefaultAsync(m => m.MenuId == id);
             if (menu == null)
             {
                 return NotFound();
             }
 
-            return View(menu);
+            return menu;
         }
 
         // GET: Menus/Create
@@ -61,16 +57,15 @@ namespace MenuPlanner.Server.Controllers
         // POST: Menus/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MenuId,Name,TimeOfDay,Season,Description,Steps,AverageRating,Votes,MenuCategory,Video")] Menu menu)
+        [HttpPost("Create")]
+        //[ValidateAntiForgeryToken]
+        public async Task<ActionResult<Menu>> Create(Menu menu)
         {
             if (ModelState.IsValid)
             {
-                menu.MenuId = Guid.NewGuid();
                 _context.Add(menu);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return CreatedAtAction("Details", new { id = menu.MenuId }, menu);
             }
             return View(menu);
         }
@@ -91,12 +86,12 @@ namespace MenuPlanner.Server.Controllers
             return View(menu);
         }
 
-        // POST: Menus/Edit/5
+        // PUT: api/Menus/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("MenuId,Name,TimeOfDay,Season,Description,Steps,AverageRating,Votes,MenuCategory,Video")] Menu menu)
+        [HttpPut("{id}")]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, Menu menu)
         {
             if (id != menu.MenuId)
             {
@@ -126,22 +121,20 @@ namespace MenuPlanner.Server.Controllers
             return View(menu);
         }
 
-        // GET: Menus/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        // GET: api/Menus/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var menu = await _context.Menus
-                .FirstOrDefaultAsync(m => m.MenuId == id);
+            var menu = await _context.Menus.FindAsync(id);
             if (menu == null)
             {
                 return NotFound();
             }
 
-            return View(menu);
+            _context.Menus.Remove(menu);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         // POST: Menus/Delete/5

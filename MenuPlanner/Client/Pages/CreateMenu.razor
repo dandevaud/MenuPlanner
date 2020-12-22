@@ -1,0 +1,64 @@
+﻿@page "/CreateMenu"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using MenuPlanner.Shared.models
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@attribute [Authorize]
+<h3>Create a Menu</h3>
+
+<div class="row">
+    <EditForm Model="@menu" OnValidSubmit="@InsertMenu">
+        <DataAnnotationsValidator />
+        <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
+        <!-- <div class="form-group">
+            Balance: <InputNumber id="balance" @bind-Value="accountModel.balance" class="form-control" />
+        </div> -->
+
+        <div class="form-group">
+            Name: <InputText id="name" @bind-Value="menu.Name" class="form-control" />
+        </div>
+        <div class="form-group">
+            Description: <InputText id="description" @bind-Value="menu.Description" class="form-control" />
+        </div>
+
+        <br />
+
+        <button type="submit" class="btn btn-success">Submit</button>
+    </EditForm>
+
+</div>
+
+<br />
+<br />
+<a href="/MenuList">Back to List</a>
+
+
+@code {
+    private Menu menu = new Menu();
+
+    private async Task InsertMenu()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync<Menu>("api/Menus/Create", menu);
+
+            if (response.IsSuccessStatusCode)
+            {
+                //var responseText = await response.Content.ReadAsStringAsync();
+                await response.Content.ReadFromJsonAsync<Menu>();
+                NavigationManager.NavigateTo("MenuList");
+            }
+            else
+            {
+                NavigationManager.NavigateTo("CreateAccount");
+            }
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+
+    }
+}
+
