@@ -1,0 +1,20 @@
+﻿@using MenuPlanner.Shared.models
+
+<div class="card" style="width: 18rem;">
+    @*<img src="images/Pizza_Prosciutto.jpg" class="card-img-top" alt="Menu image">*@
+    <Carousel Images="@Menu.Images"></Carousel>
+    <div class="card-body">
+        <h5 class="card-title">@Menu.Name</h5>
+        <p class="card-text">@Menu.Description</p>
+    </div>
+    <div class="card-footer">
+        <a href="EditMenu/@Menu.MenuId" class="btn btn-primary">Edit</a>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public Menu Menu { get; set; }
+
+}
