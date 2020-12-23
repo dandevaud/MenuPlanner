@@ -1,7 +1,4 @@
-﻿using Blazorise;
-using Blazorise.Bootstrap;
-using Blazorise.Icons.FontAwesome;
-using MenuPlanner.Server.Data;
+﻿using MenuPlanner.Server.Data;
 using MenuPlanner.Server.IoC;
 using MenuPlanner.Server.Models;
 using MenuPlanner.Server.SqlImplementation;
@@ -28,13 +25,6 @@ namespace MenuPlanner.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.AddBlazorise(options =>
-            {
-                options.ChangeTextOnKeyPress = true; // optional
-            })
-                .AddBootstrapProviders()
-                .AddFontAwesomeIcons();
 
             //Bind IoC
             IoCContainer ioCContainer = new IoCContainer(Configuration);
@@ -91,8 +81,6 @@ namespace MenuPlanner.Server
             app.UseIdentityServer();
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.ApplicationServices.UseBootstrapProviders().UseFontAwesomeIcons();
 
             app.UseEndpoints(endpoints =>
             {
