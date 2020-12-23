@@ -86,39 +86,37 @@ namespace MenuPlanner.Server.Controllers
             return View(menu);
         }
 
-        // PUT: api/Menus/5
+        // PUT: api/Menus/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPut("{id}")]
+        [HttpPut("Edit/{id}")]
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, Menu menu)
         {
             if (id != menu.MenuId)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            _context.Entry(menu).State = EntityState.Modified;
+
+            try
             {
-                try
-                {
-                    _context.Update(menu);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!MenuExists(menu.MenuId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                await _context.SaveChangesAsync();
             }
-            return View(menu);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!MenuExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
         // GET: api/Menus/5

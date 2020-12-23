@@ -6,7 +6,9 @@
 @inject HttpClient Http
 @attribute [Authorize]
 
-<a href="/CreateMenu">Add Menu</a>
+
+<a href="/CreateMenu" class="btn btn-info">Add Menu</a>
+<hr />
 
 <h3>Menus</h3>
 
@@ -28,12 +30,13 @@ else
         <tbody>
             @foreach (var menu in menus)
             {
-                <tr>
-                    <td>@menu.Name</td>
-                    <td>@menu.Description</td>
-                    <td><a href="/EditMenu/@menu.MenuId" class="btn btn-info">Edit</a></td>
-                    <td><a @onclick="(() => DeleteMenu(menu.MenuId))" class="btn btn-danger">Delete</a></td>
-                </tr>
+            <tr>
+                <td>@menu.Name</td>
+                <td>@menu.Description</td>
+                <td><a href="/EditMenu/@menu.MenuId" class="btn btn-info">Edit</a></td>
+                @*<td><a @onclick="(() => DeleteMenu(menu.MenuId))" class="btn btn-danger">Delete</a></td>*@
+                <td><a href="/DeleteMenu/@menu.MenuId" class="btn btn-danger">Delete</a></td>
+            </tr>
             }
         </tbody>
     </table>
@@ -43,6 +46,11 @@ else
     private Menu[] menus;
 
     protected override async Task OnInitializedAsync()
+    {
+        await GetMenus();
+    }
+
+    public async Task GetMenus()
     {
         try
         {
@@ -56,7 +64,7 @@ else
 
     public async Task DeleteMenu(Guid id)
     {
-        //bool confirm = await js.InvokeAsync<bool>("confirm", "Do you want to delete this account?");
+        //TODO: add confirmation dialog
         bool confirm = true;
         if (confirm)
         {
@@ -64,14 +72,12 @@ else
 
             if (response.IsSuccessStatusCode)
             {
-                var responseText = await response.Content.ReadAsStringAsync();
-
-                NavigationManager.NavigateTo("MenuList");
-
+                //var responseText = await response.Content.ReadAsStringAsync();
+                await GetMenus();
             }
             else
             {
-                NavigationManager.NavigateTo("MenuList");
+                //NavigationManager.NavigateTo("MenuList");
             }
         }
     }
