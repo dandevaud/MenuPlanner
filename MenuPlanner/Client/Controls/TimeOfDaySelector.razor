@@ -1,0 +1,19 @@
+﻿@using MenuPlanner.Shared.models.enums
+
+<div class="form-group">
+    @foreach (string name in Enum.GetNames(typeof(TimeOfDay)))
+    {
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox">
+            <label class="form-check-label">@name</label>
+        </div>
+    }
+</div>
+
+
+@code {
+
+
+
+
+}

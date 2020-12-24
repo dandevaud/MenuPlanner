@@ -5,9 +5,12 @@
 @inject HttpClient Http
 @attribute [Authorize]
 
-<button class="btn btn-primary" @onclick="AddIngredient">
-    Add Ingredient
-</button>
+<div class="form-group">
+    Name: <input type="text" @bind="@newIngredient.Name" class="form-control" />
+    <button class="btn btn-primary" @onclick="AddIngredient">
+        Add Ingredient
+    </button>
+</div>
 
 <h3>Ingredients</h3>
 
@@ -25,17 +28,19 @@ else
                 <th>Category</th>
                 <th>Calories</th>
                 <th>Price</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var ingredient in ingredients)
             {
-                <tr>
-                    <td>@ingredient.Name</td>
-                    <td>@ingredient.Category</td>
-                    <td>@ingredient.Calories</td>
-                    <td>@ingredient.Price</td>
-                </tr>
+            <tr>
+                <td>@ingredient.Name</td>
+                <td>@ingredient.Category</td>
+                <td>@ingredient.Calories</td>
+                <td>@ingredient.Price</td>
+                <td><a @onclick="(() => DeleteIngredient(ingredient.IngredientId))" class="btn btn-danger">Delete</a></td>
+            </tr>
             }
         </tbody>
     </table>
@@ -44,7 +49,38 @@ else
 @code {
     private Ingredient[] ingredients;
 
+    private Ingredient newIngredient = new Ingredient();
+
     protected override async Task OnInitializedAsync()
+    {
+        await LoadIngredients();
+    }
+
+    private async Task AddIngredient(MouseEventArgs e)
+    {
+        await Http.PostAsJsonAsync<Ingredient>("api/Ingredients", newIngredient);
+        newIngredient = new Ingredient();
+        await LoadIngredients();
+    }
+
+    public async Task DeleteIngredient(Guid id)
+    {
+        var response = await Http.DeleteAsync($"api/Ingredients/{id}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var responseText = await response.Content.ReadAsStringAsync();
+
+            await LoadIngredients();
+
+        }
+        else
+        {
+            //todo
+        }
+    }
+
+    private async Task LoadIngredients()
     {
         try
         {
@@ -58,9 +94,3 @@ else
 
 }
 
-@code {
-    private async Task AddIngredient(MouseEventArgs e)
-    {
-        await Http.PostAsJsonAsync<Ingredient>("api/Ingredients", new Ingredient { Name = "Test Ingredient" });
-    }
-}

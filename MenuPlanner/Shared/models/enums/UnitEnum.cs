@@ -2,10 +2,24 @@
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
+using System.ComponentModel;
+
 namespace MenuPlanner.Shared.models.enums
 {
     public enum UnitEnum
     {
         //TODO: Defines Units
+        [Description("Gram")]
+        g = 0,
+        [Description("Kilo Gram")]
+        kg = 1,
+        [Description("Deci Liter")]
+        dl = 2,
+        [Description("Liter")]
+        l = 3,
+        [Description("Small spoon")]
+        spoon1 = 4,
+        [Description("Big spoon")]
+        spoon2 = 5
     }
 }

@@ -32,5 +32,7 @@ namespace MenuPlanner.Shared.models
         public int MenuCategory { get; set; } //Flags
         public ICollection<Image> Images { get; set; }
         public Uri Video { get; set; }
+
     }
+
 }

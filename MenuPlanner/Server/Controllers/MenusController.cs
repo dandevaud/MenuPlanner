@@ -48,13 +48,7 @@ namespace MenuPlanner.Server.Controllers
             return menu;
         }
 
-        // GET: Menus/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Menus/Create
+        // POST: api/Menus/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost("Create")]
@@ -66,22 +60,6 @@ namespace MenuPlanner.Server.Controllers
                 _context.Add(menu);
                 await _context.SaveChangesAsync();
                 return CreatedAtAction("Details", new { id = menu.MenuId }, menu);
-            }
-            return View(menu);
-        }
-
-        // GET: Menus/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var menu = await _context.Menus.FindAsync(id);
-            if (menu == null)
-            {
-                return NotFound();
             }
             return View(menu);
         }
@@ -133,17 +111,6 @@ namespace MenuPlanner.Server.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        // POST: Menus/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var menu = await _context.Menus.FindAsync(id);
-            _context.Menus.Remove(menu);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool MenuExists(Guid id)

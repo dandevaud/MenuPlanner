@@ -1,0 +1,42 @@
+﻿@using MenuPlanner.Shared.models
+@using MenuPlanner.Shared.models.enums
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">@Ingredient.Name</h5>
+        <p class="card-text">@Ingredient.Category</p>
+        <div class="form-group">
+            <label>Quantity</label>
+            <input type="text" class="form-control" @bind-value="quantity.QuantityValue">
+        </div>
+        <div class="form-group">
+            <label>Unit</label>
+            <select class="form-control">
+                @foreach (string unit in Enum.GetNames(typeof(UnitEnum)))
+                {
+                    <option>@unit</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="card-footer">
+        <button type="button" class="btn btn-primary" @onclick="AddIngredient">Add</button>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public Ingredient Ingredient { get; set; }
+
+    [Parameter]
+    public EventCallback<MenuIngredient> MenuIngredient { get; set; }
+
+    private Quantity quantity = new Quantity();
+
+    private void AddIngredient()
+    {
+        MenuIngredient.InvokeAsync(new MenuIngredient { Quantity = quantity, Ingredient = Ingredient });
+    }
+
+}
