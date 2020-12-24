@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿// <copyright file="DbContextMock.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Moq;
