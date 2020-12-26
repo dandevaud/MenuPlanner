@@ -98,7 +98,7 @@ namespace MenuPlanner.Server.Controllers
             {
                 var existing = await _context.Ingredients.FirstAsync(x => x.Name.Equals(ingredient.Name));
                 ingredient.IngredientId = existing.IngredientId;
-                _context.Entry(existing).CurrentValues.SetValues(ingredient);
+                _context.Ingredients.Update(existing)?.CurrentValues?.SetValues(ingredient);
             }
             else
             {
