@@ -1,4 +1,5 @@
-﻿using MenuPlanner.Server.Data;
+﻿using System;
+using MenuPlanner.Server.Data;
 using MenuPlanner.Server.IoC;
 using MenuPlanner.Server.Models;
 using MenuPlanner.Server.SqlImplementation;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 
 namespace MenuPlanner.Server
 {
@@ -54,6 +56,24 @@ namespace MenuPlanner.Server
             services.AddControllersWithViews();
             services.AddRazorPages();
 
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            //services.AddSwaggerGen();
+            // Authorization take from https://stackoverflow.com/questions/45787711/how-can-i-setup-swashbuckle-aspnetcore-swagger-to-use-authorization
+            services.AddSwaggerGen(c =>
+            {
+                c.OperationFilter<AuthorizeCheckOperationFilter>();
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Scheme = "Bearer",
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Description = "JWT Authorization header using the Bearer scheme." +
+                    "Enter 'Bearer' [space] and then your token in the text input below." +
+                    "Example: 'Bearer 12345abcdef'"
+                });
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,6 +95,17 @@ namespace MenuPlanner.Server
             app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            // reach swagger UI by "/swagger/index.html"
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Menu Planner API V1");
+            });
 
             app.UseRouting();
 

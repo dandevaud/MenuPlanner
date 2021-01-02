@@ -9,12 +9,14 @@ using System.Threading.Tasks;
 using MenuPlanner.Server.SqlImplementation;
 using MenuPlanner.Shared.models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace MenuPlanner.Server.Controllers
 {
     [Authorize]
+    [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
     public class IngredientsController : ControllerBase
@@ -93,6 +95,8 @@ namespace MenuPlanner.Server.Controllers
         // POST: api/Ingredients
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Ingredient>> PostIngredient(Ingredient ingredient)
         {
 
