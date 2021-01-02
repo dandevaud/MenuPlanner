@@ -18,7 +18,7 @@ else
     <div class="row">
         <EditForm Model="@menu" OnValidSubmit="@UpdateMenu">
             <DataAnnotationsValidator />
-            <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
+            <ValidationSummary />
 
             <Carousel Images="@menu.Images"></Carousel>
 
