@@ -4,13 +4,6 @@
 @using MenuPlanner.Shared.models
 @inject HttpClient Http
 @attribute [Authorize]
-@*<div class="form-group">
-        Name: <input type="text" @bind="@newIngredient.Name" class="form-control" />
-        <button class="btn btn-primary" @onclick="AddIngredient">
-            Add Ingredient
-        </button>
-    </div>*@
-
 
 <div class="row">
     <EditForm Model="@newIngredient" OnValidSubmit="@AddIngredient">
@@ -31,7 +24,7 @@
 
         <IngredientCategories Ingredient="newIngredient"></IngredientCategories>
 
-        <button type="submit" class="btn btn-success">Add</button>
+        <button type="submit" class="btn btn-success">Save</button>
     </EditForm>
 </div>
 
@@ -54,6 +47,7 @@ else
                 <th>Calories</th>
                 <th>Price</th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -64,6 +58,7 @@ else
                     <td>@ingredient.Category</td>
                     <td>@ingredient.Calories</td>
                     <td>@ingredient.Price</td>
+                    <td><a @onclick="(() => newIngredient = ingredient)" class="btn btn-primary">Edit</a></td>
                     <td><a @onclick="(() => DeleteIngredient(ingredient.IngredientId))" class="btn btn-danger">Delete</a></td>
                 </tr>
             }
