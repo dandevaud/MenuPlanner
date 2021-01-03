@@ -40,12 +40,7 @@ namespace MenuPlanner.Server.Controllers
             var partOfName = HttpContext.Request.Query["contains"].ToString().ToLower();
             if (!string.IsNullOrEmpty(partOfName))
             {
-                //to improve with request to db only the searched entries
-                var entries = await _context.Ingredients.ToListAsync();
-                var foundEntries = entries.Where(x => x.Name.ToLower().Contains(partOfName)).ToList();
-                return foundEntries;
-                //
-                //return await _context.Ingredients.Where(x => x.Name.ToLower().Contains(partOfName)).ToListAsync();
+                return await _context.Ingredients.Where(x => x.Name.ToLower().Contains(partOfName)).ToListAsync();
             }
             return new List<Ingredient>();
         }

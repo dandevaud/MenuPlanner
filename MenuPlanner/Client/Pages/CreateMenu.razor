@@ -11,7 +11,7 @@
 <div class="row">
     <EditForm Model="@menu" OnValidSubmit="@InsertMenu">
         <DataAnnotationsValidator />
-        <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
+        <ValidationSummary />
 
         <div class="form-group">
             Name: <InputText @bind-Value="menu.Name" class="form-control" />
