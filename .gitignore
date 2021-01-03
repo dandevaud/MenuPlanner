@@ -360,3 +360,4 @@ MigrationBackup/
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio
 *.db-shm
 *.db-wal
+/MenuPlanner/Server/.config/dotnet-tools.json
