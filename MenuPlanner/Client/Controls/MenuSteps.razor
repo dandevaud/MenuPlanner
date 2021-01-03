@@ -1,0 +1,35 @@
+﻿@using MenuPlanner.Shared.models
+@using Microsoft.EntityFrameworkCore.ChangeTracking.Internal
+
+<div class="form-group">
+    @Steps
+    <a class="btn" @onclick="@RenderComponent">Add step</a>
+</div>
+
+@code {
+
+    [Parameter]
+    public RenderFragment Steps { get; set; }
+    
+    [Parameter]
+    public int Count { get; set; } = 1;
+
+    private RenderFragment CreateComponent() => builder =>
+    {
+        builder.OpenComponent(0, typeof(InputTextArea));
+        builder.AddAttribute(1, "id", $"Step{Count}");
+        builder.AddAttribute(2,"Value",typeof(Menu).GetProperty("Steps")   );
+        builder.CloseComponent();
+    };
+
+    protected override void OnInitialized()
+    {
+        CreateComponent();
+    }
+
+    private void RenderComponent()
+    {
+        Steps += CreateComponent();
+        Count++;
+    }
+}
