@@ -2,10 +2,20 @@
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
+using System;
+
 namespace MenuPlanner.Shared.models.enums
 {
     public enum IngredientCategory
     {
-        //TODO: Defines Classes
+        Unknown,
+        Fruit,
+        Vegetable,
+        Meat,
+        Fish,
+        Cheese,
+        Milk,
+        Seasoning,
+        Spice
     }
 }

@@ -4,13 +4,38 @@
 @using MenuPlanner.Shared.models
 @inject HttpClient Http
 @attribute [Authorize]
+@*<div class="form-group">
+        Name: <input type="text" @bind="@newIngredient.Name" class="form-control" />
+        <button class="btn btn-primary" @onclick="AddIngredient">
+            Add Ingredient
+        </button>
+    </div>*@
 
-<div class="form-group">
-    Name: <input type="text" @bind="@newIngredient.Name" class="form-control" />
-    <button class="btn btn-primary" @onclick="AddIngredient">
-        Add Ingredient
-    </button>
+
+<div class="row">
+    <EditForm Model="@newIngredient" OnValidSubmit="@AddIngredient">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            Name: <InputText @bind-Value="newIngredient.Name" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            Calories: <InputNumber @bind-Value="newIngredient.Calories" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            Price: <InputNumber @bind-Value="newIngredient.Price" class="form-control" />
+        </div>
+
+        <IngredientCategories Ingredient="newIngredient"></IngredientCategories>
+
+        <button type="submit" class="btn btn-success">Add</button>
+    </EditForm>
 </div>
+
+<hr />
 
 <h3>Ingredients</h3>
 
@@ -34,19 +59,20 @@ else
         <tbody>
             @foreach (var ingredient in ingredients)
             {
-            <tr>
-                <td>@ingredient.Name</td>
-                <td>@ingredient.Category</td>
-                <td>@ingredient.Calories</td>
-                <td>@ingredient.Price</td>
-                <td><a @onclick="(() => DeleteIngredient(ingredient.IngredientId))" class="btn btn-danger">Delete</a></td>
-            </tr>
+                <tr>
+                    <td>@ingredient.Name</td>
+                    <td>@ingredient.Category</td>
+                    <td>@ingredient.Calories</td>
+                    <td>@ingredient.Price</td>
+                    <td><a @onclick="(() => DeleteIngredient(ingredient.IngredientId))" class="btn btn-danger">Delete</a></td>
+                </tr>
             }
         </tbody>
     </table>
 }
 
 @code {
+
     private Ingredient[] ingredients;
 
     private Ingredient newIngredient = new Ingredient();
@@ -56,7 +82,7 @@ else
         await LoadIngredients();
     }
 
-    private async Task AddIngredient(MouseEventArgs e)
+    private async Task AddIngredient()
     {
         await Http.PostAsJsonAsync<Ingredient>("api/Ingredients", newIngredient);
         newIngredient = new Ingredient();
