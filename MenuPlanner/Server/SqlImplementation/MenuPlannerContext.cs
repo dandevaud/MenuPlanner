@@ -13,17 +13,21 @@ namespace MenuPlanner.Server.SqlImplementation
 {
     public class MenuPlannerContext : DbContext
     {
-        public DbSet<Menu> Menus { get; set; }
-        public DbSet<Ingredient> Ingredients { get; set; }
-        public DbSet<MenuIngredient> MenuIngredients { get; set; }
-        public DbSet<Comment> Comments { get; set; }
-        public DbSet<User> Users { get; set; }
+        public virtual DbSet<Menu> Menus { get; set; }
+        public virtual DbSet<Ingredient> Ingredients { get; set; }
+        public virtual DbSet<MenuIngredient> MenuIngredients { get; set; }
+        public virtual DbSet<Comment> Comments { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         public MenuPlannerContext(DbContextOptions<MenuPlannerContext> dbContextOptions) : base(dbContextOptions)
         {
             Database.EnsureCreated();
 
+        }
 
+        public MenuPlannerContext() : base()
+        {
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
