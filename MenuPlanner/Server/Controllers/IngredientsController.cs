@@ -110,6 +110,7 @@ namespace MenuPlanner.Server.Controllers
         /// Checks if ingredient exists and update it if yes or adds a new if not.
         /// </summary>
         /// <param name="ingredient">The ingredient.</param>
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task CheckIfIngredientExistsAndUpdateOrAdd(Ingredient ingredient)
         {
             if (await _context.Ingredients.AnyAsync(x => x.Name.Equals(ingredient.Name)))
