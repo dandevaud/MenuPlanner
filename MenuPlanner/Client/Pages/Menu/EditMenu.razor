@@ -30,11 +30,12 @@ else
                 Description: <textarea class="form-control" rows="3" @bind="menu.Description"></textarea>
             </div>
 
-            <TimeOfDaySelector></TimeOfDaySelector>
+            <TimeOfDaySelector Menu="@menu"></TimeOfDaySelector>
+            <MenuSteps Menu="@menu"></MenuSteps>
 
             <br />
 
-            <button type="submit" class="btn btn-success">Update</button>
+            <button type="submit" class="btn btn-success" @onclick="@UpdateMenu">Update</button>
         </EditForm>
     </div>
     <br />
@@ -64,12 +65,7 @@ else
             var response = await Http.GetAsync($"api/Menus/{Id}");
             if (response.IsSuccessStatusCode)
             {
-                var foundMenu = await response.Content.ReadFromJsonAsync<Menu>();
-                menu = new Menu
-                {
-                    Name = foundMenu.Name,
-                    Description = foundMenu.Description
-                };
+                menu = await response.Content.ReadFromJsonAsync<Menu>();
             }
             else
             {
@@ -85,16 +81,11 @@ else
 
     private async Task UpdateMenu()
     {
-        Menu m = new Menu()
-        {
-            MenuId = Id.Value,
-            Name = menu.Name,
-            Description = menu.Description
-        };
-
         try
         {
-            await Http.PutAsJsonAsync<Menu>($"api/Menus/Edit/{Id}", m);
+            menu.MenuId = Id??Guid.NewGuid();
+            var response = await Http.PutAsJsonAsync<Menu>($"api/Menus/Edit/{Id}", menu);
+
             NavigationManager.NavigateTo("MenuList");
         }
         catch (AccessTokenNotAvailableException exception)

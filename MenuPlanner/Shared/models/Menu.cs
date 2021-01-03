@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using MenuPlanner.Shared.models.enums;
 
 namespace MenuPlanner.Shared.models
 {
@@ -17,8 +18,8 @@ namespace MenuPlanner.Shared.models
         public Guid MenuId { get; set; }
         [Required]
         public string Name { get; set; }
-        public int TimeOfDay { get; set; } //Flags
-        public int Season { get; set; } //Flags
+        public TimeOfDay TimeOfDay { get; set; } //Flags
+        public Season Season { get; set; } //Flags
         [Required]
         public string Description { get; set; }
         //[Required]
@@ -29,7 +30,7 @@ namespace MenuPlanner.Shared.models
         public double AverageRating { get; set; }
         public int Votes { get; set; }
 
-        public int MenuCategory { get; set; } //Flags
+        public MenuCategory MenuCategory { get; set; } //Flags
         public ICollection<Image> Images { get; set; }
         public Uri Video { get; set; }
 
