@@ -1,4 +1,5 @@
-﻿@page "/editMenu/{Id:guid}"
+﻿@page "/AddEditMenu"
+@page "/AddEditMenu/{Id:guid}"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using MenuPlanner.Shared.models
@@ -57,7 +58,8 @@ else
 
         if (Id == null)
         {
-            NavigationManager.NavigateTo("MenuLists");
+            menu = new Menu();
+            return;
         }
 
         try
@@ -83,9 +85,14 @@ else
     {
         try
         {
-            menu.MenuId = Id??Guid.NewGuid();
-            var response = await Http.PutAsJsonAsync<Menu>($"api/Menus/Edit/{Id}", menu);
-
+            if (Id == null)
+            {
+                var response = await Http.PostAsJsonAsync<Menu>("api/Menus/Create", menu);
+            }
+            else
+            {
+                var response = await Http.PutAsJsonAsync<Menu>($"api/Menus/Edit/{Id}", menu);
+            }
             NavigationManager.NavigateTo("MenuList");
         }
         catch (AccessTokenNotAvailableException exception)
