@@ -48,17 +48,17 @@ else
 
             @if (ingredient.Name != null)
             {
-                <IngredientCard Ingredient="@ingredient" MenuIngredient="AddIngredientToMenu"></IngredientCard>
+                <IngredientCard Ingredient="@ingredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
             }
 
             @if (menu.Ingredients != null)
             {
-                <ul>
-                    @foreach (var ingredient in menu.Ingredients)
+              
+                    @foreach (var menuIngredient in menu.Ingredients)
                     {
-                        <li>@ingredient.Ingredient.Name</li>
+                        <IngredientCard MenuIngredient="@menuIngredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="false" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
                     }
-                </ul>
+                
             }
 
             <br />
@@ -97,6 +97,7 @@ else
             if (response.IsSuccessStatusCode)
             {
                 menu = await response.Content.ReadFromJsonAsync<Menu>();
+                StateHasChanged();
             }
             else
             {
@@ -109,7 +110,7 @@ else
         }
     }
 
-   
+
     private async Task UpdateMenu()
     {
         try
@@ -130,13 +131,37 @@ else
         }
     }
 
-    private void AddIngredientToMenu(MenuIngredient ingredient)
+    private async Task RemoveMenuIngredient(MenuIngredient menuIngredient)
+    {
+
+        try
+        {
+            var response = Http.DeleteAsync($"api/MenuIngredients/{menuIngredient.Id}");
+            menu.Ingredients.Remove(menuIngredient);
+            await response;
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+    private void AddIngredientToMenu(MenuIngredient menuIngredient)
     {
         if (menu.Ingredients == null)
         {
             menu.Ingredients = new List<MenuIngredient>();
         }
-        menu.Ingredients.Add(ingredient);
+        //Multi ingredient Values Possible
+        menu.Ingredients.Add(menuIngredient);
+        
+        UpdateIngredientToMenu(menuIngredient);
+    }
+
+    private void UpdateIngredientToMenu(MenuIngredient menuIngredient)
+    {
+        ingredient = new Ingredient();
+        StateHasChanged();
     }
 
 }
