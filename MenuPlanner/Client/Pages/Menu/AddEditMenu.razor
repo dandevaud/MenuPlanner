@@ -97,7 +97,6 @@ else
             if (response.IsSuccessStatusCode)
             {
                 menu = await response.Content.ReadFromJsonAsync<Menu>();
-                StateHasChanged();
             }
             else
             {
@@ -115,15 +114,27 @@ else
     {
         try
         {
+            HttpResponseMessage response;
             if (Id == null)
             {
-                var response = await Http.PostAsJsonAsync<Menu>("api/Menus/Create", menu);
+               response = await Http.PostAsJsonAsync<Menu>("api/Menus", menu);
+                menu = await response.Content.ReadFromJsonAsync<Menu>();
             }
             else
             {
-                var response = await Http.PutAsJsonAsync<Menu>($"api/Menus/Edit/{Id}", menu);
+                response = await Http.PutAsJsonAsync<Menu>($"api/Menus/{Id}", menu);
+                
             }
-            NavigationManager.NavigateTo("MenuList");
+            if (response.IsSuccessStatusCode)
+            {
+                NavigationManager.NavigateTo("MenuList");
+            }
+            else
+            {
+                string errorMessage = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(errorMessage);
+                //Implement ErrorComponent
+            }
         }
         catch (AccessTokenNotAvailableException exception)
         {
