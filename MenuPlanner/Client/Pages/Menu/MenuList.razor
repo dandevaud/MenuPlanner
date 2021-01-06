@@ -8,6 +8,15 @@
 
 
 <a href="/AddEditMenu/" class="btn btn-info">Add Menu</a>
+<button class="btn btn-primary" type="button" @onclick="FilterToggle">Filter</button>
+
+<div class="@collapse">
+    <br />
+    <div class="card card-body">
+        <MenuFilter Filter="FilterMenu"></MenuFilter>
+    </div>
+</div>
+
 <hr />
 
 <h3>Menus</h3>
@@ -30,6 +39,10 @@ else
 
 @code {
     private Menu[] menus;
+
+    private string collapse = "collapse";
+
+    private string previousFilter = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -65,6 +78,38 @@ else
             {
                 //NavigationManager.NavigateTo("MenuList");
             }
+        }
+    }
+
+    public void FilterToggle()
+    {
+        if (collapse == "collapse")
+        {
+            collapse = "collapse show";
+        }
+        else
+        {
+            collapse = "collapse";
+        }
+    }
+
+    private async Task FilterMenu(string filter)
+    {
+        if (filter != previousFilter)
+        {
+            if (filter != string.Empty)
+            {
+                // to avoid uneeded requests and at least show one result
+                if (menus.Length > 1 || filter.Length < previousFilter.Length)
+                {
+                    menus = await Http.GetFromJsonAsync<Menu[]>($"api/Menus/Filter?contains={filter}");
+                }
+            }
+            else
+            {
+                menus = await Http.GetFromJsonAsync<Menu[]>("api/Menus");
+            }
+            previousFilter = filter;
         }
     }
 

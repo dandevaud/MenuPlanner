@@ -1,0 +1,25 @@
+﻿
+<input class="form-control" @oninput="GetFilteredMenus" name="searchText"
+       type="text" placeholder="Search..." autocomplete="off" spellcheck="false"
+       autocorrect="off" />
+
+@code {
+
+    [Parameter]
+    public EventCallback<string> Filter { get; set; }
+
+    private void GetFilteredMenus(ChangeEventArgs e)
+    {
+        var filter = e.Value.ToString();
+        if (filter.Length > 2)
+        {
+            Filter.InvokeAsync(filter);
+        }
+        else
+        {
+            Filter.InvokeAsync(string.Empty);
+        }
+
+    }
+
+}

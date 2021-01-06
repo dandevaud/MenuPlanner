@@ -6,12 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using MenuPlanner.Server.SqlImplementation;
 using MenuPlanner.Shared.models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MenuPlanner.Server.Controllers
 {
@@ -46,6 +45,22 @@ namespace MenuPlanner.Server.Controllers
             }
 
             return menu;
+        }
+
+        /// <summary>
+        /// GET: api/Menus/Filter?contains=string
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("Filter")]
+        public async Task<ActionResult<IEnumerable<Menu>>> GetFilteredIngredients()
+        {
+            var partOfName = HttpContext.Request.Query["contains"].ToString().ToLower();
+            if (!string.IsNullOrEmpty(partOfName))
+            {
+                return await _context.Menus.Where(x => x.Name.ToLower().Contains(partOfName) 
+                || x.Description.ToLower().Contains(partOfName)).ToListAsync();
+            }
+            return new List<Menu>();
         }
 
         // POST: api/Menus/Create
