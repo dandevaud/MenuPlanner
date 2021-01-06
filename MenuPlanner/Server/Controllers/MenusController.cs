@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -39,10 +40,9 @@ namespace MenuPlanner.Server.Controllers
                 return NotFound();
             }
             await _context.Entry(menu).Collection(m => m.Ingredients).LoadAsync();
-            foreach (var menuIngredient in menu.Ingredients)
-            {
-                await _context.Entry(menuIngredient).Reference(i => i.Ingredient).LoadAsync();
-            }
+            menu.Ingredients.ForAll(m =>  _context.Entry(m).Reference(i => i.Ingredient).Load());
+          
+            
             return menu;
         }
 
