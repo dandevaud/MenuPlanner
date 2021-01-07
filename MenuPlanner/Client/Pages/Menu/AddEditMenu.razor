@@ -45,7 +45,6 @@ else
             <IngredientSearch @bind-Ingredient="ingredient"></IngredientSearch>
 
 
-
             @if (ingredient.Name != null)
             {
                 <IngredientCard Ingredient="@ingredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
@@ -53,17 +52,17 @@ else
 
             @if (menu.Ingredients != null)
             {
-              
-                    @foreach (var menuIngredient in menu.Ingredients)
-                    {
-                        <IngredientCard MenuIngredient="@menuIngredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="false" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
-                    }
-                
+
+                @foreach (var menuIngredient in menu.Ingredients)
+                {
+                    <IngredientCard MenuIngredient="@menuIngredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="false" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
+                }
+
             }
 
             <br />
 
-            <button type="submit" class="btn btn-success">Update</button>
+            <button type="submit" class="btn btn-success">Save</button>
         </EditForm>
     </div>
     <br />
@@ -117,13 +116,13 @@ else
             HttpResponseMessage response;
             if (Id == null)
             {
-               response = await Http.PostAsJsonAsync<Menu>("api/Menus", menu);
+                response = await Http.PostAsJsonAsync<Menu>("api/Menus", menu);
                 menu = await response.Content.ReadFromJsonAsync<Menu>();
             }
             else
             {
                 response = await Http.PutAsJsonAsync<Menu>($"api/Menus/{Id}", menu);
-                
+
             }
             if (response.IsSuccessStatusCode)
             {
@@ -165,7 +164,7 @@ else
         }
         //Multi ingredient Values Possible
         menu.Ingredients.Add(menuIngredient);
-        
+
         UpdateIngredientToMenu(menuIngredient);
     }
 
