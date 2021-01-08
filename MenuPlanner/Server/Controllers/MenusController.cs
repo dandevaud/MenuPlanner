@@ -99,16 +99,18 @@ namespace MenuPlanner.Server.Controllers
                 return NotFound();
             }
             //load images
+          
             await _context.Entry(foundMenu).Collection(m => m.Images).LoadAsync();
-            foreach (var image in foundMenu.Images)
+            foundMenu.Images
+                .Where(i => !menu.Images.Contains(i))
+                .ToList()
+                .ForEach(i =>
             {
-                _context.Image.Remove(image);
-            }
-            foundMenu.Images.Clear();
-            _context.Entry(foundMenu).State = EntityState.Detached;
-            //
+                _context.Image.Remove(i);
+            });
 
-            _context.Update(menu).CurrentValues.SetValues(menu);
+            _context.Entry(foundMenu).State = EntityState.Detached;
+             _context.Update(menu).CurrentValues.SetValues(menu);
 
             try
             {
