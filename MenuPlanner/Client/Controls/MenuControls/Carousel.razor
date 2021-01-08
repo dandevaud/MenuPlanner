@@ -1,0 +1,99 @@
+﻿@using MenuPlanner.Shared.models
+
+@if (Images == null || Images.Count == 0)
+{
+    <img src="images/food.png" class="card-img-top mx-auto" alt="Menu image" style="max-width: 300px;">
+}
+else
+{
+    LoadActivesIndex();
+    <div class="card-img-top">
+        <div class="carousel slide">
+            <ol class="carousel-indicators">
+                @for (int i = 0; i < Images.Count; i++)
+                {
+                    <li data-slide-to="@i"></li>
+                }
+            </ol>
+            <div class="carousel-inner">
+                @(i = 0)
+                @foreach (var image in Images)
+                {
+                    <div class="carousel-item @activesIndex[i]">
+                        <!-- TODO: Read correct content type, or add it in the model and add it on reading file -->
+                        <img src="data:image/jpeg;base64, @(Convert.ToBase64String(image.ImageBytes))" alt="@image.AlternativeName">
+                    </div>
+                    @(i++)
+                }
+            </div>
+            <a class="carousel-control-prev" role="button" @onclick="SlidePrevious">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" role="button" @onclick="SlideNext">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+    </div>
+}
+
+
+
+@code {
+
+    [Parameter]
+    public ICollection<Image> Images { get; set; }
+
+    private int i = 0;
+    private int index = 0;
+    private Dictionary<int, string> activesIndex = new Dictionary<int, string>();
+
+    private void LoadActivesIndex()
+    {
+        int i = 0;
+        foreach (var image in Images)
+        {
+            if (i == 0)
+                activesIndex[i] = "active";
+            else
+            {
+                activesIndex[i] = string.Empty;
+            }
+            i++;
+        }
+    }
+
+    private void SlidePrevious()
+    {
+        int previousIndex = index;
+        if (index > 0)
+        {
+            index--;
+        }
+        else
+        {
+            index = Images.Count - 1;
+        }
+        activesIndex[index] = "active";
+        activesIndex[previousIndex] = string.Empty;
+    }
+
+    private void SlideNext()
+    {
+        int previousIndex = index;
+        if (index == Images.Count - 1)
+        {
+            index = 0;
+        }
+        else
+        {
+            index++;
+        }
+        activesIndex[index] = "active";
+        activesIndex[previousIndex] = string.Empty;
+        StateHasChanged();
+
+    }
+
+}

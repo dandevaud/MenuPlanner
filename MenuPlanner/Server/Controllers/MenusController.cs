@@ -39,9 +39,31 @@ namespace MenuPlanner.Server.Controllers
             {
                 return NotFound();
             }
+            //load ingredients
             await _context.Entry(menu).Collection(m => m.Ingredients).LoadAsync();
             menu.Ingredients.ForAll(m => _context.Entry(m).Reference(i => i.Ingredient).Load());
+            //load images
+            await _context.Entry(menu).Collection(m => m.Images).LoadAsync();
             return menu;
+        }
+
+        /// <summary>
+        /// GET: api/Menus/Images/5
+        /// </summary>
+        /// <param name="id">Menu Id</param>
+        /// <returns>Image Collection</returns>
+        [HttpGet("Images/{id}")]
+        public async Task<ActionResult<List<Image>>> GetImages(Guid id)
+        {
+            var menu = await _context.Menus.FindAsync(id);
+
+            if (menu == null)
+            {
+                return NotFound();
+            }
+            //load images
+            await _context.Entry(menu).Collection(m => m.Images).LoadAsync();
+            return Ok(menu.Images);
         }
 
         /// <summary>
