@@ -1,0 +1,63 @@
+﻿@using System.IO
+@using MenuPlanner.Shared.models
+
+<div class="form-group">
+    @foreach (var image in Menu.Images)
+    {
+        <span class="picture">
+            <img src="data:image/jpeg;base64, @(Convert.ToBase64String(image.ImageBytes))" alt="@image.AlternativeName" height="200" />
+            <a class="remove-pic" role="button" @onclick="() => RemoveImage(image)">🗙</a>
+        </span>
+        <span>&nbsp;</span>
+    }
+    <br />
+    <br />
+    <div class="custom-file">
+        <InputFile OnChange="OnInputFileChange" class="custom-file-input" multiple />
+        <label class="custom-file-label">Add Pictures</label>
+    </div>
+    <br />
+    <p>@filesMessage</p>
+</div>
+
+@code {
+
+    [Parameter]
+    public Menu Menu { get; set; }
+
+    private IReadOnlyList<IBrowserFile> selectedFiles;
+    private string filesMessage = "No file(s) selected";
+
+    private async void OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        if (Menu.Images == null)
+        {
+            Menu.Images = new List<Image>();
+        }
+        selectedFiles = e.GetMultipleFiles();
+        int i = 0;
+        foreach (var file in selectedFiles)
+        {
+            Stream stream = file.OpenReadStream();
+            MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            stream.Close();
+
+            Image image = new Image
+            {
+                ImageBytes = ms.ToArray(),
+                AlternativeName = $"Picture {i++}",
+            };
+
+            Menu.Images.Add(image);
+        }
+        filesMessage = $"{selectedFiles.Count} file(s) selected";
+        this.StateHasChanged();
+    }
+
+    private void RemoveImage(Image image)
+    {
+        Menu.Images.Remove(image);
+    }
+
+}

@@ -54,11 +54,21 @@ else
         try
         {
             menus = await Http.GetFromJsonAsync<Menu[]>("api/Menus");
+            foreach (var menu in menus)
+            {
+                LazyLoadImages(menu);
+            }
         }
         catch (AccessTokenNotAvailableException exception)
         {
             exception.Redirect();
         }
+    }
+
+    public async void LazyLoadImages(Menu menu)
+    {
+        menu.Images = await Http.GetFromJsonAsync<List<Image>>($"api/Menus/Images/{menu.MenuId}");
+        StateHasChanged();
     }
 
     public async Task DeleteMenu(Guid id)

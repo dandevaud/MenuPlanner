@@ -22,8 +22,6 @@ else
             <DataAnnotationsValidator />
             <ValidationSummary />
 
-
-
             <div class="form-group">
                 Name: <InputText id="name" @bind-Value="menu.Name" class="form-control" />
             </div>
@@ -32,12 +30,7 @@ else
                 Description: <textarea class="form-control" rows="3" @bind="menu.Description"></textarea>
             </div>
 
-            <Carousel Images="@menu.Images"></Carousel>
-            <div class="custom-file">
-                <input type="file" class="custom-file-input" id="customFile">
-                <label class="custom-file-label" for="customFile">Add Pictures</label>
-            </div>
-
+            <MenuImages Menu="menu"></MenuImages>
 
             <TimeOfDaySelector Menu="@menu"></TimeOfDaySelector>
             <MenuSteps Menu="@menu"></MenuSteps>
@@ -77,6 +70,8 @@ else
     [Parameter]
     public Guid? Id { get; set; }
 
+
+
     private Menu menu;
 
     private Ingredient ingredient = new Ingredient();
@@ -92,15 +87,7 @@ else
 
         try
         {
-            var response = await Http.GetAsync($"api/Menus/{Id}");
-            if (response.IsSuccessStatusCode)
-            {
-                menu = await response.Content.ReadFromJsonAsync<Menu>();
-            }
-            else
-            {
-                NavigationManager.NavigateTo("MenuList");
-            }
+            menu = await Http.GetFromJsonAsync<Menu>($"api/Menus/{Id}");
         }
         catch (AccessTokenNotAvailableException exception)
         {
@@ -111,33 +98,26 @@ else
 
     private async Task UpdateMenu()
     {
-        try
+        HttpResponseMessage response;
+        if (Id == null)
         {
-            HttpResponseMessage response;
-            if (Id == null)
-            {
-                response = await Http.PostAsJsonAsync<Menu>("api/Menus", menu);
-                menu = await response.Content.ReadFromJsonAsync<Menu>();
-            }
-            else
-            {
-                response = await Http.PutAsJsonAsync<Menu>($"api/Menus/{Id}", menu);
-
-            }
-            if (response.IsSuccessStatusCode)
-            {
-                NavigationManager.NavigateTo("MenuList");
-            }
-            else
-            {
-                string errorMessage = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(errorMessage);
-                //Implement ErrorComponent
-            }
+            response = await Http.PostAsJsonAsync<Menu>("api/Menus", menu);
+            menu = await response.Content.ReadFromJsonAsync<Menu>();
         }
-        catch (AccessTokenNotAvailableException exception)
+        else
         {
-            exception.Redirect();
+            response = await Http.PutAsJsonAsync<Menu>($"api/Menus/{Id}", menu);
+
+        }
+        if (response.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo("MenuList");
+        }
+        else
+        {
+            string errorMessage = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(errorMessage);
+            //Implement ErrorComponent
         }
     }
 
