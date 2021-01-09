@@ -1,4 +1,5 @@
-﻿@using MenuPlanner.Shared.models
+﻿@using System.Timers;
+@using MenuPlanner.Shared.models
 
 @if (Images == null || Images.Count == 0)
 {
@@ -11,18 +12,18 @@ else
             @if (Images.Count > 1)
             {
                 <ol class="carousel-indicators">
-                    @foreach (var image in Images)
+                    @for (int i = 0; i < Images.Count; i++)
                     {
-                        <li class="@GetActive()"></li>
+                        int copiedIndex = i;
+                        <li class="@GetActive()" @onclick="() => SetActiveImageIndex(copiedIndex)"></li>
                     }
                     @ResetRenderCounter();
-
                 </ol>
             }
             <div class="carousel-inner">
                 @foreach (var image in Images)
                 {
-                    <div class="carousel-item @GetActive()">
+                    <div class="text-center carousel-item @GetActive()">
                         <!-- TODO: Read correct content type, or add it in the model and add it on reading file -->
                         <img src="data:image/jpeg;base64, @(Convert.ToBase64String(image.ImageBytes))" alt="@image.AlternativeName">
                     </div>
@@ -55,6 +56,37 @@ else
 
     private int carouselRenderIndex = -1;
     private int activeImageIndex = 0;
+    private Timer scrollTimer = null;
+
+    protected override Task OnParametersSetAsync()
+    {
+        int scrollMilliseconds = 5 * 1000;
+
+        scrollTimer?.Stop();
+
+        if (scrollTimer == null)
+        {
+            scrollTimer = new Timer();
+            scrollTimer.Elapsed += (o, e) =>
+            {
+
+                activeImageIndex += 1;
+
+                if (activeImageIndex > (Images?.Count - 1 ?? 0))
+                {
+                    activeImageIndex = 0;
+                }
+
+                this.InvokeAsync(() =>
+                {
+                    this.StateHasChanged();
+                });
+            };
+        }
+        scrollTimer.Interval = scrollMilliseconds;
+        scrollTimer?.Start();
+        return base.OnParametersSetAsync();
+    }
 
     private string GetActive()
     {
@@ -79,14 +111,18 @@ else
     {
         carouselRenderIndex = -1;
         activeImageIndex += 1;
-        this.StateHasChanged();
     }
 
     protected void OnPreviousClicked()
     {
         carouselRenderIndex = -1;
         activeImageIndex -= 1;
-        this.StateHasChanged();
+    }
+
+    private void SetActiveImageIndex(int newIndex)
+    {
+        carouselRenderIndex = -1;
+        activeImageIndex = newIndex;
     }
 
 }

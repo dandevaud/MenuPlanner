@@ -91,7 +91,7 @@ namespace MenuPlanner.Server.Controllers
             {
                 return BadRequest();
             }
-            
+
             //to improve -> remove all the images from this menu
             var foundMenu = await _context.Menus.FindAsync(id);
             if (foundMenu == null)
@@ -99,7 +99,7 @@ namespace MenuPlanner.Server.Controllers
                 return NotFound();
             }
             //load images
-          
+
             await _context.Entry(foundMenu).Collection(m => m.Images).LoadAsync();
             foundMenu.Images
                 .Where(i => !menu.Images.Contains(i))
@@ -110,7 +110,7 @@ namespace MenuPlanner.Server.Controllers
             });
 
             _context.Entry(foundMenu).State = EntityState.Detached;
-             _context.Update(menu).CurrentValues.SetValues(menu);
+            _context.Update(menu).CurrentValues.SetValues(menu);
 
             try
             {
