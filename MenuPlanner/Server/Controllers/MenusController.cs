@@ -3,23 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper.Internal;
+using MenuPlanner.Server.Logic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MenuPlanner.Server.SqlImplementation;
 using MenuPlanner.Shared.models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MenuPlanner.Server.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class MenusController : ControllerBase
+     public class MenusController : ControllerBase
     {
         private readonly MenuPlannerContext _context;
+        
 
         public MenusController(MenuPlannerContext context)
         {
             _context = context;
+           
         }
 
         // GET: api/Menus

@@ -21,14 +21,11 @@ namespace MenuPlanner.Server.SqlImplementation
 
         public MenuPlannerContext(DbContextOptions<MenuPlannerContext> dbContextOptions) : base(dbContextOptions)
         {
-            Database.EnsureCreated();
-
+            Database.Migrate();
         }
 
-        public MenuPlannerContext() : base()
-        {
-            
-        }
+        public MenuPlannerContext() : base(){}
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

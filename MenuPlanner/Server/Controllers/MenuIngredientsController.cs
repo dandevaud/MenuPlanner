@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MenuPlanner.Server.SqlImplementation;
 using MenuPlanner.Shared.models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MenuPlanner.Server.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    
     public class MenuIngredientsController : ControllerBase
     {
         private readonly MenuPlannerContext _context;
