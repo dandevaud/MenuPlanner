@@ -32,11 +32,7 @@ else
 
             <MenuImages Menu="@menu"></MenuImages>
 
-            @*<div class="form-group">
-                Rating <InputNumber @bind-Value="rating" class="form-control" min="0" max="5"></InputNumber>
-            </div>*@
-            <StarRating Menu="@menu" IsEditable="true"></StarRating>
-
+            <StarRating Menu="@menu" IsEditable="true" Rating="@StoreRating"></StarRating>
 
             <TimeOfDaySelector Menu="@menu"></TimeOfDaySelector>
             <MenuSteps Menu="@menu"></MenuSteps>
@@ -51,12 +47,10 @@ else
 
             @if (menu.Ingredients != null)
             {
-
                 @foreach (var menuIngredient in menu.Ingredients)
                 {
                     <IngredientCard MenuIngredient="@menuIngredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="false" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
                 }
-
             }
 
             <br />
@@ -70,7 +64,6 @@ else
 }
 
 
-
 @code {
 
     [Parameter]
@@ -79,6 +72,8 @@ else
     private Menu menu;
 
     private Ingredient ingredient = new Ingredient();
+
+    private int rating;
 
     protected override async Task OnInitializedAsync()
     {
@@ -102,6 +97,7 @@ else
 
     private async Task UpdateMenu()
     {
+        SetRating();
         HttpResponseMessage response;
         if (Id == null)
         {
@@ -156,6 +152,20 @@ else
     {
         ingredient = new Ingredient();
         StateHasChanged();
+    }
+
+    private void SetRating()
+    {
+        if (rating > 0)
+        {
+            menu.AverageRating = ((menu.AverageRating * menu.Votes) + rating) / (menu.Votes + 1);
+            menu.Votes++;
+        }
+    }
+
+    private void StoreRating(int rating)
+    {
+        this.rating = rating;
     }
 
 }

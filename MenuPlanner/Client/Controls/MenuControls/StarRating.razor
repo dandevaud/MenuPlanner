@@ -8,7 +8,7 @@
             int index = i;
             <i class="@stars[index]" style="color: #EEBD01; @pointer" @onclick="() => SetRating(index + 1)"></i>
         }
-        <span class="ml-1">Note: @Menu.AverageRating.ToString("0.##") Votes: @Menu.Votes</span>
+        <span class="ml-1">Note: @Menu.AverageRating.ToString("0.#") Votes: @Menu.Votes</span>
     </div>
     <br />
 }
@@ -20,6 +20,9 @@
 
     [Parameter]
     public bool IsEditable { get; set; }
+
+    [Parameter]
+    public Action<int> Rating { get; set; }
 
     private string[] stars = new string[5];
 
@@ -62,11 +65,7 @@
     {
         if(IsEditable)
         {
-            if (rating > 0)
-            {
-                Menu.AverageRating = ((Menu.AverageRating * Menu.Votes) + rating) / (Menu.Votes + 1);
-                Menu.Votes++;
-            }
+            Rating.Invoke(rating);
             RenderStars(Convert.ToDouble(rating));
         }
     }
