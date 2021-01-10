@@ -23,7 +23,8 @@ namespace MenuPlanner.Server.SqlImplementation
 
         public MenuPlannerContext(DbContextOptions<MenuPlannerContext> dbContextOptions) : base(dbContextOptions)
         {
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
+            Database.Migrate();
         }
 
         public MenuPlannerContext() : base()
