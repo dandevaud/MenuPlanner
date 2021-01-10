@@ -17,7 +17,7 @@ else
                         int copiedIndex = i;
                         <li class="@GetActive()" @onclick="() => SetActiveImageIndex(copiedIndex)"></li>
                     }
-                    @ResetRenderCounter();
+                    @ResetRenderCounter()
                 </ol>
             }
             <div class="carousel-inner">
@@ -28,7 +28,7 @@ else
                         <img src="data:image/jpeg;base64, @(Convert.ToBase64String(image.ImageBytes))" alt="@image.AlternativeName">
                     </div>
                 }
-                @ResetRenderCounter();
+                @ResetRenderCounter()
             </div>
             @if (activeImageIndex > 0 && Images.Count > 1)
             {

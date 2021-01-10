@@ -58,6 +58,7 @@ a, .btn-link {
     max-height: 100%;
     width: auto;
     height: 300px;
+    object-fit: scale-down;
 }
 
 .picture .remove-pic {

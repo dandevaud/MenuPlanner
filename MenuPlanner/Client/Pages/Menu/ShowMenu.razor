@@ -1,0 +1,108 @@
+﻿@page "/ShowMenu/{Id:guid}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using MenuPlanner.Shared.models
+@using MenuPlanner.Client.Controls.MenuControls
+@using MenuPlanner.Client.Controls.IngredientControls
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@attribute [Authorize]
+
+<h3>Show Menu</h3>
+
+@if (menu == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <hr />
+    <h4>@menu.Name</h4>
+    <br />
+    <div style="width: 400px"><Carousel Images="@menu.Images"></Carousel></div>
+    <br />
+    <p>@menu.Description</p>
+    <br />
+
+    @if (menu.Steps != null)
+    {
+        <h4>Steps</h4>
+        <ul class="list-group">
+            @foreach (var step in menu.Steps)
+            {
+                counter++;
+                <li class="list-group-item">@counter - @step</li>
+            }
+            @resetCounter()
+        </ul>
+        <br />
+    }
+
+    @if (menu.Ingredients != null)
+    {
+        <h4>Ingredients</h4>
+        <ul class="list-group">
+            @foreach (var ingredient in menu.Ingredients)
+            {
+                counter++;
+                <li class="list-group-item">@counter - @ingredient.Ingredient.Name (@ingredient.Quantity.QuantityValue @ingredient.Quantity.Unit)</li>
+            }
+            @resetCounter()
+        </ul>
+    }
+
+    @if (menu.Comments != null)
+    {
+        <h4>Comments</h4>
+        <ul class="list-group">
+            @foreach (var comment in menu.Comments)
+            {
+                <li class="list-group-item">@comment.Date - @comment.Text</li>
+            }
+            @resetCounter()
+        </ul>
+        <br />
+    }
+
+    <br />
+    <br />
+    <a href="/MenuList">Back to List</a>
+}
+
+
+@code {
+
+    [Parameter]
+    public Guid? Id { get; set; }
+
+    private Menu menu;
+    private int counter = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (Id == null)
+        {
+            menu = new Menu();
+            return;
+        }
+
+        try
+        {
+            menu = await Http.GetFromJsonAsync<Menu>($"api/Menus/{Id}");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+    private string resetCounter()
+    {
+        counter = 0;
+        return null;
+    }
+
+
+
+}
