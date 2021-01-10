@@ -52,23 +52,3 @@ a, .btn-link {
 .steplabel {
     vertical-align: top;
 }
-
-.carousel-inner img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: 300px;
-    object-fit: scale-down;
-}
-
-.picture .remove-pic {
-    position: absolute;
-    left: 10px;
-    font-size: 20px;
-    color: white;
-    text-decoration: none;
-}
-
-.picture {
-    position: relative;
-}

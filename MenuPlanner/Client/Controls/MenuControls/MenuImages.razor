@@ -2,13 +2,16 @@
 @using MenuPlanner.Shared.models
 
 <div class="form-group">
-    @foreach (var image in Menu.Images)
+    @if (Menu.Images != null)
     {
-    <span class="picture">
-        <img src="data:image/jpeg;base64, @(Convert.ToBase64String(image.ImageBytes))" alt="@image.AlternativeName" height="200" />
-        <a class="remove-pic" role="button" @onclick="() => RemoveImage(image)">🗙</a>
-    </span>
-        <span>&nbsp;</span>
+        @foreach (var image in Menu.Images)
+        {
+            <span class="picture">
+                <img src="data:image/jpeg;base64, @(Convert.ToBase64String(image.ImageBytes))" alt="@image.AlternativeName" height="200" />
+                <a class="remove-pic" role="button" @onclick="() => RemoveImage(image)">🗙</a>
+            </span>
+            <span>&nbsp;</span>
+        }
     }
     <br />
     <br />
