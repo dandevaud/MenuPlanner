@@ -34,26 +34,28 @@ namespace MenuPlanner.ServerTests
         #region SetUpLists
         private void SetUpIngredients()
         {
-            var huhn = new Ingredient() { IngredientId = Guid.NewGuid(), Name = "Huhn" };
-            var poulet = new Ingredient()
-            {
-                IngredientId = Guid.NewGuid(),
-                Name = "Poulet",
-                ParentIngredients = new List<Ingredient>()
-                {
-                    huhn
-                }
-            };
-            var rind = new Ingredient() { IngredientId = Guid.NewGuid(), Name = "Rind" };
             var pouletGschnetzlets = new Ingredient()
             {
                 IngredientId = Guid.NewGuid(),
                 Name = "Poulet Geschnetzletes",
-                ParentIngredients = new List<Ingredient>()
+                
+            };
+            var poulet = new Ingredient()
+            {
+                IngredientId = Guid.NewGuid(),
+                Name = "Poulet",
+                ChildIngredients = new List<Ingredient>()
                 {
-                    poulet
+                    pouletGschnetzlets
                 }
             };
+            var huhn = new Ingredient() { IngredientId = Guid.NewGuid(), Name = "Huhn" , ChildIngredients = new List<Ingredient>()
+            {
+                poulet
+            }};
+           
+            var rind = new Ingredient() { IngredientId = Guid.NewGuid(), Name = "Rind" };
+            
             Ingredients.Add(huhn);
             Ingredients.Add(poulet);
             Ingredients.Add(rind);

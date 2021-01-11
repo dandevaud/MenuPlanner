@@ -25,10 +25,10 @@ namespace MenuPlanner.Server.Logic
          private async Task LoadSubIngredients(Ingredient ing)
         {
             var entry = _context.Entry(ing);
-            await entry.Collection(i => i.ParentIngredients).LoadAsync();
-            if (ing.ParentIngredients != null)
+            await entry.Collection(i => i.ChildIngredients).LoadAsync();
+            if (ing.ChildIngredients != null)
             {
-                foreach (var i in ing.ParentIngredients)
+                foreach (var i in ing.ChildIngredients)
                 {
                     await LoadSubIngredients(i);
                 }
@@ -41,34 +41,34 @@ namespace MenuPlanner.Server.Logic
         /// </returns>
         public async Task<List<Menu>> GetAllMenusContainingName(string filter)
         {
-            var menus = await _context.Menus.Where(m => m.Name.Contains(filter)).ToListAsync();
+            var menus = await _context.Menus.Where(m => m.Name.ToLower().Contains(filter.ToLower())).ToListAsync();
             return menus;
         }
 
 
         /// <summary>
-        /// Gets all menus with ingredient and parent ingredient containing the provided filter.
+        /// Gets all menus with ingredient and child ingredient containing the provided filter.
         /// </summary>
         /// <param filter="filter">The filter.</param>
         /// <returns>List of Menus</returns>
-        public async Task<List<Menu>> GetAllMenusWithIngredientAndParentIngredientContainingName(string filter)
+        public async Task<List<Menu>> GetAllMenusWithIngredientAndChildIngredientContainingName(string filter)
          {
-             var ingredients = await _context.Ingredients.Where(i => i.Name.Contains(filter)).ToListAsync();
+             var ingredients = await _context.Ingredients.Where(i => i.Name.ToLower().Contains(filter.ToLower())).ToListAsync();
              List<Menu> toRet = new List<Menu>();
-             ingredients.ForEach(async i => toRet.AddRange(await GetAllMenusWithIngredientAndParentIngredient(i)));
+             ingredients.ForEach(async i => toRet.AddRange(await GetAllMenusWithIngredientAndChildIngredient(i)));
              return toRet;
          }
 
-        /// <summary>Gets all menus containing either the ingredient provided or any of his parent ingredients.</summary>
+        /// <summary>Gets all menus containing either the ingredient provided or any of his Child ingredients.</summary>
         /// <param name="ing">The ingredient to look for</param>
         /// <returns>all menus containing this ingredient</returns>
-        public async Task<List<Menu>> GetAllMenusWithIngredientAndParentIngredient(Ingredient ing)
+        public async Task<List<Menu>> GetAllMenusWithIngredientAndChildIngredient(Ingredient ing)
         {
             await LoadSubIngredients(ing);
             var ingredientsToLookFor = new List<Ingredient>();
             ingredientsToLookFor.Add(ing);
             
-            ingredientsToLookFor.AddRange(await GetParentIngredientsRecursive(ing));
+            ingredientsToLookFor.AddRange(await GetChildIngredientsRecursive(ing));
 
             var menuIngredients = await GetAllMenuIngredientWithIngredient(ingredientsToLookFor);
 
@@ -81,15 +81,15 @@ namespace MenuPlanner.Server.Logic
 
         }
 
-        private async Task<List<Ingredient>> GetParentIngredientsRecursive(Ingredient ing)
+        private async Task<List<Ingredient>> GetChildIngredientsRecursive(Ingredient ing)
         {
             var listToRet = new List<Ingredient>();
-            if (ing.ParentIngredients != null)
+            if (ing.ChildIngredients != null)
             {
-                listToRet.AddRange(ing.ParentIngredients);
-                foreach (var i in ing.ParentIngredients)
+                listToRet.AddRange(ing.ChildIngredients);
+                foreach (var i in ing.ChildIngredients)
                 {
-                    listToRet.AddRange(await GetParentIngredientsRecursive(i));
+                    listToRet.AddRange(await GetChildIngredientsRecursive(i));
                 }
             }
 

@@ -35,15 +35,15 @@ namespace MenuPlanner.Server.Logic.Tests
         }
       
         //[Test()]
-        //Mock DB Get Entity not working
+        //Mock DB Context Entity not working --> Test not possible
         public async Task GetAllMenusWithIngredientAndParentIngredientTest()
         {
 
             //ToListAsync unsupported by Mock
             var ing = await dbContext.Object.Ingredients
-                .Where(i => i.Name.Equals("Poulet Geschnetzletes"))
+                .Where(i => i.Name.Equals("Huhn"))
                 .FirstAsync();
-            var menuList = searchLogic.GetAllMenusWithIngredientAndParentIngredient(ing);
+            var menuList = searchLogic.GetAllMenusWithIngredientAndChildIngredient(ing);
             var expected = mockDb.Menus
                 .Where(m =>
                     m.Name.Equals("Chicken Nuggets") || m.Name.Equals("Pouletbrüstli") || m.Name.Equals("Ofen Huhn"))

@@ -43,7 +43,7 @@ namespace MenuPlanner.Server.Controllers
         [HttpPost("MenuWithIngredient")]
         public async Task<ActionResult<List<Menu>>> GetMenuForIngredient(Ingredient ingredient)
         {
-            var menuList = await searchLogic.GetAllMenusWithIngredientAndParentIngredient(ingredient);
+            var menuList = await searchLogic.GetAllMenusWithIngredientAndChildIngredient(ingredient);
 
             return menuList;
         }
@@ -52,21 +52,21 @@ namespace MenuPlanner.Server.Controllers
         [HttpGet("MenuWithIngredient")]
         public async Task<ActionResult<List<Menu>>> GetMenuByIngredientName(String filter)
         {
-           return await searchLogic.GetAllMenusWithIngredientAndParentIngredientContainingName(filter);
+           return await searchLogic.GetAllMenusWithIngredientAndChildIngredientContainingName(filter);
         }
 
         // GET: api/Search/MenuByName?filter={filter}
         [HttpGet("MenuByName")]
         public async Task<ActionResult<List<Menu>>> GetMenuByName(String filter)
         {
-            return await searchLogic.GetAllMenusWithIngredientAndParentIngredientContainingName(filter);
+            return await searchLogic.GetAllMenusWithIngredientAndChildIngredientContainingName(filter);
         }
 
         // GET: api/Search/Menu?filter={filter}
         [HttpGet("Menu")]
         public async Task<ActionResult<List<Menu>>> GetMenu(String filter)
         {
-            var byIngredient = searchLogic.GetAllMenusWithIngredientAndParentIngredientContainingName(filter);
+            var byIngredient = searchLogic.GetAllMenusWithIngredientAndChildIngredientContainingName(filter);
             var byName = searchLogic.GetAllMenusContainingName(filter);
 
             var toRet = new List<Menu>();
