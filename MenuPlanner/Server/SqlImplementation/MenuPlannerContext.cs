@@ -18,14 +18,19 @@ namespace MenuPlanner.Server.SqlImplementation
         public virtual DbSet<MenuIngredient> MenuIngredients { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        //why table was created as "Image" and not as "Images"?
+        public virtual DbSet<Image> Image { get; set; }
 
         public MenuPlannerContext(DbContextOptions<MenuPlannerContext> dbContextOptions) : base(dbContextOptions)
         {
+            //Database.EnsureCreated();
             Database.Migrate();
         }
 
-        public MenuPlannerContext() : base(){}
-
+        public MenuPlannerContext() : base()
+        {
+            
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

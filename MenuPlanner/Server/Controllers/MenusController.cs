@@ -44,11 +44,47 @@ namespace MenuPlanner.Server.Controllers
             {
                 return NotFound();
             }
+            //load ingredients
             await _context.Entry(menu).Collection(m => m.Ingredients).LoadAsync();
-            menu.Ingredients.ForAll(m =>  _context.Entry(m).Reference(i => i.Ingredient).Load());
-          
-            
+            menu.Ingredients.ForAll(m => _context.Entry(m).Reference(i => i.Ingredient).Load());
+            //load images
+            await _context.Entry(menu).Collection(m => m.Images).LoadAsync();
             return menu;
+        }
+
+        /// <summary>
+        /// GET: api/Menus/Images/5
+        /// </summary>
+        /// <param name="id">Menu Id</param>
+        /// <returns>Image Collection</returns>
+        [HttpGet("Images/{id}")]
+        public async Task<ActionResult<List<Image>>> GetImages(Guid id)
+        {
+            var menu = await _context.Menus.FindAsync(id);
+
+            if (menu == null)
+            {
+                return NotFound();
+            }
+            //load images
+            await _context.Entry(menu).Collection(m => m.Images).LoadAsync();
+            return Ok(menu.Images);
+        }
+
+        /// <summary>
+        /// GET: api/Menus/Filter?contains=string
+        /// </summary>
+        /// <returns>List of Menu</returns>
+        [HttpGet("Filter")]
+        public async Task<ActionResult<IEnumerable<Menu>>> GetFilteredIngredients()
+        {
+            var partOfName = HttpContext.Request.Query["contains"].ToString().ToLower();
+            if (!string.IsNullOrEmpty(partOfName))
+            {
+                return await _context.Menus.Where(x => x.Name.ToLower().Contains(partOfName)
+                       || x.Description.ToLower().Contains(partOfName)).ToListAsync();
+            }
+            return new List<Menu>();
         }
 
         // PUT: api/Menus/5
@@ -61,6 +97,40 @@ namespace MenuPlanner.Server.Controllers
                 return BadRequest();
             }
 
+            //to improve -> remove all the images from this menu
+            var foundMenu = await _context.Menus.FindAsync(id);
+            if (foundMenu == null)
+            {
+                return NotFound();
+            }
+            //load images & Menuingredients
+            await _context.Entry(foundMenu).Collection(m => m.Images).LoadAsync();
+            await _context.Entry(foundMenu).Collection(m => m.Ingredients).LoadAsync();
+            var providedImages = menu.Images.Select(
+                i => i.ImageId).ToList();
+            var providedMenuIngredients = menu.Ingredients.Select(i => i.Id).ToList();
+
+            //Remove all deleted Images from DB
+            foundMenu.Images
+                .Select(i => i.ImageId)
+                .Where(guid => !providedImages.Contains(guid))
+                .ToList()
+                .ForEach(async id =>
+                {
+                    _context.Image.Remove(await _context.Image.FindAsync(id));
+                });
+
+            //Remove all deleted MenuIngredients from DB
+            foundMenu.Ingredients
+                .Select(i => i.Id)
+                .Where(guid => !providedMenuIngredients.Contains(guid))
+                .ToList()
+                .ForEach(async id =>
+                {
+                    _context.MenuIngredients.Remove(await _context.MenuIngredients.FindAsync(id));
+                });
+
+            _context.Entry(foundMenu).State = EntityState.Detached;
             _context.Update(menu).CurrentValues.SetValues(menu);
 
             try

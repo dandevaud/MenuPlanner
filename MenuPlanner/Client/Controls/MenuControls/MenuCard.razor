@@ -1,14 +1,15 @@
 ﻿@using MenuPlanner.Shared.models
 
 <div class="card" style="width: 18rem;">
-    @*<img src="images/Pizza_Prosciutto.jpg" class="card-img-top" alt="Menu image">*@
     <Carousel Images="@Menu.Images"></Carousel>
     <div class="card-body">
         <h5 class="card-title">@Menu.Name</h5>
+        <StarRating Menu="@Menu" IsEditable="false"></StarRating>
         <p class="card-text">@Menu.Description</p>
     </div>
     <div class="card-footer">
-        <a href="AddEditMenu/@Menu.MenuId" class="btn btn-primary">Edit</a>
+        <a href="ShowMenu/@Menu.MenuId" class="btn btn-primary">Show</a>
+        <a href="AddEditMenu/@Menu.MenuId" class="btn btn-info">Edit</a>
         <a href="DeleteMenu/@Menu.MenuId" class="btn btn-danger">Delete</a>
     </div>
 </div>

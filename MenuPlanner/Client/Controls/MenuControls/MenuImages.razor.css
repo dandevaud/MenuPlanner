@@ -1,0 +1,11 @@
+﻿.picture .remove-pic {
+    position: absolute;
+    left: 10px;
+    font-size: 20px;
+    color: white;
+    text-decoration: none;
+}
+
+.picture {
+    position: relative;
+}
