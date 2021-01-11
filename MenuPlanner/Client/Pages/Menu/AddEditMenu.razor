@@ -124,16 +124,10 @@ else
     private async Task RemoveMenuIngredient(MenuIngredient menuIngredient)
     {
 
-        try
-        {
-            var response = Http.DeleteAsync($"api/MenuIngredients/{menuIngredient.Id}");
+        
             menu.Ingredients.Remove(menuIngredient);
-            await response;
-        }
-        catch (AccessTokenNotAvailableException exception)
-        {
-            exception.Redirect();
-        }
+           
+      
     }
 
     private void AddIngredientToMenu(MenuIngredient menuIngredient)

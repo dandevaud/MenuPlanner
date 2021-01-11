@@ -98,16 +98,32 @@ namespace MenuPlanner.Server.Controllers
             {
                 return NotFound();
             }
-            //load images
-
+            //load images & Menuingredients
             await _context.Entry(foundMenu).Collection(m => m.Images).LoadAsync();
+            await _context.Entry(foundMenu).Collection(m => m.Ingredients).LoadAsync();
+            var providedImages = menu.Images.Select(
+                i => i.ImageId).ToList();
+            var providedMenuIngredients = menu.Ingredients.Select(i => i.Id).ToList();
+
+            //Remove all deleted Images from DB
             foundMenu.Images
-                .Where(i => !menu.Images.Contains(i))
+                .Select(i => i.ImageId)
+                .Where(guid => !providedImages.Contains(guid))
                 .ToList()
-                .ForEach(i =>
-            {
-                _context.Image.Remove(i);
-            });
+                .ForEach(async id =>
+                {
+                    _context.Image.Remove(await _context.Image.FindAsync(id));
+                });
+
+            //Remove all deleted MenuIngredients from DB
+            foundMenu.Ingredients
+                .Select(i => i.Id)
+                .Where(guid => !providedMenuIngredients.Contains(guid))
+                .ToList()
+                .ForEach(async id =>
+                {
+                    _context.MenuIngredients.Remove(await _context.MenuIngredients.FindAsync(id));
+                });
 
             _context.Entry(foundMenu).State = EntityState.Detached;
             _context.Update(menu).CurrentValues.SetValues(menu);
