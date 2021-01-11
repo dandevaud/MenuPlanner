@@ -13,17 +13,21 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MenuPlanner.Server.Controllers
 {
+
+
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
      public class MenusController : ControllerBase
     {
         private readonly MenuPlannerContext _context;
-        
+        private readonly EntityUpdater entityUpdater;
+
 
         public MenusController(MenuPlannerContext context)
         {
             _context = context;
+            entityUpdater = new EntityUpdater(context);
            
         }
 
@@ -104,84 +108,20 @@ namespace MenuPlanner.Server.Controllers
             {
                 return BadRequest();
             }
-
+            
             //to improve -> remove all the images from this menu
             var foundMenu = await _context.Menus.FindAsync(id);
             if (foundMenu == null)
             {
                 return NotFound();
             }
-            //load images & Menuingredients
-            await _context.Entry(foundMenu).Collection(m => m.Images).LoadAsync();
-            await _context.Entry(foundMenu).Collection(m => m.Ingredients).LoadAsync();
-            var providedImages = menu.Images.Select(
-                i => i.ImageId).ToList();
-            var providedMenuIngredients = menu.Ingredients.Select(i => i.Id).ToList();
 
-            //Remove all deleted Images from DB
-            foundMenu.Images
-                .Select(i => i.ImageId)
-                .Where(guid => !providedImages.Contains(guid))
-                .ToList()
-                .ForEach(async id =>
-                {
-                    var image = await _context.Image.FindAsync(id);
-                    providedImages.Remove(id);
-                    _context.Image.Remove(image);
-                    _context.Entry(image).State = EntityState.Deleted;
-                });
+            await entityUpdater.UpdateMenuInContext(menu, foundMenu);
 
-            //Remove all deleted MenuIngredients from DB
-            foundMenu.Ingredients
-                .Select(i => i.Id)
-                .Where(guid => !providedMenuIngredients.Contains(guid))
-                .ToList()
-                .ForEach(async id =>
-                {
-                    var menuIng = await _context.MenuIngredients.FindAsync(id);
-                    _context.MenuIngredients.Remove(menuIng);
-                    providedMenuIngredients.Remove(id);
-                    _context.Entry(menuIng).State = EntityState.Deleted;
-                });
-
-            providedMenuIngredients.ForEach(menuIngr =>
-            {
-                var entity = _context.MenuIngredients.Find(menuIngr);
-                if (entity != null)
-                {
-                    _context.Entry(entity).State = EntityState.Detached;
-                }
-            });
-            providedImages.ForEach(imageProv =>
-            {
-                var entity = _context.Image.Find(imageProv);
-                if (entity != null)
-                {
-                    _context.Entry(entity).State = EntityState.Detached;
-                }
-            });
-
-            _context.Entry(foundMenu).State = EntityState.Detached;
-            _context.Update(menu).CurrentValues.SetValues(menu);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MenuExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
 
             return NoContent();
         }
+
 
         // POST: api/Menus
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
