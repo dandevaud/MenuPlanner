@@ -43,14 +43,14 @@ namespace MenuPlanner.Server.Logic
             DeleteRemovedEntitiesFromMenu<Image>(
                 entityInDatabase.Images,
                 (Image i) => i.ImageId,
-                (Guid guid) => !providedImages.Contains(guid),
+                (Guid guid) => providedImages.Contains(guid),
                 await RemoveSubEntities<Image>(_context.Image, providedImages));
 
             //Remove all deleted MenuIngredients from DB
             DeleteRemovedEntitiesFromMenu<MenuIngredient>(
                 entityInDatabase.Ingredients,
                 (MenuIngredient i) => i.Id,
-                (Guid guid) => !providedMenuIngredients.Contains(guid),
+                (Guid guid) => providedMenuIngredients.Contains(guid),
                 await RemoveSubEntities<MenuIngredient>(_context.MenuIngredients, providedImages));
 
 
@@ -93,9 +93,9 @@ namespace MenuPlanner.Server.Logic
         {
             entities
                 .Select(selector)
-                .Where(guid => !providedContains.Invoke(guid))
+                .Where(guid => !providedContains(guid))
                 .ToList()
-                .ForEach(async id => { await removeFromContext.Invoke(id); });
+                .ForEach(async id => { await removeFromContext(id); });
         }
 
         private async Task LoadMenuSubEntities(Menu foundMenu)
