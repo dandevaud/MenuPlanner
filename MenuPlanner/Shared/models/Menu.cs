@@ -32,10 +32,10 @@ namespace MenuPlanner.Shared.models
         public MenuCategory MenuCategory { get; set; } //Flags
         public ICollection<Image> Images { get; set; }
         public Uri Video { get; set; }
-        /*
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime CreationDateTime { get; set; }
-        */
+        
     }
 
 }

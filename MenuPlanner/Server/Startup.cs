@@ -31,11 +31,14 @@ namespace MenuPlanner.Server
             //Bind IoC
             IoCContainer ioCContainer = new IoCContainer(Configuration);
             ioCContainer.BindIoC(services);
-            if (Configuration["DataBase:DataBaseUsed"].Equals("SQLite"))
+            if (Configuration["AuthDataBase:DataBaseUsed"].Equals("SQLite"))
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}"));
-                services.AddDbContext<MenuPlannerContext>(options =>
+                options.UseSqlite($"Data Source={Configuration["AuthDataBase:ConnectionStrings:DataSource"]}"));
+        }
+        if (Configuration["DataBase:DataBaseUsed"].Equals("SQLite"))
+                {
+                    services.AddDbContext<MenuPlannerContext>(options =>
                     options.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}"));
             }
             //services.AddDbContext<ApplicationDbContext>(options =>
