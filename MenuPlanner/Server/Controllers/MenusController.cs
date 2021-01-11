@@ -46,7 +46,15 @@ namespace MenuPlanner.Server.Controllers
             }
             //load ingredients
             await _context.Entry(menu).Collection(m => m.Ingredients).LoadAsync();
-            menu.Ingredients.ForAll(m => _context.Entry(m).Reference(i => i.Ingredient).Load());
+            
+                menu?.Ingredients?.ToList().ForEach(m =>
+                    _context.Entry(m).Reference<Ingredient>(
+                            i => i.Ingredient
+                        )
+                        .Load());
+            
+           
+
             //load images
             await _context.Entry(menu).Collection(m => m.Images).LoadAsync();
             return menu;
@@ -117,7 +125,10 @@ namespace MenuPlanner.Server.Controllers
                 .ToList()
                 .ForEach(async id =>
                 {
-                    _context.Image.Remove(await _context.Image.FindAsync(id));
+                    var image = await _context.Image.FindAsync(id);
+                    providedImages.Remove(id);
+                    _context.Image.Remove(image);
+                    _context.Entry(image).State = EntityState.Deleted;
                 });
 
             //Remove all deleted MenuIngredients from DB
@@ -127,8 +138,28 @@ namespace MenuPlanner.Server.Controllers
                 .ToList()
                 .ForEach(async id =>
                 {
-                    _context.MenuIngredients.Remove(await _context.MenuIngredients.FindAsync(id));
+                    var menuIng = await _context.MenuIngredients.FindAsync(id);
+                    _context.MenuIngredients.Remove(menuIng);
+                    providedMenuIngredients.Remove(id);
+                    _context.Entry(menuIng).State = EntityState.Deleted;
                 });
+
+            providedMenuIngredients.ForEach(menuIngr =>
+            {
+                var entity = _context.MenuIngredients.Find(menuIngr);
+                if (entity != null)
+                {
+                    _context.Entry(entity).State = EntityState.Detached;
+                }
+            });
+            providedImages.ForEach(imageProv =>
+            {
+                var entity = _context.Image.Find(imageProv);
+                if (entity != null)
+                {
+                    _context.Entry(entity).State = EntityState.Detached;
+                }
+            });
 
             _context.Entry(foundMenu).State = EntityState.Detached;
             _context.Update(menu).CurrentValues.SetValues(menu);
