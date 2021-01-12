@@ -5,20 +5,7 @@ namespace Shared.models.Search
     {
 
         public List<TResult> Result {get; set;}
+        public string OrderBy {get; set;}
 
-        public override bool Equals(object obj)
-        {
-            return base.Equals(obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        public override string ToString()
-        {
-            return base.ToString();
-        }
     }
 }
