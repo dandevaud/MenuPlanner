@@ -76,18 +76,24 @@ namespace MenuPlanner.Server.Logic
             return await _context.Menus.Where(m => m.Ingredients.Intersect(menuIngredients).Any()).ToListAsync();
         }
 
-        /// <summary>Gets all menus containing the time of day attribute</summary>
+        /// <summary>Gets all menus containing the provided time of day attribute</summary>
         /// <param name="timeOfDay">The time of day to look for</param>
         /// <returns>all menus containing the attribute</returns>
         public async Task<List<Menu>> GetMenuByTimeOfDay(TimeOfDay timeOfDay){
             return await _context.Menus.Where(m => m.TimeOfDay.HasFlag(timeOfDay)).ToListAsync();
         }
 
+      /// <summary>Gets all menus containing the provided season attribute</summary>
+        /// <param name="season">The season to look for</param>
+        /// <returns>all menus containing the attribute</returns>
         public async Task<List<Menu>> GetMenuBySeason(Season season){
             return await _context.Menus.Where(m => m.Season.HasFlag(season)).ToListAsync();
         }
 
-          public async Task<List<Menu>> GetMenuByCategory(MenuCategory category){
+        /// <summary>Gets all menus containing the provided menu category attribute</summary>
+        /// <param name="category">The menu category to look for</param>
+        /// <returns>all menus containing the attribute</returns>
+         public async Task<List<Menu>> GetMenuByCategory(MenuCategory category){
             return await _context.Menus.Where(m => m.MenuCategory.HasFlag(category)).ToListAsync();
         }
 
