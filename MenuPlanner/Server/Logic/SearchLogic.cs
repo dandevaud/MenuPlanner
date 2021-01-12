@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MenuPlanner.Server.SqlImplementation;
 using MenuPlanner.Shared.models;
+using MenuPlanner.Shared.models.enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace MenuPlanner.Server.Logic
@@ -73,6 +74,21 @@ namespace MenuPlanner.Server.Logic
             var menuIngredients = await GetAllMenuIngredientWithIngredient(ingredientsToLookFor);
 
             return await _context.Menus.Where(m => m.Ingredients.Intersect(menuIngredients).Any()).ToListAsync();
+        }
+
+        /// <summary>Gets all menus containing the time of day attribute</summary>
+        /// <param name="timeOfDay">The time of day to look for</param>
+        /// <returns>all menus containing the attribute</returns>
+        public async Task<List<Menu>> GetMenuByTimeOfDay(TimeOfDay timeOfDay){
+            return await _context.Menus.Where(m => m.TimeOfDay.HasFlag(timeOfDay)).ToListAsync();
+        }
+
+        public async Task<List<Menu>> GetMenuBySeason(Season season){
+            return await _context.Menus.Where(m => m.Season.HasFlag(season)).ToListAsync();
+        }
+
+          public async Task<List<Menu>> GetMenuByCategory(MenuCategory category){
+            return await _context.Menus.Where(m => m.MenuCategory.HasFlag(category)).ToListAsync();
         }
 
         private async Task<List<MenuIngredient>> GetAllMenuIngredientWithIngredient(List<Ingredient> ingredients)
