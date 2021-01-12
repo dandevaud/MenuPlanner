@@ -1,0 +1,73 @@
+﻿@using MenuPlanner.Shared.models
+
+@if (stars.Length == 5)
+{
+    <div>
+        @for (int i = 0; i < 5; i++)
+        {
+            int index = i;
+            <i class="@stars[index]" style="color: #EEBD01; @pointer" @onclick="() => SetRating(index + 1)"></i>
+        }
+        <span class="ml-1">Note: @Menu.AverageRating.ToString("0.#") Votes: @Menu.Votes</span>
+    </div>
+    <br />
+}
+
+@code {
+
+    [Parameter]
+    public Menu Menu { get; set; }
+
+    [Parameter]
+    public bool IsEditable { get; set; }
+
+    [Parameter]
+    public Action<int> Rating { get; set; }
+
+    private string[] stars = new string[5];
+
+    private string pointer = "";
+
+    protected override Task OnParametersSetAsync()
+    {
+        var rating = Menu.AverageRating;
+        if (IsEditable)
+        {
+            rating = 0;
+            pointer = "cursor: pointer;";
+        }
+        RenderStars(rating);
+        return base.OnParametersSetAsync();
+    }
+
+    private void RenderStars(double rating)
+    {
+        //var stars = new string[5];
+        for (int i = 0; i < stars.Length; i++)
+        {
+            if (i > (int)rating)
+            {
+                stars[i] = "far fa-star";
+            }
+            else if (i < (int)rating)
+            {
+                stars[i] = "fas fa-star";
+            }
+            else
+            {
+                stars[i] = ((rating - i) >= 0.5) ? "fas fa-star-half-alt" : "far fa-star";
+            }
+        }
+        //this.stars = stars;
+    }
+
+    private void SetRating(int rating)
+    {
+        if(IsEditable)
+        {
+            Rating.Invoke(rating);
+            RenderStars(Convert.ToDouble(rating));
+        }
+    }
+
+}

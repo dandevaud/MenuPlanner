@@ -1,8 +1,5 @@
 ﻿@using MenuPlanner.Shared.models
-@using Microsoft.Data.SqlClient
-@using Microsoft.EntityFrameworkCore
 @using Microsoft.EntityFrameworkCore.ChangeTracking.Internal
-@using Microsoft.EntityFrameworkCore.Query.Internal
 
 <div class="form-group">
     <h5>Steps:</h5>
@@ -10,7 +7,7 @@
     {
         <p>
             <label class="steplabel" for="@($"Steps{element.Index}")">Step @(element.Index + 1):</label>
-            <textarea id="@($"Steps{element.Index}")" value="@(element.Step ?? String.Empty)" @onchange="@(e => OnChange(e,element.Index) )"></textarea>
+            <textarea class="form-control" rows="3" id="@($"Steps{element.Index}")" value="@(element.Step ?? String.Empty)" @onchange="@(e => OnChange(e,element.Index) )" ></textarea>
             <a class="btn btn-danger steplabel" @onclick="@(() => RemoveStep(element.Step))">Remove</a>
             </p>
     }

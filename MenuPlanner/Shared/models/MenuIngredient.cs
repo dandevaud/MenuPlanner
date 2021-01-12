@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace MenuPlanner.Shared.models
@@ -22,6 +23,9 @@ namespace MenuPlanner.Shared.models
         [NotMapped]
         public Quantity Quantity { get; set; }
 
+        [ForeignKey("MenuId")]
+        [JsonIgnore]
+        public Menu Menu { get; set; }
         [Required]
         //https://stackoverflow.com/questions/8973027/ef-code-first-map-dictionary-or-custom-type-as-an-nvarchar
         public string QuantityAsJson

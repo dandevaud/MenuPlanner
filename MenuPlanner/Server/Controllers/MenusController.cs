@@ -1,13 +1,11 @@
-﻿// <copyright file="IngredientsController.cs" company="Alessandro Marra & Daniel Devaud">
-// Copyright (c) Alessandro Marra & Daniel Devaud.
-// </copyright>
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper.Internal;
+using MenuPlanner.Server.Logic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MenuPlanner.Server.SqlImplementation;
 using MenuPlanner.Shared.models;
@@ -15,19 +13,25 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MenuPlanner.Server.Controllers
 {
+
+
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class MenusController : Controller
+     public class MenusController : ControllerBase
     {
         private readonly MenuPlannerContext _context;
+        private readonly EntityUpdater entityUpdater;
+
 
         public MenusController(MenuPlannerContext context)
         {
             _context = context;
+            entityUpdater = new EntityUpdater(context);
+           
         }
 
-        // GET: Menus
+        // GET: api/Menus
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Menu>>> GetMenus()
         {
@@ -36,7 +40,7 @@ namespace MenuPlanner.Server.Controllers
 
         // GET: api/Menus/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Menu>> Details(Guid id)
+        public async Task<ActionResult<Menu>> GetMenu(Guid id)
         {
             var menu = await _context.Menus.FindAsync(id);
 
@@ -44,62 +48,95 @@ namespace MenuPlanner.Server.Controllers
             {
                 return NotFound();
             }
+            //load ingredients
+            await _context.Entry(menu).Collection(m => m.Ingredients).LoadAsync();
+            
+                menu?.Ingredients?.ToList().ForEach(m =>
+                    _context.Entry(m).Reference<Ingredient>(
+                            i => i.Ingredient
+                        )
+                        .Load());
+            
+           
 
+            //load images
+            await _context.Entry(menu).Collection(m => m.Images).LoadAsync();
             return menu;
         }
 
-        // POST: api/Menus/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost("Create")]
-        //[ValidateAntiForgeryToken]
-        public async Task<ActionResult<Menu>> Create(Menu menu)
+        /// <summary>
+        /// GET: api/Menus/Images/5
+        /// </summary>
+        /// <param name="id">Menu Id</param>
+        /// <returns>Image Collection</returns>
+        [HttpGet("Images/{id}")]
+        public async Task<ActionResult<List<Image>>> GetImages(Guid id)
         {
-            if (ModelState.IsValid)
+            var menu = await _context.Menus.FindAsync(id);
+
+            if (menu == null)
             {
-                _context.Add(menu);
-                await _context.SaveChangesAsync();
-                return CreatedAtAction("Details", new { id = menu.MenuId }, menu);
+                return NotFound();
             }
-            return View(menu);
+            //load images
+            await _context.Entry(menu).Collection(m => m.Images).LoadAsync();
+            return Ok(menu.Images);
         }
 
-        // PUT: api/Menus/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPut("Edit/{id}")]
-        //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, Menu menu)
+        /// <summary>
+        /// GET: api/Menus/Filter?contains=string
+        /// </summary>
+        /// <returns>List of Menu</returns>
+        [HttpGet("Filter")]
+        public async Task<ActionResult<IEnumerable<Menu>>> GetFilteredIngredients()
+        {
+            var partOfName = HttpContext.Request.Query["contains"].ToString().ToLower();
+            if (!string.IsNullOrEmpty(partOfName))
+            {
+                return await _context.Menus.Where(x => x.Name.ToLower().Contains(partOfName)
+                       || x.Description.ToLower().Contains(partOfName)).ToListAsync();
+            }
+            return new List<Menu>();
+        }
+
+        // PUT: api/Menus/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutMenu(Guid id, Menu menu)
         {
             if (id != menu.MenuId)
             {
                 return BadRequest();
             }
-
-            _context.Entry(menu).State = EntityState.Modified;
-
-            try
+            
+            //to improve -> remove all the images from this menu
+            var foundMenu = await _context.Menus.FindAsync(id);
+            if (foundMenu == null)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MenuExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+
+            await entityUpdater.UpdateMenuInContext(menu, foundMenu);
+
 
             return NoContent();
         }
 
-        // GET: api/Menus/5
+
+        // POST: api/Menus
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<Menu>> PostMenu(Menu menu)
+        {
+            _context.Menus.Add(menu);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetMenu", new { id = menu.MenuId }, menu);
+        }
+
+        // DELETE: api/Menus/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> DeleteMenu(Guid id)
         {
             var menu = await _context.Menus.FindAsync(id);
             if (menu == null)

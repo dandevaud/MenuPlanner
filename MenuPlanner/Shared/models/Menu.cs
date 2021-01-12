@@ -29,11 +29,13 @@ namespace MenuPlanner.Shared.models
         public ICollection<Comment> Comments { get; set; }
         public double AverageRating { get; set; }
         public int Votes { get; set; }
-
         public MenuCategory MenuCategory { get; set; } //Flags
         public ICollection<Image> Images { get; set; }
         public Uri Video { get; set; }
-
+        
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public DateTime CreationDateTime { get; set; }
+        
     }
 
 }
