@@ -361,3 +361,4 @@ MigrationBackup/
 *.db-shm
 *.db-wal
 /MenuPlanner/Server/.config/dotnet-tools.json
+.vscode
