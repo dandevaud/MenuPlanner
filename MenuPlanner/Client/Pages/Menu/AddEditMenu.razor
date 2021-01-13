@@ -121,13 +121,9 @@ else
         }
     }
 
-    private async Task RemoveMenuIngredient(MenuIngredient menuIngredient)
+    private void RemoveMenuIngredient(MenuIngredient menuIngredient)
     {
-
-        
-            menu.Ingredients.Remove(menuIngredient);
-           
-      
+        menu.Ingredients.Remove(menuIngredient);
     }
 
     private void AddIngredientToMenu(MenuIngredient menuIngredient)
