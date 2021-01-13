@@ -13,7 +13,9 @@ using System.Threading.Tasks;
 using MenuPlanner.Server.Controllers;
 using MenuPlanner.Server.SqlImplementation;
 using MenuPlanner.ServerTests;
+using MenuPlanner.Shared.models;
 using Moq;
+using Shared.models.Search;
 
 namespace MenuPlanner.Server.Logic.Tests
 {
@@ -43,7 +45,10 @@ namespace MenuPlanner.Server.Logic.Tests
             var ing = await dbContext.Object.Ingredients
                 .Where(i => i.Name.Equals("Huhn"))
                 .FirstAsync();
-            var menuList = searchLogic.GetAllMenusWithIngredientAndChildIngredient(ing);
+            var menuList = searchLogic.SearchMenus(new MenuSearchRequestModel()
+            {
+                Ingredients = new List<Ingredient>() {ing}
+            });
             var expected = mockDb.Menus
                 .Where(m =>
                     m.Name.Equals("Chicken Nuggets") || m.Name.Equals("Pouletbrüstli") || m.Name.Equals("Ofen Huhn"))
@@ -53,8 +58,8 @@ namespace MenuPlanner.Server.Logic.Tests
                 .ToList();
             await menuList;
 
-            expected.ForEach(m => Assert.Contains(m,menuList.Result));
-            Assert.IsEmpty(menuList.Result.FindAll(m => notExpected.Contains(m)));
+            expected.ForEach(m => Assert.Contains(m,menuList.Result.Result));
+            Assert.IsEmpty(menuList.Result.Result.FindAll(m => notExpected.Contains(m)));
             
         }
     }
