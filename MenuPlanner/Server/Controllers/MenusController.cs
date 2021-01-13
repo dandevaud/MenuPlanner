@@ -115,6 +115,10 @@ namespace MenuPlanner.Server.Controllers
         public async Task<ActionResult<Menu>> PostMenu(Menu menu)
         {
             _context.Menus.Add(menu);
+            foreach (var menuIngredient in menu.Ingredients)
+            {
+                _context.Entry(menuIngredient.Ingredient).State = EntityState.Detached;
+            }
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetMenu", new { id = menu.MenuId }, menu);
