@@ -1,0 +1,47 @@
+﻿@using MenuPlanner.Shared.models
+@using MenuPlanner.Shared.models.enums
+@inject HttpClient Http
+<form>
+<div class="box box-element">
+    <div class="input-group">
+        <div class="form-outline">
+            <input type="search" id="menuSearch" class="form-control" placeholder="Search" />
+
+
+        </div>
+        <button type="button" class="btn btn-primary">
+            <i class="fas fa-search"></i>
+        </button>
+        <select>
+            <option value="filter">Any Match</option>
+            <option value="name">By Name</option>
+        </select>
+    </div>
+</div>
+<div class="box box-element">
+    <select multiple aria-label="Time of Day">
+        @foreach (var e in Enum.GetValues<TimeOfDay>())
+        {
+            @if (!e.Equals(TimeOfDay.Unknown))
+            {
+                <option value="@e">@e.ToString()</option>
+            }
+        }
+    </select>
+    <select multiple aria-label="Season">
+        @foreach (var e in Enum.GetValues<Season>())
+        {
+            @if (!e.Equals(Season.Unknown))
+            {
+                <option value="@e">@e.ToString()</option>
+            }
+        }
+    </select>
+
+</div>
+</form>
+
+
+    @code {
+
+    }
