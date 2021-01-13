@@ -34,13 +34,13 @@ namespace MenuPlanner.Server.Logic
 
          public async Task<SearchResponseModel<Menu>> SearchMenus(MenuSearchRequestModel searchRequest)
          {
-             var menuList = await _context.Menus.ToListAsync();
-             LoadMenuSubEntities(menuList);
-            
-             GetMenuByIngredient(searchRequest, menuList);
-             FilterByEnums(searchRequest.TimeOfDay, menuList,((TimeOfDay t, Menu m) =>  m.TimeOfDay.HasFlag(t)));
-             FilterByEnums(searchRequest.Season, menuList, ((Season t, Menu m) => m.Season.HasFlag(t)));
-             FilterByEnums(searchRequest.MenuCategory, menuList, ((MenuCategory t, Menu m) => m.Season.HasFlag(t)));
+             var menuList =  _context.Menus.ToList();
+             await LoadMenuSubEntities(menuList);
+
+             menuList = GetMenuByIngredient(searchRequest, menuList);
+             menuList = FilterByEnums(searchRequest.TimeOfDay, menuList,((TimeOfDay t, Menu m) =>  m.TimeOfDay.HasFlag(t)));
+             menuList = FilterByEnums(searchRequest.Season, menuList, ((Season t, Menu m) => m.Season.HasFlag(t)));
+             menuList = FilterByEnums(searchRequest.MenuCategory, menuList, ((MenuCategory t, Menu m) => m.Season.HasFlag(t)));
 
              if (searchRequest.Votes > 0)
              {
@@ -60,7 +60,7 @@ namespace MenuPlanner.Server.Logic
                      .Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || m.Season.ToString().Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || m.TimeOfDay.ToString()
                      .Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || m.Ingredients.Any(i => i.Ingredient.Name.Contains(searchRequest.Filter));
 
-             GeneralSearchRequestModelHandling<Menu>(searchRequest, menuList, NamePredicate, FilterPredicate);
+             menuList = GeneralSearchRequestModelHandling<Menu>(searchRequest, menuList, NamePredicate, FilterPredicate);
 
              return new SearchResponseModel<Menu>() {Result = menuList};
 
@@ -69,8 +69,8 @@ namespace MenuPlanner.Server.Logic
 
          public async Task<SearchResponseModel<Ingredient>> SearchIngredients(IngredientSearchRequestModel searchRequest)
          {
-             var ingredientList = await _context.Ingredients.ToListAsync();
-
+             var ingredientList = _context.Ingredients.ToList();
+             
              if (searchRequest.Calories > 0)
              {
                  ingredientList = ingredientList.Where(i => i.Calories <= searchRequest.Calories).ToList();
@@ -80,31 +80,32 @@ namespace MenuPlanner.Server.Logic
              {
                  ingredientList = ingredientList.Where(i => i.Price <= searchRequest.Price).ToList();
              }
-             FilterByEnums(searchRequest.Category,ingredientList, ((IngredientCategory t, Ingredient i) => i.Category.HasFlag(t)));
+            ingredientList = FilterByEnums(searchRequest.Category,ingredientList, ((IngredientCategory t, Ingredient i) => i.Category.HasFlag(t)));
              
             //GeneralSearchRequestModel search by filter takes longest, hence reduce menulist size with easy tasks before
             bool NamePredicate(Ingredient i) => i.Name.Contains(searchRequest.Name, StringComparison.InvariantCultureIgnoreCase);
 
              bool FilterPredicate(Ingredient i) =>
-                 i.Name.Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || i.Category.ToString()
-                     .Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase);
+                 i.Name.Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || 
+                 i.Category.ToString().Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase);
 
-             GeneralSearchRequestModelHandling<Ingredient>(searchRequest, ingredientList, NamePredicate, FilterPredicate);
+            ingredientList = GeneralSearchRequestModelHandling<Ingredient>(searchRequest, ingredientList, NamePredicate, FilterPredicate);
 
              return new SearchResponseModel<Ingredient>() { Result = ingredientList };
 
          }
 
-        private void FilterByEnums<T,M>(T enumFilter, List<M> menuList, ContainsAnyOf<T,M> anyPredicate) where T: struct,Enum
+        private List<M> FilterByEnums<T,M>(T enumFilter, List<M> list, ContainsAnyOf<T,M> anyPredicate) where T: struct,Enum
          {
              //Handle default value (is always true if checked by HasFlags)
              if (!enumFilter.GetType().GetDefaultValue().Equals(enumFilter))
              {
                  var enumList = handleEnums(enumFilter);
-                menuList = menuList.Where(m => enumList.Any(en => anyPredicate(en, m)
+                list = list.Where(m => enumList.Any(en => anyPredicate(en, m)
                  )).ToList();
              }
 
+             return list;
 
          }
 
@@ -119,7 +120,7 @@ namespace MenuPlanner.Server.Logic
                  return listOfSetEnumFilter;
          }
 
-         private void GetMenuByIngredient(MenuSearchRequestModel searchRequest, List<Menu> menuList)
+         private List<Menu> GetMenuByIngredient(MenuSearchRequestModel searchRequest, List<Menu> menuList)
          {
              if (!searchRequest.Ingredients.IsNullOrEmpty())
              {
@@ -129,6 +130,8 @@ namespace MenuPlanner.Server.Logic
                  ingredients.ForEach(async i => ingredientsToLookFor.AddRange(await GetSubIngredients(i)));
                  menuList = menuList.Where(m => m.Ingredients.Any(i => ingredientsToLookFor.Contains(i.Ingredient))).ToList();
              }
+
+             return menuList;
          }
 
          public async Task<List<Ingredient>> GetSubIngredients(Ingredient ing)
@@ -147,20 +150,22 @@ namespace MenuPlanner.Server.Logic
         /// <param name="list">The list to search on.</param>
         /// <param name="namePredicate">The name predicate used for searching by name.</param>
         /// <param name="filterPredicate">The filter predicate used for searching by filter.</param>
-        private void GeneralSearchRequestModelHandling<T>(SearchRequestModel searchRequest, List<T> list, Predicate<T> namePredicate, Predicate<T> filterPredicate)
+        private List<T> GeneralSearchRequestModelHandling<T>(SearchRequestModel searchRequest, List<T> list, Predicate<T> namePredicate, Predicate<T> filterPredicate)
          {
              if (!searchRequest.Name.IsNullOrEmpty())
              {
-                 list = list.FindAll(namePredicate).ToList();
+                 list = list.FindAll( namePredicate).ToList();
              }
 
              if (!searchRequest.Filter.IsNullOrEmpty())
              {
                  list = list.FindAll(filterPredicate).ToList();
              }
+
+             return list;
          }
 
-         private void LoadMenuSubEntities(List<Menu> menuList)
+         private async Task LoadMenuSubEntities(List<Menu> menuList)
          {
              menuList.ForEach(async m =>
              {
@@ -168,6 +173,11 @@ namespace MenuPlanner.Server.Logic
                  var ingredients = menuEntity.Collection(sm => sm.Ingredients).LoadAsync();
                  var images = menuEntity.Collection(sm => sm.Images).LoadAsync();
                  var comments = menuEntity.Collection(sm => sm.Comments).LoadAsync();
+                 foreach (var menuIngredient in m.Ingredients)
+                 {
+                    await _context.Entry(menuIngredient).Reference(mi => mi.Ingredient).LoadAsync();
+                    await LoadSubIngredients(menuIngredient.Ingredient);
+                 }
                  await ingredients;
                  await images;
                  await comments;
