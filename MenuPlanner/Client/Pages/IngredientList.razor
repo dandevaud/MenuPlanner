@@ -1,34 +1,10 @@
 ﻿@page "/ingredientList"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using MenuPlanner.Shared.models.enums
 @using MenuPlanner.Shared.models
 @inject HttpClient Http
 @attribute [Authorize]
-
-<div class="row">
-    <EditForm Model="@newIngredient" OnValidSubmit="@AddIngredient">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-
-        <div class="form-group">
-            Name: <InputText @bind-Value="newIngredient.Name" class="form-control" />
-        </div>
-
-        <div class="form-group">
-            Calories: <InputNumber @bind-Value="newIngredient.Calories" class="form-control" />
-        </div>
-
-        <div class="form-group">
-            Price: <InputNumber @bind-Value="newIngredient.Price" class="form-control" />
-        </div>
-
-        <IngredientCategories Ingredient="newIngredient"></IngredientCategories>
-
-        <button type="submit" class="btn btn-success">Save</button>
-    </EditForm>
-</div>
-
-<hr />
 
 <h3>Ingredients</h3>
 
@@ -38,12 +14,59 @@
 }
 else
 {
+    <h5>Add Ingredient</h5>
+    <div class="row">
+        <EditForm Model="@newIngredient" OnValidSubmit="@AddIngredient">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                Name: <InputText @bind-Value="newIngredient.Name" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                Calories: <InputNumber @bind-Value="newIngredient.Calories" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                Price (1 gram): <InputNumber @bind-Value="newIngredient.Price" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                Category:
+                <InputSelect @bind-Value="newIngredient.Category" class="form-control" disabled="@isCategoryDisabled">
+                    @foreach (var value in Enum.GetValues(typeof(IngredientCategory)))
+                        {
+                        <option>@value</option>
+                        }
+                </InputSelect>
+            </div>
+
+            <div class="form-group">
+                Parent Ingredient:
+                <InputSelect @bind-Value="parentIngredient" @oninput="StoreParentIngredient" class="form-control">
+                    <option></option>
+                    @foreach (var value in ingredients)
+                        {
+                        <option>@value.Name</option>
+                        }
+                </InputSelect>
+            </div>
+            <button type="submit" class="btn btn-success">Save</button>
+        </EditForm>
+    </div>
+
+    <br />
+    <br />
+
+    <h5>Ingredient List</h5>
 
     <table class="table">
         <thead>
             <tr>
                 <th>Name</th>
                 <th>Category</th>
+                <th>Child Ingredient</th>
                 <th>Calories</th>
                 <th>Price</th>
                 <th></th>
@@ -56,6 +79,7 @@ else
                 <tr>
                     <td>@ingredient.Name</td>
                     <td>@ingredient.Category</td>
+                    <td>@(String.Join(",",ingredient.ChildIngredients.Select(i => i.Name).ToList()))</td>
                     <td>@ingredient.Calories</td>
                     <td>@ingredient.Price</td>
                     <td><a @onclick="(() => newIngredient = ingredient)" class="btn btn-primary">Edit</a></td>
@@ -72,6 +96,10 @@ else
 
     private Ingredient newIngredient = new Ingredient();
 
+    private string parentIngredient;
+
+    private bool isCategoryDisabled;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadIngredients();
@@ -79,12 +107,20 @@ else
 
     private async Task AddIngredient()
     {
+        if (!string.IsNullOrEmpty(parentIngredient))
+        {
+            var foundIngredient = ingredients.FirstOrDefault(i => i.Name == parentIngredient);
+            newIngredient.ParentIngredients = new List<Ingredient>();
+            newIngredient.ParentIngredients.Add(foundIngredient);
+        }
         await Http.PostAsJsonAsync<Ingredient>("api/Ingredients", newIngredient);
         newIngredient = new Ingredient();
+        isCategoryDisabled = false;
+        parentIngredient = null;
         await LoadIngredients();
     }
 
-    public async Task DeleteIngredient(Guid id)
+    private async Task DeleteIngredient(Guid id)
     {
         var response = await Http.DeleteAsync($"api/Ingredients/{id}");
 
@@ -110,6 +146,22 @@ else
         catch (AccessTokenNotAvailableException exception)
         {
             exception.Redirect();
+        }
+    }
+
+    private void StoreParentIngredient(ChangeEventArgs e)
+    {
+        var value = (string)e.Value;
+        if (!string.IsNullOrEmpty(value))
+        {
+            var foundIngredient = ingredients.FirstOrDefault(i => i.Name == value);
+            newIngredient.Category = foundIngredient.Category;
+            isCategoryDisabled = true;
+        }
+        else
+        {
+            newIngredient.Category = IngredientCategory.Unknown;
+            isCategoryDisabled = false;
         }
     }
 

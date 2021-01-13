@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using MenuPlanner.Shared.models.enums;
 
 
@@ -17,6 +18,7 @@ namespace MenuPlanner.Shared.models
         public Guid IngredientId { get; set; }
         [Required]
         public string Name { get; set; }
+        [JsonIgnore]
         public ICollection<Ingredient> ParentIngredients { get; set; }
         public ICollection<Ingredient> ChildIngredients { get; set; }
         public IngredientCategory Category { get; set; }

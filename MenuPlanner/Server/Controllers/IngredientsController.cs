@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using MenuPlanner.Server.SqlImplementation;
 using MenuPlanner.Shared.models;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileSystemGlobbing.Internal.PathSegments;
 
 namespace MenuPlanner.Server.Controllers
 {
@@ -32,7 +34,16 @@ namespace MenuPlanner.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients()
         {
-            return await _context.Ingredients.ToListAsync();
+            var toReturn = await _context.Ingredients.ToListAsync();
+            toReturn.ForEach(async i =>
+            {
+                var loadChild = _context.Entry(i).Collection(ing => ing.ChildIngredients).LoadAsync();
+                var loadParent = _context.Entry(i).Collection(ing => ing.ParentIngredients).LoadAsync();
+
+                await loadChild;
+                await loadParent;
+            });
+            return toReturn;
         }
 
         
@@ -105,13 +116,41 @@ namespace MenuPlanner.Server.Controllers
             if (await _context.Ingredients.AnyAsync(x => x.Name.Equals(ingredient.Name)))
             {
                 var existing = await _context.Ingredients.FirstAsync(x => x.Name.Equals(ingredient.Name));
+                await _context.Entry(existing).Collection(i => i.ChildIngredients).LoadAsync();
+                await _context.Entry(existing).Collection(i => i.ParentIngredients).LoadAsync();
                 ingredient.IngredientId = existing.IngredientId;
                 _context.Ingredients.Update(existing)?.CurrentValues?.SetValues(ingredient);
+                await UpdateEachParentIngredient(existing);
             }
             else
             {
+                
                 _context.Ingredients.Add(ingredient);
+                await UpdateEachParentIngredient(ingredient);
+                await _context.Ingredients.LoadAsync();
+
             }
+        }
+
+        private async Task UpdateEachParentIngredient(Ingredient ingredient)
+        {
+            await _context.Entry(ingredient).Collection(i => i.ChildIngredients).LoadAsync();
+            await _context.Entry(ingredient).Collection(i => i.ParentIngredients).LoadAsync();
+            var enumerator = ingredient.ParentIngredients.GetEnumerator();
+            var updatedList = new List<Ingredient>();
+            while (enumerator.MoveNext())
+            {
+                var ingredientParent =enumerator.Current;
+                var entity = _context.Ingredients.Update(ingredientParent);
+                await entity.Collection(i => i.ChildIngredients).LoadAsync();
+                var contextIngredientParent = entity.Entity;
+                contextIngredientParent.ChildIngredients.Add(ingredient);
+                updatedList.Add(contextIngredientParent);
+            }
+
+            ingredient.ParentIngredients = updatedList;
+
+
         }
 
         // DELETE: api/Ingredients/5

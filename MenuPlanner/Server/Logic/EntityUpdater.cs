@@ -44,14 +44,14 @@ namespace MenuPlanner.Server.Logic
                 entityInDatabase.Images,
                 (Image i) => i.ImageId,
                 (Guid guid) => providedImages.Contains(guid),
-                await RemoveSubEntities<Image>(_context.Image, providedImages));
+                RemoveSubEntities<Image>(_context.Image, providedImages));
 
             //Remove all deleted MenuIngredients from DB
             DeleteRemovedEntitiesFromMenu<MenuIngredient>(
                 entityInDatabase.Ingredients,
                 (MenuIngredient i) => i.Id,
                 (Guid guid) => providedMenuIngredients.Contains(guid),
-                await RemoveSubEntities<MenuIngredient>(_context.MenuIngredients, providedImages));
+                RemoveSubEntities<MenuIngredient>(_context.MenuIngredients, providedImages));
 
 
             providedMenuIngredients.ForEach(menuIngr =>
@@ -68,7 +68,7 @@ namespace MenuPlanner.Server.Logic
             await _context.SaveChangesAsync();
         }
 
-        private async Task<RemoveFromContext<T>> RemoveSubEntities<T>(DbSet<T> dbSet, List<Guid> providedList) where T : class
+        private RemoveFromContext<T> RemoveSubEntities<T>(DbSet<T> dbSet, List<Guid> providedList) where T : class
         {
             return async (Guid guid) =>
             {
