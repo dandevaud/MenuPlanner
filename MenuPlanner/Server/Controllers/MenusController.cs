@@ -61,6 +61,8 @@ namespace MenuPlanner.Server.Controllers
 
             //load images
             await _context.Entry(menu).Collection(m => m.Images).LoadAsync();
+            //load Comments
+            await _context.Entry(menu).Collection(m => m.Comments).LoadAsync();
             return menu;
         }
 
@@ -83,23 +85,7 @@ namespace MenuPlanner.Server.Controllers
             return Ok(menu.Images);
         }
 
-        /// <summary>
-        /// GET: api/Menus/Filter?contains=string
-        /// </summary>
-        /// <returns>List of Menu</returns>
-        [HttpGet("Filter")]
-        public async Task<ActionResult<IEnumerable<Menu>>> GetFilteredIngredients()
-        {
-            var partOfName = HttpContext.Request.Query["contains"].ToString().ToLower();
-            if (!string.IsNullOrEmpty(partOfName))
-            {
-                return await _context.Menus.Where(x => x.Name.ToLower().Contains(partOfName)
-                       || x.Description.ToLower().Contains(partOfName)).ToListAsync();
-            }
-            return new List<Menu>();
-        }
-
-        // PUT: api/Menus/5
+       // PUT: api/Menus/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMenu(Guid id, Menu menu)

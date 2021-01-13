@@ -35,18 +35,7 @@ namespace MenuPlanner.Server.Controllers
             return await _context.Ingredients.ToListAsync();
         }
 
-        // GET: api/Ingredients/Filter?contains=xy
-        [HttpGet("Filter")]
-        public async Task<ActionResult<IEnumerable<Ingredient>>> GetFilteredIngredients()
-        {
-            var partOfName = HttpContext.Request.Query["contains"].ToString().ToLower();
-            if (!string.IsNullOrEmpty(partOfName))
-            {
-                return await _context.Ingredients.Where(x => x.Name.ToLower().Contains(partOfName)).ToListAsync();
-            }
-            return new List<Ingredient>();
-        }
-
+        
         // GET: api/Ingredients/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Ingredient>> GetIngredient(Guid id)

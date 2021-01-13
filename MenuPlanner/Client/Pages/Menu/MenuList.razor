@@ -112,7 +112,7 @@ else
                 // to avoid uneeded requests and at least show one result
                 if (menus.Length > 1 || filter.Length < previousFilter.Length)
                 {
-                    menus = await Http.GetFromJsonAsync<Menu[]>($"api/Menus/Filter?contains={filter}");
+                    menus = await Http.GetFromJsonAsync<Menu[]>($"api/Search/MenuBy?filter={filter}");
                 }
             }
             else

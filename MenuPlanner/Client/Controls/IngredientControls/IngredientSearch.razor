@@ -39,7 +39,7 @@
         filter = e.Value.ToString();
         if (filter.Length > 2)
         {
-            FoundIngredients = (await Http.GetFromJsonAsync<Ingredient[]>($"api/Ingredients/Filter?contains={filter}")).ToList();
+            FoundIngredients = (await Http.GetFromJsonAsync<Ingredient[]>($"api/Search/IngredientBy?filter={filter}")).ToList();
             StateHasChanged();
          }
         else

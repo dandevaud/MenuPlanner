@@ -79,6 +79,14 @@ namespace MenuPlanner.Server.Controllers
             return searchResponse.Result;
         }
 
+        // GET: api/Search/MenuBy?timeOfDay={TimeOfDay}&category={category}&season={season}&filter={string}&...
+        [HttpGet("IngredientBy")]
+        public async Task<ActionResult<List<Ingredient>>> GetIngredientBy([FromQuery] IngredientSearchRequestModel searchRequestModel)
+        {
+            var searchResponse = await searchLogic.SearchIngredients(searchRequestModel);
+            return searchResponse.Result;
+        }
+
 
         // GET: api/Search/Menu?filter={filter}
         [HttpGet("Menu")]
