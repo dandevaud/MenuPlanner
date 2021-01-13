@@ -15,6 +15,7 @@ using MenuPlanner.Shared.models.enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Shared.models.Search;
 
 namespace MenuPlanner.Server.Controllers
 {
@@ -63,48 +64,14 @@ namespace MenuPlanner.Server.Controllers
             return await searchLogic.GetAllMenusWithIngredientAndChildIngredientContainingName(filter);
         }
 
-          // GET: api/Search/MenuByName?timeOfDay={TimeOfDay}&category={category}&season={season}
+        // GET: api/Search/MenuBy?timeOfDay={TimeOfDay}&category={category}&season={season}&filter={string}&...
         [HttpGet("MenuBy")]
-        public async Task<ActionResult<List<Menu>>> GetMenuBy()
+        public async Task<ActionResult<List<Menu>>> GetMenuBy([FromQuery] MenuSearchRequestModel searchRequestModel)
         {
-            var tasks = new List<Task<List<Menu>>>();
-            var exceptions = new List<ArgumentException>();
-            var toReturn = new List<Menu>();
-           
-            try{
-                var timeOfDay = GetEnumValueFromQuery<TimeOfDay>("timeOfDay");
-                toReturn.AddRange( await searchLogic.GetMenuByTimeOfDay(timeOfDay));
-            } catch (ArgumentException ex){
-                exceptions.Add(ex);
-            }
-
-            try{
-                var category = GetEnumValueFromQuery<MenuCategory>("category");
-                toReturn.AddRange( await searchLogic.GetMenuByCategory(category));
-            } catch (ArgumentException ex){
-                exceptions.Add(ex);
-            }
-
-            try{
-                var season = GetEnumValueFromQuery<Season>("season");
-                toReturn.AddRange( await searchLogic.GetMenuBySeason(season));
-            } catch (ArgumentException ex){
-                exceptions.Add(ex);
-            }
-
-
-            tasks.ForEach(t => {
-                var result = await t;
-            })
-            return await ;
+            var searchResponse = await searchLogic.SearchMenus(searchRequestModel);
+            return searchResponse.Result;
         }
 
-        private T GetEnumValueFromQuery<T> (string queryString) where T : struct{
-            var enumString = HttpContext.Request.Query[queryString].ToString().ToLower();
-            T enumParsed;
-            Enum.TryParse<T>(enumString,true, out enumParsed);
-            return enumParsed;
-        }
 
         // GET: api/Search/Menu?filter={filter}
         [HttpGet("Menu")]

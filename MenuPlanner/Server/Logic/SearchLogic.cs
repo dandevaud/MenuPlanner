@@ -30,7 +30,7 @@ namespace MenuPlanner.Server.Logic
 
      
 
-         public async Task<List<Menu>> SearchMenus(MenuSearchRequestModel searchRequest)
+         public async Task<SearchResponseModel<Menu>> SearchMenus(MenuSearchRequestModel searchRequest)
          {
              var menuList = await _context.Menus.ToListAsync();
              LoadMenuSubEntities(menuList);
@@ -60,7 +60,7 @@ namespace MenuPlanner.Server.Logic
 
              GeneralSearchRequestModelHandling<Menu>(searchRequest, menuList, NamePredicate, FilterPredicate);
 
-             return menuList;
+             return new SearchResponseModel<Menu>() {Result = menuList};
 
          }
 
@@ -154,97 +154,5 @@ namespace MenuPlanner.Server.Logic
              }
          }
 
-
-
-        #region Old Stuff
-
-        /// <summary>Gets all menus containing the provided filter.</summary>
-        /// <param filter="filter">The filter.</param>
-        /// <returns>
-        ///   <br />
-        /// </returns>
-        public async Task<List<Menu>> GetAllMenusContainingName(string filter)
-        {
-            var menus = await EntityFrameworkQueryableExtensions.ToListAsync(_context.Menus.Where(m => m.Name.ToLower().Contains(filter.ToLower())));
-            return menus;
-        }
-
-
-        /// <summary>
-        /// Gets all menus with ingredient and child ingredient containing the provided filter.
-        /// </summary>
-        /// <param filter="filter">The filter.</param>
-        /// <returns>List of Menus</returns>
-        public async Task<List<Menu>> GetAllMenusWithIngredientAndChildIngredientContainingName(string filter)
-         {
-             var ingredients = await EntityFrameworkQueryableExtensions.ToListAsync(_context.Ingredients.Where(i => i.Name.ToLower().Contains(filter.ToLower())));
-             List<Menu> toRet = new List<Menu>();
-             ingredients.ForEach(async i => toRet.AddRange(await GetAllMenusWithIngredientAndChildIngredient(i)));
-             return toRet;
-         }
-
-        /// <summary>Gets all menus containing either the ingredient provided or any of his Child ingredients.</summary>
-        /// <param name="ing">The ingredient to look for</param>
-        /// <returns>all menus containing this ingredient</returns>
-        public async Task<List<Menu>> GetAllMenusWithIngredientAndChildIngredient(Ingredient ing)
-        {
-            await LoadSubIngredients(ing);
-            var ingredientsToLookFor = new List<Ingredient>();
-            ingredientsToLookFor.Add(ing);
-            
-            ingredientsToLookFor.AddRange(await GetChildIngredientsRecursive(ing));
-
-            var menuIngredients = await GetAllMenuIngredientWithIngredient(ingredientsToLookFor);
-
-            return await EntityFrameworkQueryableExtensions.ToListAsync(_context.Menus.Where(m => m.Ingredients.Intersect(menuIngredients).Any()));
-        }
-
-        /// <summary>Gets all menus containing the provided time of day attribute</summary>
-        /// <param name="timeOfDay">The time of day to look for</param>
-        /// <returns>all menus containing the attribute</returns>
-        public async Task<List<Menu>> GetMenuByTimeOfDay(TimeOfDay timeOfDay){
-            return await EntityFrameworkQueryableExtensions.ToListAsync(_context.Menus.Where(m => m.TimeOfDay.HasFlag(timeOfDay)));
-        }
-
-      /// <summary>Gets all menus containing the provided season attribute</summary>
-        /// <param name="season">The season to look for</param>
-        /// <returns>all menus containing the attribute</returns>
-        public async Task<List<Menu>> GetMenuBySeason(Season season){
-            return await EntityFrameworkQueryableExtensions.ToListAsync(_context.Menus.Where(m => m.Season.HasFlag(season)));
-        }
-
-        /// <summary>Gets all menus containing the provided menu category attribute</summary>
-        /// <param name="category">The menu category to look for</param>
-        /// <returns>all menus containing the attribute</returns>
-         public async Task<List<Menu>> GetMenuByCategory(MenuCategory category){
-            return await EntityFrameworkQueryableExtensions.ToListAsync(_context.Menus.Where(m => m.MenuCategory.HasFlag(category)));
-        }
-
-        private async Task<List<MenuIngredient>> GetAllMenuIngredientWithIngredient(List<Ingredient> ingredients)
-        {
-            return await EntityFrameworkQueryableExtensions.ToListAsync(_context.MenuIngredients.Where(mi => ingredients.Contains(mi.Ingredient)));
-
-        }
-
-        private async Task<List<Ingredient>> GetChildIngredientsRecursive(Ingredient ing)
-        {
-            var listToRet = new List<Ingredient>();
-            if (ing.ChildIngredients != null)
-            {
-                listToRet.AddRange(ing.ChildIngredients);
-                foreach (var i in ing.ChildIngredients)
-                {
-                    listToRet.AddRange(await GetChildIngredientsRecursive(i));
-                }
-            }
-
-            return listToRet;
-        }
-
-
-
-        
-
-        #endregion
     }
 }
