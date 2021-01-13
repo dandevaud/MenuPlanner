@@ -66,7 +66,7 @@ else
             <tr>
                 <th>Name</th>
                 <th>Category</th>
-                <th>Parent Ingredient</th>
+                <th>Child Ingredient</th>
                 <th>Calories</th>
                 <th>Price</th>
                 <th></th>
@@ -79,7 +79,7 @@ else
                 <tr>
                     <td>@ingredient.Name</td>
                     <td>@ingredient.Category</td>
-                    <td>@ingredient.ParentIngredients</td>
+                    <td>@(String.Join(",",ingredient.ChildIngredients.Select(i => i.Name).ToList()))</td>
                     <td>@ingredient.Calories</td>
                     <td>@ingredient.Price</td>
                     <td><a @onclick="(() => newIngredient = ingredient)" class="btn btn-primary">Edit</a></td>
