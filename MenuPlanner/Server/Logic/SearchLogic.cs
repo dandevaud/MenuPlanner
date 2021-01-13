@@ -18,6 +18,8 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace MenuPlanner.Server.Logic
 {
+    public delegate bool ContainsAnyOf<T,M>(T enumIn , M model);
+    
     public class SearchLogic
     {
         private readonly MenuPlannerContext _context;
@@ -36,9 +38,9 @@ namespace MenuPlanner.Server.Logic
              LoadMenuSubEntities(menuList);
             
              GetMenuByIngredient(searchRequest, menuList);
-             FilterByEnums(searchRequest.TimeOfDay, menuList);
-             FilterByEnums(searchRequest.Season, menuList);
-             FilterByEnums(searchRequest.MenuCategory, menuList);
+             FilterByEnums(searchRequest.TimeOfDay, menuList,((TimeOfDay t, Menu m) =>  m.TimeOfDay.HasFlag(t)));
+             FilterByEnums(searchRequest.Season, menuList, ((Season t, Menu m) => m.Season.HasFlag(t)));
+             FilterByEnums(searchRequest.MenuCategory, menuList, ((MenuCategory t, Menu m) => m.Season.HasFlag(t)));
 
              if (searchRequest.Votes > 0)
              {
@@ -64,13 +66,43 @@ namespace MenuPlanner.Server.Logic
 
          }
 
-         private void FilterByEnums<T>(T enumFilter, List<Menu> menuList) where T: struct,Enum
+
+         public async Task<SearchResponseModel<Ingredient>> SearchIngredients(IngredientSearchRequestModel searchRequest)
+         {
+             var ingredientList = await _context.Ingredients.ToListAsync();
+
+             if (searchRequest.Calories > 0)
+             {
+                 ingredientList = ingredientList.Where(i => i.Calories <= searchRequest.Calories).ToList();
+             }
+
+             if (searchRequest.Price > 0)
+             {
+                 ingredientList = ingredientList.Where(i => i.Price <= searchRequest.Price).ToList();
+             }
+             FilterByEnums(searchRequest.Category,ingredientList, ((IngredientCategory t, Ingredient i) => i.Category.HasFlag(t)));
+             
+            //GeneralSearchRequestModel search by filter takes longest, hence reduce menulist size with easy tasks before
+            bool NamePredicate(Ingredient i) => i.Name.Contains(searchRequest.Name, StringComparison.InvariantCultureIgnoreCase);
+
+             bool FilterPredicate(Ingredient i) =>
+                 i.Name.Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || i.Category.ToString()
+                     .Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase);
+
+             GeneralSearchRequestModelHandling<Ingredient>(searchRequest, ingredientList, NamePredicate, FilterPredicate);
+
+             return new SearchResponseModel<Ingredient>() { Result = ingredientList };
+
+         }
+
+        private void FilterByEnums<T,M>(T enumFilter, List<M> menuList, ContainsAnyOf<T,M> anyPredicate) where T: struct,Enum
          {
              //Handle default value (is always true if checked by HasFlags)
              if (!enumFilter.GetType().GetDefaultValue().Equals(enumFilter))
              {
                  var enumList = handleEnums(enumFilter);
-                 menuList = menuList.Where(m => enumList.Any(en => m.TimeOfDay.HasFlag(en))).ToList();
+                menuList = menuList.Where(m => enumList.Any(en => anyPredicate(en, m)
+                 )).ToList();
              }
 
 

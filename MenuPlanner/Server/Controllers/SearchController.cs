@@ -45,23 +45,30 @@ namespace MenuPlanner.Server.Controllers
         [HttpPost("MenuWithIngredient")]
         public async Task<ActionResult<List<Menu>>> GetMenuForIngredient(Ingredient ingredient)
         {
-            var menuList = await searchLogic.GetAllMenusWithIngredientAndChildIngredient(ingredient);
 
-            return menuList;
+            var menuList = await searchLogic.SearchMenus(new MenuSearchRequestModel(){
+                Ingredients = new List<Ingredient>(){
+                    ingredient}
+            });
+
+            return menuList.Result;
         }
 
         // GET: api/Search/MenuWithIngredient?filter={filter}
         [HttpGet("MenuWithIngredient")]
         public async Task<ActionResult<List<Menu>>> GetMenuByIngredientName(String filter)
         {
-           return await searchLogic.GetAllMenusWithIngredientAndChildIngredientContainingName(filter);
-        }
+           var ingredients = await searchLogic.SearchIngredients(new IngredientSearchRequestModel()
+           {
+               Name = filter
+           });
 
-        // GET: api/Search/MenuByName?filter={filter}
-        [HttpGet("MenuByName")]
-        public async Task<ActionResult<List<Menu>>> GetMenuByName(String filter)
-        {
-            return await searchLogic.GetAllMenusWithIngredientAndChildIngredientContainingName(filter);
+           var toReturn = await searchLogic.SearchMenus(new MenuSearchRequestModel()
+           {
+               Ingredients = ingredients.Result
+           });
+
+           return toReturn.Result;
         }
 
         // GET: api/Search/MenuBy?timeOfDay={TimeOfDay}&category={category}&season={season}&filter={string}&...
@@ -77,14 +84,10 @@ namespace MenuPlanner.Server.Controllers
         [HttpGet("Menu")]
         public async Task<ActionResult<List<Menu>>> GetMenu(String filter)
         {
-            var byIngredient = searchLogic.GetAllMenusWithIngredientAndChildIngredientContainingName(filter);
-            var byName = searchLogic.GetAllMenusContainingName(filter);
+           var toRet = await searchLogic.SearchMenus(new MenuSearchRequestModel(){
+                Filter = filter});
 
-            var toRet = new List<Menu>();
-            toRet.AddRange(await byIngredient);
-            toRet.AddRange(await byName);
-
-            return toRet;
+            return toRet.Result;
         }
 
     }
