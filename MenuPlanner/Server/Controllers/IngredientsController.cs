@@ -131,33 +131,42 @@ namespace MenuPlanner.Server.Controllers
                 await _context.Entry(existing).Collection(i => i.ParentIngredients).LoadAsync();
                 ingredient.IngredientId = existing.IngredientId;
                 _context.Ingredients.Update(existing)?.CurrentValues?.SetValues(ingredient);
-                await UpdateEachParentIngredient(existing);
+                await UpdateEachParentIngredient(existing,ingredient);
             }
             else
             {
                 
                 _context.Ingredients.Add(ingredient);
-                await UpdateEachParentIngredient(ingredient);
+                await UpdateEachParentIngredient(ingredient,ingredient);
                 await _context.Ingredients.LoadAsync();
 
             }
         }
 
-        private async Task UpdateEachParentIngredient(Ingredient ingredient)
+        private async Task UpdateEachParentIngredient(Ingredient ingredient, Ingredient provided)
         {
             await _context.Entry(ingredient).Collection(i => i.ChildIngredients).LoadAsync();
             await _context.Entry(ingredient).Collection(i => i.ParentIngredients).LoadAsync();
-            var enumerator = ingredient.ParentIngredients.GetEnumerator();
-            var updatedList = new List<Ingredient>();
-            while (enumerator.MoveNext())
+            var updatedAddedParentIngredients = provided.ParentIngredients.Select(ppi => ppi.IngredientId).ToList()
+                .Except(ingredient.ParentIngredients.Select(ipi => ipi.IngredientId).ToList()).ToList();
+            var updatedList = ingredient.ParentIngredients;
+            //remove Child Ingredients from removed Parents
+            ingredient.ParentIngredients.Select(pi => pi.IngredientId).ToList().Except(provided.ParentIngredients.Select(ppi => ppi.IngredientId).ToList()).ToList().ForEach(async i =>
             {
-                var ingredientParent =enumerator.Current;
+                var entry = await _context.Ingredients.FindAsync(i);
+                var entity = _context.Ingredients.Update(entry);
+                await entity.Collection(pi => pi.ChildIngredients).LoadAsync();
+                entity.Entity.ChildIngredients.Remove(ingredient);
+            });
+            updatedAddedParentIngredients.ForEach(async uapi =>
+            {
+                var ingredientParent = await _context.Ingredients.FindAsync(uapi);
                 var entity = _context.Ingredients.Update(ingredientParent);
                 await entity.Collection(i => i.ChildIngredients).LoadAsync();
                 var contextIngredientParent = entity.Entity;
                 contextIngredientParent.ChildIngredients.Add(ingredient);
                 updatedList.Add(contextIngredientParent);
-            }
+            });
 
             ingredient.ParentIngredients = updatedList;
 
