@@ -39,7 +39,12 @@ namespace MenuPlanner.Server
             if (Configuration["DataBase:DataBaseUsed"].Equals("SQLite"))
             {
                 services.AddDbContext<MenuPlannerContext>(options =>
-                options.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}"));
+                    {
+                        options.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}");
+                        options.EnableSensitiveDataLogging(true);
+                    }
+
+                );
             }
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseSqlServer(
