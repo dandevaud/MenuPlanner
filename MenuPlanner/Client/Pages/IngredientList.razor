@@ -45,7 +45,7 @@ else
             <div class="form-group">
                 <label>Parent Ingredients</label>
                 <div class="form-control" style="height: auto; min-height: 40px">
-                    @foreach (var ingredient in parentIngredients)
+                    @foreach (var ingredient in newIngredient.ParentIngredients)
                     {
                         <div class="alert alert-secondary alert-dismissible d-inline number m-1 p-1">
                             @ingredient.Name<i class="fa fa-window-close ml-1" @onclick="() => RemoveParentIngredient(ingredient)"></i>
@@ -112,22 +112,20 @@ else
 
     private string parentIngredient;
 
-    private List<Ingredient> parentIngredients = new List<Ingredient>();
-
     private bool isCategoryDisabled;
 
     protected override async Task OnInitializedAsync()
     {
+        newIngredient.ParentIngredients = new List<Ingredient>();
         await LoadIngredients();
     }
 
     private async Task AddIngredient()
     {
-        newIngredient.ParentIngredients = parentIngredients;
         await Http.PostAsJsonAsync<Ingredient>("api/Ingredients", newIngredient);
         newIngredient = new Ingredient();
+        newIngredient.ParentIngredients = new List<Ingredient>();
         isCategoryDisabled = false;
-        parentIngredients = new List<Ingredient>();
         parentIngredient = null;
         await LoadIngredients();
     }
@@ -167,9 +165,9 @@ else
         if (!string.IsNullOrEmpty(value))
         {
             var foundIngredient = ingredients.FirstOrDefault(i => i.Name == value);
-            if(!parentIngredients.Contains(foundIngredient))
+            if(!newIngredient.ParentIngredients.Contains(foundIngredient))
             {
-                parentIngredients.Add(foundIngredient);
+                newIngredient.ParentIngredients.Add(foundIngredient);
             }
             newIngredient.Category = foundIngredient.Category;
             isCategoryDisabled = true;
@@ -183,7 +181,7 @@ else
 
     private void RemoveParentIngredient(Ingredient ingredient)
     {
-        parentIngredients.Remove(ingredient);
+        newIngredient.ParentIngredients.Remove(ingredient);
     }
 
 }
