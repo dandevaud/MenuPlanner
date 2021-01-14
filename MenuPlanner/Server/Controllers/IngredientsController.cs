@@ -160,17 +160,34 @@ namespace MenuPlanner.Server.Controllers
             });
             updatedAddedParentIngredients.ForEach(async uapi =>
             {
-                var ingredientParent = await _context.Ingredients.FindAsync(uapi);
-                var entity = _context.Ingredients.Update(ingredientParent);
-                await entity.Collection(i => i.ChildIngredients).LoadAsync();
-                var contextIngredientParent = entity.Entity;
-                contextIngredientParent.ChildIngredients.Add(ingredient);
-                updatedList.Add(contextIngredientParent);
+                updatedList = await AddIngredientToChildIngredientOfParent(ingredient, uapi, updatedList);
             });
+
+            if (ingredient == provided)
+            {
+                //By design it is checked if it is the same object --> it is if the ingredient is new
+                updatedList = new List<Ingredient>();
+                ingredient.ParentIngredients.Select(i=> i.IngredientId).ToList().ForEach(async uapi =>
+                {
+                    updatedList = await AddIngredientToChildIngredientOfParent(ingredient, uapi, updatedList);
+                });
+
+            }
 
             ingredient.ParentIngredients = updatedList;
 
 
+        }
+
+        private async Task<ICollection<Ingredient>> AddIngredientToChildIngredientOfParent(Ingredient ingredient, Guid parentIngGuid, ICollection<Ingredient> updatedList)
+        {
+            var ingredientParent = await _context.Ingredients.FindAsync(parentIngGuid);
+            var entity = _context.Ingredients.Update(ingredientParent);
+            await entity.Collection(i => i.ChildIngredients).LoadAsync();
+            var contextIngredientParent = entity.Entity;
+            contextIngredientParent.ChildIngredients.Add(ingredient);
+            updatedList.Add(contextIngredientParent);
+            return updatedList;
         }
 
         // DELETE: api/Ingredients/5
