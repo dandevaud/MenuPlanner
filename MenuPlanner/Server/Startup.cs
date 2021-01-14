@@ -1,5 +1,4 @@
-﻿using System;
-using MenuPlanner.Server.Data;
+﻿using MenuPlanner.Server.Data;
 using MenuPlanner.Server.IoC;
 using MenuPlanner.Server.Models;
 using MenuPlanner.Server.SqlImplementation;
@@ -11,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 
 namespace MenuPlanner.Server
 {
@@ -35,15 +35,21 @@ namespace MenuPlanner.Server
             {
                 services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite($"Data Source={Configuration["AuthDataBase:ConnectionStrings:DataSource"]}"));
-        }
-        if (Configuration["DataBase:DataBaseUsed"].Equals("SQLite"))
-                {
-                    services.AddDbContext<MenuPlannerContext>(options =>
-                    options.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}"));
+            }
+            if (Configuration["DataBase:DataBaseUsed"].Equals("SQLite"))
+            {
+                services.AddDbContext<MenuPlannerContext>(options =>
+                options.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}"));
             }
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseSqlServer(
             //        Configuration.GetConnectionString("DefaultConnection")));
+
+            //Added to handle the EF Reference Loop in Ingredient Model taken from https://stackoverflow.com/a/58155532
+            services.AddControllers().AddNewtonsoftJson(o =>
+            {
+                o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -61,7 +67,7 @@ namespace MenuPlanner.Server
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             //services.AddSwaggerGen();
-            // Authorization take from https://stackoverflow.com/questions/45787711/how-can-i-setup-swashbuckle-aspnetcore-swagger-to-use-authorization
+            // Swagger Authorization take from https://stackoverflow.com/a/61899245
             services.AddSwaggerGen(c =>
             {
                 c.OperationFilter<AuthorizeCheckOperationFilter>();

@@ -43,6 +43,8 @@ namespace MenuPlanner.Server.Controllers
                 await loadChild;
                 await loadParent;
             });
+            //alternative to test, not working well yet
+            //var toReturn = await _context.Ingredients.Include(i => i.ParentIngredients).ThenInclude(i => i.ChildIngredients).Where(i => !i.ParentIngredients.Any()).ToListAsync();
             return toReturn;
         }
 
