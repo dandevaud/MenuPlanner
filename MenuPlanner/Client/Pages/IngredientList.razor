@@ -8,69 +8,65 @@
 
 <h3>Ingredients</h3>
 
+<hr />
+<h5>Add Ingredient</h5>
+<div class="row">
+    <EditForm Model="@newIngredient" OnValidSubmit="@AddIngredient">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            Name: <InputText @bind-Value="newIngredient.Name" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            Calories (100 g): <InputNumber @bind-Value="newIngredient.Calories" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            Price (100 g): <InputNumber @bind-Value="newIngredient.Price" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            Category:
+            <InputSelect @bind-Value="newIngredient.Category" class="form-control" disabled="@isCategoryDisabled">
+                @foreach (var value in Enum.GetValues(typeof(IngredientCategory)))
+                {
+                    <option>@value</option>
+                }
+            </InputSelect>
+        </div>
+
+        <div class="form-group">
+            <label>Parent Ingredients</label>
+            <div class="form-control" style="height: auto; min-height: 40px">
+                @foreach (var ingredient in newIngredient.ParentIngredients)
+                {
+                    <div class="alert alert-secondary alert-dismissible d-inline number m-1 p-1">
+                        @ingredient.Name<i class="fa fa-window-close ml-1" @onclick="() => RemoveParentIngredient(ingredient)"></i>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="form-group">
+            Parent Ingredient:
+            <IngredientSearch IngredientChanged="StoreParentIngredient"></IngredientSearch>
+        </div>
+
+        <button type="submit" class="btn btn-success">Save</button>
+    </EditForm>
+</div>
+
+<br />
+<br />
+
 @if (ingredients == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <h5>Add Ingredient</h5>
-    <div class="row">
-        <EditForm Model="@newIngredient" OnValidSubmit="@AddIngredient">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-
-            <div class="form-group">
-                Name: <InputText @bind-Value="newIngredient.Name" class="form-control" />
-            </div>
-
-            <div class="form-group">
-                Calories (100 g): <InputNumber @bind-Value="newIngredient.Calories" class="form-control" />
-            </div>
-
-            <div class="form-group">
-                Price (100 g): <InputNumber @bind-Value="newIngredient.Price" class="form-control" />
-            </div>
-
-            <div class="form-group">
-                Category:
-                <InputSelect @bind-Value="newIngredient.Category" class="form-control" disabled="@isCategoryDisabled">
-                    @foreach (var value in Enum.GetValues(typeof(IngredientCategory)))
-                        {
-                        <option>@value</option>
-                        }
-                </InputSelect>
-            </div>
-
-            <div class="form-group">
-                <label>Parent Ingredients</label>
-                <div class="form-control" style="height: auto; min-height: 40px">
-                    @foreach (var ingredient in newIngredient.ParentIngredients)
-                    {
-                        <div class="alert alert-secondary alert-dismissible d-inline number m-1 p-1">
-                            @ingredient.Name<i class="fa fa-window-close ml-1" @onclick="() => RemoveParentIngredient(ingredient)"></i>
-                        </div>
-                    }
-                </div>
-            </div>
-
-            <div class="form-group">
-                Parent Ingredient:
-                <InputSelect @bind-Value="parentIngredient" @oninput="StoreParentIngredient" class="form-control">
-                    <option></option>
-                    @foreach (var value in ingredients)
-                        {
-                        <option>@value.Name</option>
-                        }
-                </InputSelect>
-            </div>
-            <button type="submit" class="btn btn-success">Save</button>
-        </EditForm>
-    </div>
-
-    <br />
-    <br />
-
     <h5>Ingredient List</h5>
 
     <table class="table">
@@ -110,8 +106,6 @@ else
 
     private Ingredient newIngredient = new Ingredient();
 
-    private string parentIngredient;
-
     private bool isCategoryDisabled;
 
     protected override async Task OnInitializedAsync()
@@ -126,7 +120,6 @@ else
         newIngredient = new Ingredient();
         newIngredient.ParentIngredients = new List<Ingredient>();
         isCategoryDisabled = false;
-        parentIngredient = null;
         await LoadIngredients();
     }
 
@@ -159,24 +152,14 @@ else
         }
     }
 
-    private void StoreParentIngredient(ChangeEventArgs e)
+    private void StoreParentIngredient(Ingredient ingredient)
     {
-        var value = (string)e.Value;
-        if (!string.IsNullOrEmpty(value))
+        if (!newIngredient.ParentIngredients.Any(i => i.IngredientId == ingredient.IngredientId))
         {
-            var foundIngredient = ingredients.FirstOrDefault(i => i.Name == value);
-            if(!newIngredient.ParentIngredients.Contains(foundIngredient))
-            {
-                newIngredient.ParentIngredients.Add(foundIngredient);
-            }
-            newIngredient.Category = foundIngredient.Category;
-            isCategoryDisabled = true;
+            newIngredient.ParentIngredients.Add(ingredient);
         }
-        else
-        {
-            newIngredient.Category = IngredientCategory.Unknown;
-            isCategoryDisabled = false;
-        }
+        newIngredient.Category = ingredient.Category;
+        isCategoryDisabled = true;
     }
 
     private void RemoveParentIngredient(Ingredient ingredient)
