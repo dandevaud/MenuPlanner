@@ -21,13 +21,13 @@ namespace MenuPlanner.Server.Controllers
      public class MenusController : ControllerBase
     {
         private readonly MenuPlannerContext _context;
-        private readonly EntityUpdater entityUpdater;
+        private readonly MenuEntityUpdater entityUpdater;
 
 
         public MenusController(MenuPlannerContext context)
         {
             _context = context;
-            entityUpdater = new EntityUpdater(context);
+            entityUpdater = new MenuEntityUpdater(context);
            
         }
 

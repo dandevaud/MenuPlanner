@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MenuPlanner.Server.Logic
 {
-    public class EntityUpdater
+    public class MenuEntityUpdater
     {
 
         public delegate Boolean ProvidedContains(Guid guid);
@@ -19,7 +19,7 @@ namespace MenuPlanner.Server.Logic
 
         private readonly MenuPlannerContext _context;
 
-        public EntityUpdater(MenuPlannerContext dbContext)
+        public MenuEntityUpdater(MenuPlannerContext dbContext)
         {
             _context = dbContext;
         }
