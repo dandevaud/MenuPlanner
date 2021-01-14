@@ -8,7 +8,7 @@
 
 <h3>Ingredients</h3>
 
-@if (true)
+@if (ingredients == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -123,15 +123,11 @@ else
 
     private async Task AddIngredient()
     {
-        if (!string.IsNullOrEmpty(parentIngredient))
-        {
-            //var foundIngredient = ingredients.FirstOrDefault(i => i.Name == parentIngredient);
-            newIngredient.ParentIngredients = parentIngredients;
-            //newIngredient.ParentIngredients.Add(foundIngredient);
-        }
+        newIngredient.ParentIngredients = parentIngredients;
         await Http.PostAsJsonAsync<Ingredient>("api/Ingredients", newIngredient);
         newIngredient = new Ingredient();
         isCategoryDisabled = false;
+        parentIngredients = new List<Ingredient>();
         parentIngredient = null;
         await LoadIngredients();
     }
@@ -158,7 +154,6 @@ else
         try
         {
             ingredients = await Http.GetFromJsonAsync<List<Ingredient>>("api/Ingredients");
-            var x = ingredients;
         }
         catch (AccessTokenNotAvailableException exception)
         {
