@@ -1,47 +1,154 @@
 ﻿@using MenuPlanner.Shared.models
 @using MenuPlanner.Shared.models.enums
+@using global::Shared.models.Search
+@using Microsoft.Data.SqlClient
+@using Newtonsoft.Json.Serialization
+@using System.ComponentModel
+@using Microsoft.CodeAnalysis.CSharp.Syntax
+@using Microsoft.CodeAnalysis.Operations
 @inject HttpClient Http
 <form>
-<div class="box box-element">
-    <div class="input-group">
-        <div class="form-outline">
-            <input type="search" id="menuSearch" class="form-control" placeholder="Search" />
-
-
+    <fieldset>
+        <div class="row g-3 m-3">
+            <div class="col col-9">
+                <input type="search" id="menuSearch" class="form-control m-0" placeholder="Search" />
+             
+            </div>
+            <div class="col col-1">
+                <button  type="button" class="btn btn-primary form-control m-0">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <div class="col col-2">
+                @if (isAdvanced)
+                {
+                <select class="form-select" aria-label="MatchingCritera">
+                    <option value="filter" selected>Any Match</option>
+                    <option value="name">By Name</option>
+                </select>
+                }
+                else
+                {
+                    <button class="btn btn-primary form-control" @onclick="@changeAdvanced">Advanced</button>
+                }
+            </div>
         </div>
-        <button type="button" class="btn btn-primary">
-            <i class="fas fa-search"></i>
-        </button>
-        <select>
-            <option value="filter">Any Match</option>
-            <option value="name">By Name</option>
-        </select>
-    </div>
-</div>
-<div class="box box-element">
-    <select multiple aria-label="Time of Day">
-        @foreach (var e in Enum.GetValues<TimeOfDay>())
-        {
-            @if (!e.Equals(TimeOfDay.Unknown))
-            {
-                <option value="@e">@e.ToString()</option>
-            }
-        }
-    </select>
-    <select multiple aria-label="Season">
-        @foreach (var e in Enum.GetValues<Season>())
-        {
-            @if (!e.Equals(Season.Unknown))
-            {
-                <option value="@e">@e.ToString()</option>
-            }
-        }
-    </select>
+        <div class="row m-4" hidden=@(!isAdvanced)>
+            <div class="col col-4">
+                <label for="TimeOfDay" class="form-label">Time of Day</label>
+                <InputSelect @bind-Value="@selectedEnums.TimeOfDays" @oninput="UpdateList<TimeOfDay>">
 
-</div>
+                    @foreach (var e in Enum.GetValues<TimeOfDay>())
+                    {
+                        @if (!e.Equals(TimeOfDay.Unknown))
+                        {
+                            <option value="@e">@e.ToString()</option>
+                        }
+                    }
+                </InputSelect>
+            </div>
+            <div class="col col-4">
+                <label for="Season" class="form-label">Season</label>
+                <InputSelect @bind-Value="@selectedEnums.Seasons" @oninput="UpdateList<Season>">
+                    @foreach (var e in Enum.GetValues<Season>())
+                    {
+                        @if (!e.Equals(Season.Unknown))
+                        {
+                            <option value="@e">@e.ToString()</option>
+                        }
+                    }
+                </InputSelect>
+            </div>
+            <div class="col col-4">
+                <label for="MenuCategory" class="form-label">Menu Category</label>
+                <InputSelect @bind-Value="@selectedEnums.MenuCategories" @oninput="UpdateList<MenuCategory>">
+                    @foreach (var e in Enum.GetValues<MenuCategory>())
+                    {
+                        @if (!e.Equals(MenuCategory.Unknown))
+                        {
+                            <option value="@e">@e.ToString()</option>
+                        }
+                    }
+                </InputSelect>
+
+            </div>
+        </div>
+        <div class="row" hidden=@(!isAdvanced)>
+            <div class="col col-8"></div>
+            <div class="col col-2">
+                <button class="btn btn-danger form-control" @onclick="@changeAdvanced">Close</button>
+            </div>
+            <div class="col col-2">
+                <button class="btn btn-success form-control" type="submit">Search</button>
+            </div>
+        </div>
+    </fieldset>
 </form>
 
 
     @code {
+        //[Parameter]
+        public List<Menu> Results { get; set; }
 
+
+        private MenuSearchRequestModel searchModel;
+        private SelectedEnums selectedEnums = new SelectedEnums();
+
+
+        private Boolean isAdvanced = false;
+
+        private class SelectedEnums
+        {
+            public List<TimeOfDay> TimeOfDays { get; set; } = new List<TimeOfDay>();
+            public List<MenuCategory> MenuCategories { get; set; } = new List<MenuCategory>();
+            public List<Season> Seasons { get; set; } = new List<Season>();
+
+            public void UpdateValues<T>(T provided) where T:struct,Enum
+            {
+                if (provided is TimeOfDay day)
+                {
+                    RemoveOrAddToList<TimeOfDay>(TimeOfDays,day);
+                } else if (provided is MenuCategory category)
+                {
+                    RemoveOrAddToList<MenuCategory>(MenuCategories, category);
+
+                } else if (provided is Season season)
+                {
+                    RemoveOrAddToList<Season>(Seasons, season);
+                }
+            }
+
+            private void RemoveOrAddToList<T>(List<T> list,T element) where T : struct, Enum
+            {
+                if (list.Contains(element)) list.Remove(element);
+
+                else list.Add(element);
+            }
+        }
+
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            searchModel = new MenuSearchRequestModel();
+        }
+
+        private void changeAdvanced()
+        {
+            isAdvanced = !isAdvanced;
+        }
+
+        private void UpdateList<T>(ChangeEventArgs e) where T : struct,Enum
+        {
+            T selected;
+            Enum.TryParse<T>(e.Value.ToString(), out selected);
+            selectedEnums.UpdateValues<T>(selected);
+
+        }
+
+
+
+        private bool EnumHasFlag<T>(T searchEnum, T toCheck) where T : struct,Enum
+        {
+            return searchEnum.HasFlag(toCheck);
+        }
     }

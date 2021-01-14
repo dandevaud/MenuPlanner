@@ -9,7 +9,13 @@ namespace MenuPlanner.Shared.models.enums
     [Flags]
     public enum MenuCategory
     {
-        Unknown = 0
-        //TODO: Add further Categories
+        Unknown,
+        Apero,
+        Starters,
+        Main,
+        Dessert,
+        Snacks,
+        Drinks
+
     }
 }
