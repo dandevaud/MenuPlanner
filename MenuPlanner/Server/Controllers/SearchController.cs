@@ -80,7 +80,9 @@ namespace MenuPlanner.Server.Controllers
         }
 
         // GET: api/Search/MenuBy?timeOfDay={TimeOfDay}&category={category}&season={season}&filter={string}&...
+        
         [HttpGet("IngredientBy")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<Ingredient>>> GetIngredientBy([FromQuery] IngredientSearchRequestModel searchRequestModel)
         {
             var searchResponse = await searchLogic.SearchIngredients(searchRequestModel);
