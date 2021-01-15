@@ -10,9 +10,12 @@
         <p class="card-text">@Menu.Description</p>
     </div>
 
-    <div class="card-footer">
-        <a href="AddEditDeleteMenu/@Menu.MenuId" class="btn btn-info">Edit</a>
-    </div>
+    <AuthorizeView>
+        <Authorized>
+            <div class="card-footer"><a href="AddEditDeleteMenu/@Menu.MenuId" class="btn btn-info">Edit</a></div>
+        </Authorized>
+    </AuthorizeView>
+
 </div>
 
 @code {

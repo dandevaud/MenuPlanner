@@ -11,11 +11,11 @@
     @if (FoundIngredients != null)
     {
         <div class="hs-menu-inner">
-            @foreach(var ingredient in FoundIngredients)
+            @foreach (var ingredient in FoundIngredients)
             {
-                
-                    <a class="dropdown-item" data-value="@ingredient.Name" @onclick="@(() => SetIngredient(ingredient))">@ingredient.Name</a>
-               
+
+                <a class="dropdown-item" data-value="@ingredient.Name" @onclick="@(() => SetIngredient(ingredient))">@ingredient.Name</a>
+
             }
         </div>
     }
@@ -24,7 +24,7 @@
 
 @code {
 
-    private List<Ingredient> FoundIngredients {get; set; }
+    private List<Ingredient> FoundIngredients { get; set; }
 
     [Parameter]
     public Ingredient Ingredient { get; set; }
@@ -34,7 +34,7 @@
 
     private string filter = "";
 
-   
+
 
     private async Task GetFilteredIngredients(ChangeEventArgs e)
     {

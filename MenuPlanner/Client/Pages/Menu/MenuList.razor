@@ -1,13 +1,13 @@
-﻿@page "/menuList"
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+﻿@page "/"
 @using MenuPlanner.Shared.models
 @inject NavigationManager NavigationManager
-@inject HttpClient Http
-@attribute [Authorize]
+@inject PublicClient PublicClient
 
-
-<a href="/AddEditDeleteMenu/" class="btn btn-info">Add Menu</a>
+<AuthorizeView>
+    <Authorized>
+        <a href="/AddEditDeleteMenu/" class="btn btn-info" role="button">Add Menu</a>
+    </Authorized>
+</AuthorizeView>
 <button class="btn btn-primary" type="button" @onclick="FilterToggle">Filter</button>
 
 <div class="@collapse">
@@ -38,6 +38,7 @@ else
 }
 
 @code {
+
     private Menu[] menus;
 
     private string collapse = "collapse";
@@ -51,43 +52,17 @@ else
 
     public async Task GetMenus()
     {
-        try
+        menus = await PublicClient.Client.GetFromJsonAsync<Menu[]>("api/Menus");
+        foreach (var menu in menus)
         {
-            menus = await Http.GetFromJsonAsync<Menu[]>("api/Menus");
-            foreach (var menu in menus)
-            {
-                LazyLoadImages(menu);
-            }
-        }
-        catch (AccessTokenNotAvailableException exception)
-        {
-            exception.Redirect();
+            LazyLoadImages(menu);
         }
     }
 
     public async void LazyLoadImages(Menu menu)
     {
-        menu.Images = await Http.GetFromJsonAsync<List<Image>>($"api/Menus/Images/{menu.MenuId}");
+        menu.Images = await PublicClient.Client.GetFromJsonAsync<List<Image>>($"api/Menus/Images/{menu.MenuId}");
         StateHasChanged();
-    }
-
-    public async Task DeleteMenu(Guid id)
-    {
-        //TODO: add confirmation dialog
-        bool confirm = true;
-        if (confirm)
-        {
-            var response = await Http.DeleteAsync($"api/Menus/{id}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                await GetMenus();
-            }
-            else
-            {
-                //NavigationManager.NavigateTo("MenuList");
-            }
-        }
     }
 
     public void FilterToggle()
@@ -111,12 +86,12 @@ else
                 // to avoid uneeded requests and at least show one result
                 if (menus.Length > 1 || filter.Length < previousFilter.Length)
                 {
-                    menus = await Http.GetFromJsonAsync<Menu[]>($"api/Menus/Filter?contains={filter}");
+                    menus = await PublicClient.Client.GetFromJsonAsync<Menu[]>($"api/Menus/Filter?contains={filter}");
                 }
             }
             else
             {
-                menus = await Http.GetFromJsonAsync<Menu[]>("api/Menus");
+                menus = await PublicClient.Client.GetFromJsonAsync<Menu[]>("api/Menus");
             }
             previousFilter = filter;
         }
