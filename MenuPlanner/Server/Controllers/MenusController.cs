@@ -36,7 +36,6 @@ namespace MenuPlanner.Server.Controllers
         }
 
         // GET: api/Menus/5
-        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<Menu>> GetMenu(Guid id)
         {

@@ -1,12 +1,8 @@
 ﻿@page "/ShowMenu/{Id:guid}"
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using MenuPlanner.Shared.models
 @using MenuPlanner.Client.Controls.MenuControls
-@using MenuPlanner.Client.Controls.IngredientControls
 @inject NavigationManager NavigationManager
-@inject HttpClient Http
-@attribute [Authorize]
+@inject PublicClient PublicClient
 
 <h3>Show Menu</h3>
 
@@ -68,7 +64,7 @@ else
 
     <br />
     <br />
-    <a href="/MenuList">Back to List</a>
+    <a href="/">Back to List</a>
 }
 
 
@@ -89,14 +85,7 @@ else
             return;
         }
 
-        try
-        {
-            menu = await Http.GetFromJsonAsync<Menu>($"api/Menus/{Id}");
-        }
-        catch (AccessTokenNotAvailableException exception)
-        {
-            exception.Redirect();
-        }
+        menu = await PublicClient.Client.GetFromJsonAsync<Menu>($"api/Menus/{Id}");
     }
 
     private string resetCounter()
