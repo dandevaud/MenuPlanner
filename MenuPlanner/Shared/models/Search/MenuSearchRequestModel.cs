@@ -10,7 +10,7 @@ namespace Shared.models.Search
         public TimeOfDay TimeOfDay { get; set; }
         public Season Season { get; set; }
         public MenuCategory MenuCategory { get; set; }
-        public ICollection<Ingredient> Ingredients { get; set; }
+        public ICollection<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
 
     }
 }

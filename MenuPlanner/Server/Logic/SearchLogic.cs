@@ -150,16 +150,16 @@ namespace MenuPlanner.Server.Logic
         /// <param name="list">The list to search on.</param>
         /// <param name="namePredicate">The name predicate used for searching by name.</param>
         /// <param name="filterPredicate">The filter predicate used for searching by filter.</param>
-        private List<T> GeneralSearchRequestModelHandling<T>(SearchRequestModel searchRequest, List<T> list, Predicate<T> namePredicate, Predicate<T> filterPredicate)
+        private List<T> GeneralSearchRequestModelHandling<T>(SearchRequestModel searchRequest, List<T> list, Func<T,bool> namePredicate, Func<T,bool> filterPredicate)
          {
              if (!searchRequest.Name.IsNullOrEmpty())
              {
-                 list = list.FindAll( namePredicate).ToList();
+                 list = list.Where( namePredicate).ToList();
              }
 
              if (!searchRequest.Filter.IsNullOrEmpty())
              {
-                 list = list.FindAll(filterPredicate).ToList();
+                 list = list.Where(filterPredicate).ToList();
              }
 
              return list;
