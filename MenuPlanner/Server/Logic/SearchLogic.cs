@@ -201,11 +201,17 @@ namespace MenuPlanner.Server.Logic
          }
          private async Task LoadSubIngredients(Ingredient ing)
          {
-             var entry = _context.ChangeTracker.Entries<Ingredient>()
-                 .First(i => i.Entity.IngredientId.Equals(ing.IngredientId));
+             EntityEntry<Ingredient> entry;
+             
+                entry = _context.ChangeTracker.Entries<Ingredient>()
+                     .FirstOrDefault(i => i.Entity.IngredientId.Equals(ing.IngredientId));
+             
+            
+
              if (entry == null)
              {
                  entry = _context.Entry(ing);
+                 entry.State = EntityState.Unchanged;
              } else if (entry.State == EntityState.Detached)
              {
                  await entry.ReloadAsync();

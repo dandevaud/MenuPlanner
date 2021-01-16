@@ -3,19 +3,14 @@
 @inject NavigationManager NavigationManager
 @inject PublicClient PublicClient
 
+
+<MenuSearch Results="@menus" ResultsChanged="@MenusChanged"></MenuSearch>
 <AuthorizeView>
     <Authorized>
         <a href="/AddEditDeleteMenu/" class="btn btn-info" role="button">Add Menu</a>
     </Authorized>
 </AuthorizeView>
-<button class="btn btn-primary" type="button" @onclick="FilterToggle">Filter</button>
 
-<div class="@collapse">
-    <br />
-    <div class="card card-body">
-        <MenuFilter Filter="FilterMenu"></MenuFilter>
-    </div>
-</div>
 
 <hr />
 
@@ -24,6 +19,10 @@
 @if (menus == null)
 {
     <p><em>Loading...</em></p>
+}
+else if (menus.Length == 0)
+{
+    <p><em>No menus found with current search</em></p>
 }
 else
 {
@@ -41,10 +40,6 @@ else
 
     private Menu[] menus;
 
-    private string collapse = "collapse";
-
-    private string previousFilter = string.Empty;
-
     protected override async Task OnInitializedAsync()
     {
         await GetMenus();
@@ -59,43 +54,18 @@ else
         }
     }
 
+    private void MenusChanged(Menu[] menusChanged)
+    {
+        menus = menusChanged;
+        StateHasChanged();
+    }
+
     public async void LazyLoadImages(Menu menu)
     {
         menu.Images = await PublicClient.Client.GetFromJsonAsync<List<Image>>($"api/Menus/Images/{menu.MenuId}");
         StateHasChanged();
     }
 
-    public void FilterToggle()
-    {
-        if (collapse == "collapse")
-        {
-            collapse = "collapse show";
-        }
-        else
-        {
-            collapse = "collapse";
-        }
-    }
-
-    private async Task FilterMenu(string filter)
-    {
-        if (filter != previousFilter)
-        {
-            if (filter != string.Empty)
-            {
-                // to avoid uneeded requests and at least show one result
-                if (menus.Length > 1 || filter.Length < previousFilter.Length)
-                {
-                    menus = await PublicClient.Client.GetFromJsonAsync<Menu[]>($"api/Menus/Filter?contains={filter}");
-                }
-            }
-            else
-            {
-                menus = await PublicClient.Client.GetFromJsonAsync<Menu[]>("api/Menus");
-            }
-            previousFilter = filter;
-        }
-    }
 
 }
 

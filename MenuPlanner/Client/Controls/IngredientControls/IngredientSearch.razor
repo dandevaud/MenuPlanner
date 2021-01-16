@@ -43,16 +43,9 @@
     private async Task GetFilteredIngredients(ChangeEventArgs e)
     {
         filter = e.Value.ToString();
-        if (filter.Length > 2)
-        {
+        
             FoundIngredients = ((await PublicClient.Client.GetFromJsonAsync<Ingredient[]>($"api/Search/IngredientBy?filter={filter}")) ?? Array.Empty<Ingredient>()).ToList();
             StateHasChanged();
-        }
-        else
-        {
-            FoundIngredients = new List<Ingredient>();
-            await Task.CompletedTask;
-        }
 
     }
 
