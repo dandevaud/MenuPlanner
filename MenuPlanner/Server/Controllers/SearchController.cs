@@ -79,8 +79,17 @@ namespace MenuPlanner.Server.Controllers
             return searchResponse.Result;
         }
 
+        // Post: api/Search/MenuBy
+        [HttpPost("MenuBy")]
+        [AllowAnonymous]
+        public async Task<ActionResult<List<Menu>>> GetMenuByPost(MenuSearchRequestModel searchRequestModel)
+        {
+            var searchResponse = await searchLogic.SearchMenus(searchRequestModel);
+            return searchResponse.Result;
+        }
+
         // GET: api/Search/MenuBy?timeOfDay={TimeOfDay}&category={category}&season={season}&filter={string}&...
-        
+
         [HttpGet("IngredientBy")]
         [AllowAnonymous]
         public async Task<ActionResult<List<Ingredient>>> GetIngredientBy([FromQuery] IngredientSearchRequestModel searchRequestModel)

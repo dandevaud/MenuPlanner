@@ -6,34 +6,47 @@
 @using System.ComponentModel
 @using Microsoft.CodeAnalysis.CSharp.Syntax
 @using Microsoft.CodeAnalysis.Operations
-@inject HttpClient Http
-<EditForm Model="searchModel">
+@inject PublicClient PublicClient
+
+<EditForm Model="searchModel" OnValidSubmit="@GetMenus">
     <fieldset>
-        <div class="row g-3 m-3">
+        <div class="row g-3 m-3 form-group">
             <div class="col col-9">
-                <input type="search" id="menuSearch" class="form-control m-0" placeholder="Search" />
+                <input type="search" @bind="searchString" id="menuSearch" class="form-control m-0" placeholder="Search" />
              
             </div>
             <div class="col col-1">
-                <button  type="button" class="btn btn-primary form-control m-0">
+                <button  type="submit" class="btn btn-primary form-control m-0" >
                     <i class="fas fa-search"></i>
                 </button>
             </div>
             <div class="col col-2">
                 @if (isAdvanced)
                 {
-                <select class="form-select" aria-label="MatchingCritera">
-                    <option value="filter" selected>Any Match</option>
-                    <option value="name">By Name</option>
-                </select>
+                    <select @onchange="() => isAnyMatch = !isAnyMatch" class="form-control">
+                        <option value=true selected>Any Match</option>
+                        <option value=false>By Name</option>
+                    </select>
                 }
                 else
                 {
-                    <button class="btn btn-primary form-control" @onclick="@changeAdvanced">Advanced</button>
+                    <button class="btn btn-primary form-control" @onclick="@ChangeAdvanced" type="button">Advanced</button>
                 }
             </div>
         </div>
-        <div class="row m-4" hidden=@(!isAdvanced)>
+        <div class="row m-4 form-group" hidden="@(!isAdvanced)">
+            <label for="ingredient">Ingredient</label>
+            <div id="ingredient" class="form-control" style="min-height: 40px">
+                @foreach (var ingredient in searchModel.Ingredients)
+                {
+                    <div class="alert alert-secondary alert-dismissible d-inline number m-1 p-1">
+                        @ingredient.Name <i class="fa fa-window-close ml-1" @onclick="() => RemoveIngredient(ingredient)"></i>
+                    </div>
+                }
+            </div>
+            <IngredientSearch InputClass="form-control" DivClass="px-0" Ingredient="ing" IngredientChanged="AddToIngredientList"></IngredientSearch>
+        </div>
+        <div class="row m-4 form-group" hidden=@(!isAdvanced)>
             <div class="col col-4">
                 <label for="TimeOfDay" class="form-label">Time of Day</label>
                 <ul id="TimeOfDay" class="list-group" >
@@ -76,12 +89,15 @@
         </div>
         
         <div class="row" hidden=@(!isAdvanced)>
-            <div class="col col-8"></div>
+            <div class="col col-6"></div>
             <div class="col col-2">
-                <button class="btn btn-danger form-control" @onclick="@changeAdvanced">Close</button>
+                <button class="btn btn-secondary form-control" @onclick="@Reset" type="reset"><i class="fa fa-redo"/> Reset</button>
             </div>
             <div class="col col-2">
-                <button class="btn btn-success form-control" type="submit">Search</button>
+                <button class="btn btn-danger form-control" @onclick="@ChangeAdvanced" type="button"><i class="fa fa-times-circle"/> Close</button>
+            </div>
+            <div class="col col-2">
+                <button class="btn btn-success form-control" type="submit"><i class="fa fa-search"/> Search</button>
             </div>
         </div>
     </fieldset>
@@ -89,7 +105,7 @@
 
 
     @code {
-        //[Parameter]
+        [Parameter]
         public List<Menu> Results { get; set; }
 
         public delegate R HandleList<T,R>(T value);
@@ -97,8 +113,13 @@
         private MenuSearchRequestModel searchModel;
         private SelectedEnums selectedEnums = new SelectedEnums();
 
+        private Ingredient ing;
+
+        private string searchString = String.Empty;
 
         private Boolean isAdvanced = false;
+
+        private bool isAnyMatch = true;
 
         private class SelectedEnums
         {
@@ -125,6 +146,9 @@
                 return CheckTypeAndHandleList(provided,false,new HandleList<TimeOfDay, bool>((TimeOfDay t) => { return TimeOfDays.Contains(t);}),new HandleList<Season, bool>((Season s) => { return Seasons.Contains(s);}),new HandleList<MenuCategory, bool>((MenuCategory m) => { return MenuCategories.Contains(m);})  );
             }
 
+
+
+
             private R CheckTypeAndHandleList<T,R>(T provided, R defaultReturn, HandleList<TimeOfDay,R> handleTimeOfDay, HandleList<Season,R> handleSeason, HandleList<MenuCategory,R> handleMenuCategory) where T : struct, Enum where R:struct
             {
                 if (provided is TimeOfDay day)
@@ -150,12 +174,24 @@
                 return true;
             }
 
-            
+
+        }
+
+        private void RemoveIngredient(Ingredient ingr)
+        {
+            searchModel.Ingredients.Remove(ingr);
+            StateHasChanged();
+        }
+
+        private void AddToIngredientList(Ingredient ingr)
+        {
+            if (!searchModel.Ingredients.Contains(ingr)) searchModel.Ingredients.Add(ingr);
+            StateHasChanged();
         }
 
         protected override void OnInitialized()
         {
-             searchModel = new MenuSearchRequestModel();
+            searchModel = new MenuSearchRequestModel();
         }
 
         private string GetActiveAttribute<T>(T option) where T :struct,Enum
@@ -164,9 +200,19 @@
             return "";
         }
 
-        private void changeAdvanced()
+        private void ChangeAdvanced()
         {
             isAdvanced = !isAdvanced;
+        }
+
+        private async Task Reset()
+        {
+            Results = await PublicClient.Client.GetFromJsonAsync<List<Menu>>("api/Menus");
+            selectedEnums.MenuCategories = new List<MenuCategory>();
+            selectedEnums.Seasons = new List<Season>();
+            selectedEnums.TimeOfDays = new List<TimeOfDay>();
+            searchModel.Ingredients = new List<Ingredient>();
+            searchString = String.Empty;
         }
 
         private void UpdateList<T>(ChangeEventArgs e) where T : struct,Enum
@@ -177,10 +223,27 @@
 
         }
 
-
-
         private bool EnumHasFlag<T>(T searchEnum, T toCheck) where T : struct,Enum
         {
             return searchEnum.HasFlag(toCheck);
+        }
+
+        private async Task GetMenus()
+        {
+            selectedEnums.MenuCategories.ForEach(e => searchModel.MenuCategory |= e);
+            selectedEnums.Seasons.ForEach(e => searchModel.Season |= e);
+            selectedEnums.TimeOfDays.ForEach(e => searchModel.TimeOfDay |= e);
+
+            if (isAnyMatch)
+            {
+                searchModel.Filter = searchString;
+            }
+            else
+            {
+                searchModel.Name = searchString;
+            }
+
+            var response = await PublicClient.Client.PostAsJsonAsync<MenuSearchRequestModel>("api/Search/MenuBy",searchModel);
+            Results = await response.Content.ReadFromJsonAsync<List<Menu>>();
         }
     }

@@ -2,9 +2,9 @@
 @inject PublicClient PublicClient
 
 
-<div class="form-group">
+<div class="@DivClass">
     <div class="hs-searchbox">
-        <input class="form-control search" name="searchText"
+        <input class="search @InputClass" name="searchText"
                type="text" placeholder="Search..." autocomplete="off" spellcheck="false"
                autocorrect="off" @oninput="@GetFilteredIngredients" />
     </div>
@@ -34,7 +34,13 @@
 
     private string filter = "";
 
-   
+    [Parameter]
+    public string DivClass { get; set; } = "form-group";
+
+    [Parameter]
+    public string InputClass { get; set; } = "form-control";
+
+
 
     private async Task GetFilteredIngredients(ChangeEventArgs e)
     {

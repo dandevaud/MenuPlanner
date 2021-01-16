@@ -13,8 +13,10 @@ using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.models.enums;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Shared.models.Search;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using EntityState = Microsoft.EntityFrameworkCore.EntityState;
 
 namespace MenuPlanner.Server.Logic
 {
@@ -126,9 +128,18 @@ namespace MenuPlanner.Server.Logic
              {
                  var ingredients = searchRequest.Ingredients.ToList();
                  var ingredientsToLookFor = new List<Ingredient>(ingredients);
-                 ingredients.ForEach(async i => await LoadSubIngredients(i));
+                 ingredients.ForEach(async i =>
+                 {
+                     await LoadSubIngredients(i);
+                 });
                  ingredients.ForEach(async i => ingredientsToLookFor.AddRange(await GetSubIngredients(i)));
-                 menuList = menuList.Where(m => m.Ingredients.Any(i => ingredientsToLookFor.Contains(i.Ingredient))).ToList();
+                 menuList = menuList.
+                     Where(m => m.Ingredients.
+                         Any(i => 
+                             ingredientsToLookFor.
+                                 Any(itlf => 
+                                     itlf.IngredientId.Equals(i.Ingredient.IngredientId)))).
+                     ToList();
              }
 
              return menuList;
@@ -137,8 +148,12 @@ namespace MenuPlanner.Server.Logic
          public async Task<List<Ingredient>> GetSubIngredients(Ingredient ing)
          {
              var toReturn = new List<Ingredient>();
-             toReturn.AddRange(ing.ChildIngredients);
-             ing.ChildIngredients.ToList().ForEach(async i => toReturn.AddRange(await GetSubIngredients(i)));
+             if (ing.ChildIngredients != null)
+             {
+                 toReturn.AddRange(ing.ChildIngredients);
+                 ing.ChildIngredients.ToList().ForEach(async i => toReturn.AddRange(await GetSubIngredients(i)));
+             }
+
              return toReturn;
          }
 
@@ -170,6 +185,7 @@ namespace MenuPlanner.Server.Logic
              menuList.ForEach(async m =>
              {
                  var menuEntity = _context.Entry(m);
+                 menuEntity.State = EntityState.Unchanged;
                  var ingredients = menuEntity.Collection(sm => sm.Ingredients).LoadAsync();
                  var images = menuEntity.Collection(sm => sm.Images).LoadAsync();
                  var comments = menuEntity.Collection(sm => sm.Comments).LoadAsync();
@@ -185,7 +201,13 @@ namespace MenuPlanner.Server.Logic
          }
          private async Task LoadSubIngredients(Ingredient ing)
          {
-             var entry = _context.Entry(ing);
+             var entry = _context.ChangeTracker.Entries<Ingredient>()
+                 .First(i => i.Entity.IngredientId.Equals(ing.IngredientId));
+             if (entry.State == EntityState.Detached)
+             {
+                 await entry.ReloadAsync();
+             }
+
              await entry.Collection(i => i.ChildIngredients).LoadAsync();
              if (ing.ChildIngredients != null)
              {

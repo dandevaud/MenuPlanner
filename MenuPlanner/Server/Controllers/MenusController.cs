@@ -33,6 +33,7 @@ namespace MenuPlanner.Server.Controllers
 
         // GET: api/Menus
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Menu>>> GetMenus()
         {
             return await _context.Menus.ToListAsync();
