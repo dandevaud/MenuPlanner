@@ -203,10 +203,13 @@ namespace MenuPlanner.Server.Logic
          {
              var entry = _context.ChangeTracker.Entries<Ingredient>()
                  .First(i => i.Entity.IngredientId.Equals(ing.IngredientId));
-             if (entry.State == EntityState.Detached)
+             if (entry == null)
+             {
+                 entry = _context.Entry(ing);
+             } else if (entry.State == EntityState.Detached)
              {
                  await entry.ReloadAsync();
-             }
+             } 
 
              await entry.Collection(i => i.ChildIngredients).LoadAsync();
              if (ing.ChildIngredients != null)
