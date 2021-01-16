@@ -17,9 +17,12 @@ namespace MenuPlanner.Shared.models.enums
         dl = 2,
         [Description("Liter")]
         l = 3,
-        [Description("Small spoon")]
-        spoon1 = 4,
-        [Description("Big spoon")]
-        spoon2 = 5
+        [Description("Teaspoon")]
+        tsp = 4,
+        [Description("Tablespoon")]
+        tbsp = 5,
+        [Description("Piece")]
+        piece = 6
+        
     }
 }

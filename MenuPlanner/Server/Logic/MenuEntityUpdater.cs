@@ -53,7 +53,10 @@ namespace MenuPlanner.Server.Logic
                 (Guid guid) => providedMenuIngredients.Contains(guid),
                 RemoveSubEntities<MenuIngredient>(_context.MenuIngredients, providedImages));
 
-
+            menu.Ingredients.Select(i => i.Ingredient).ToList()
+                .ForEach( ing => 
+                    DetachEntityFromContext<Ingredient>(_context.Ingredients).Invoke(ing.IngredientId)
+                );
             providedMenuIngredients.ForEach(menuIngr =>
                 DetachEntityFromContext<MenuIngredient>(_context.MenuIngredients).Invoke(menuIngr)
             );
@@ -62,11 +65,16 @@ namespace MenuPlanner.Server.Logic
             );
 
             _context.Entry(entityInDatabase).State = EntityState.Detached;
+            await UnLoadMenuSubEntities(entityInDatabase);
+            await UnLoadMenuSubEntities(menu);
             _context.Update(menu).CurrentValues.SetValues(menu);
 
 
             await _context.SaveChangesAsync();
         }
+
+        
+
 
         private RemoveFromContext<T> RemoveSubEntities<T>(DbSet<T> dbSet, List<Guid> providedList) where T : class
         {
@@ -85,7 +93,9 @@ namespace MenuPlanner.Server.Logic
                 var entity = dbSet.Find(guid);
                 if (entity != null)
                 {
-                    _context.Entry(entity).State = EntityState.Detached;
+                    var entry = _context.ChangeTracker.Entries<T>()
+                        .FirstOrDefault(ent => ent.Entity.Equals(entity));
+                    if (entry != null) entry.State = EntityState.Detached;
                 }
             };
         }
@@ -102,6 +112,46 @@ namespace MenuPlanner.Server.Logic
         {
             await _context.Entry(foundMenu).Collection(m => m.Images).LoadAsync();
             await _context.Entry(foundMenu).Collection(m => m.Ingredients).LoadAsync();
+            foundMenu.Ingredients.ToList().ForEach(async mi => await _context.Entry(mi).Reference(i => i.Ingredient).LoadAsync());
+        }
+
+        private async Task UnLoadMenuSubEntities(Menu foundMenu)
+        {
+            foundMenu.Ingredients.ToList().ForEach(mi =>
+            {
+                var entity = _context.ChangeTracker.Entries<Ingredient>().FirstOrDefault(i => mi.Ingredient.IngredientId.Equals(i.Entity.IngredientId));
+                if (entity != null)
+                {
+                    if (entity.State == EntityState.Unchanged)
+                    {
+                        entity.State = EntityState.Detached;
+                    }
+                }
+            });
+
+
+            foundMenu.Ingredients.ToList().ForEach(mi =>
+            {
+                var entity = _context.ChangeTracker.Entries<MenuIngredient>().FirstOrDefault(i => mi.Id.Equals(i.Entity.Id));
+                if (entity != null)
+                {
+                    if (entity.State == EntityState.Unchanged)
+                    {
+                        entity.State = EntityState.Detached;
+                    }
+                }
+            });
+            foundMenu.Images.ToList().ForEach(mi =>
+            {
+                var entity = _context.ChangeTracker.Entries<Image>().FirstOrDefault(i => mi.ImageId.Equals(i.Entity.ImageId));
+                if (entity != null)
+                {
+                    if (entity.State == EntityState.Unchanged)
+                    {
+                        entity.State = EntityState.Detached;
+                    }
+                }
+            });
         }
     }
 }

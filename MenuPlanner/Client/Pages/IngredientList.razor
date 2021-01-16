@@ -4,6 +4,7 @@
 @using MenuPlanner.Shared.models.enums
 @using MenuPlanner.Shared.models
 @inject HttpClient Http
+@inject NavigationManager NavigationManager
 @attribute [Authorize]
 
 <h3>Ingredients</h3>
@@ -11,7 +12,7 @@
 <hr />
 <h5>Add Ingredient</h5>
 <div class="row">
-    <EditForm Model="@newIngredient" OnValidSubmit="@AddIngredient">
+    <EditForm Model="@newIngredient" OnValidSubmit="@AddIngredient" id="edit">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
@@ -92,7 +93,7 @@ else
                     <td>@string.Join(",", ingredient.ParentIngredients.Select(i => i.Name).ToList())</td>
                     <td>@ingredient.Calories</td>
                     <td>@ingredient.Price</td>
-                    <td><a @onclick="(() => newIngredient = ingredient)" class="btn btn-primary">Edit</a></td>
+                    <td><a @onclick="(() => newIngredient = ingredient)" class="btn btn-primary" href="@(NavigationManager.Uri)#edit">Edit</a></td>
                     <td><a @onclick="(() => DeleteIngredient(ingredient.IngredientId))" class="btn btn-danger">Delete</a></td>
                 </tr>
             }

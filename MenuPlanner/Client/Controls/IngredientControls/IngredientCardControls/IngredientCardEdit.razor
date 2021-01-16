@@ -1,5 +1,8 @@
 ﻿@using MenuPlanner.Shared.models.enums
 @using MenuPlanner.Shared.models
+@using System.ComponentModel
+@using System.Dynamic
+@using MenuPlanner.Shared.Extension
 <div class="form-group">
     <label>Quantity</label>
     <input type="text" class="form-control" @bind-value="Quantity.QuantityValue">
@@ -7,9 +10,9 @@
 <div class="form-group">
     <label>Unit</label>
     <select class="form-control" @bind="Quantity.Unit">
-        @foreach (var unit in Enum.GetValues(typeof(UnitEnum)))
+        @foreach (var unit in Enum.GetValues<UnitEnum>())
         {
-            <option value="@unit">@unit.ToString()</option>
+            <option value="@unit">@unit.GetDescription()</option>
         }
     </select>
 </div>
@@ -21,5 +24,6 @@
 
     [Parameter]
     public EventCallback<Quantity> QuantityChanged { get; set; }
+    
 
 }

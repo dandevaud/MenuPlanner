@@ -1,0 +1,60 @@
+﻿@using Microsoft.EntityFrameworkCore.Internal
+@using MenuPlanner.Shared.models
+@typeparam TEnum
+
+<div class="form-group">
+    @foreach (TEnum timeOfDay in Enum.GetValues<TEnum>())
+    {
+        <div class="form-check form-check-inline" hidden="@IsHidden(timeOfDay)">
+            <input class="form-check-input" type="checkbox" checked="@IsChecked(timeOfDay)" @onclick="@(() => UpdateTimeOfDay(timeOfDay))">
+            <label class="form-check-label">@(timeOfDay.ToString())</label>
+        </div>
+
+    }
+</div>
+
+@code {
+    [Parameter] public TEnum ProvidedEnum { get; set; }
+
+    [Parameter]
+    public bool isFlag { get; set; } = true;
+    [Parameter] public EventCallback<TEnum> UpdateEnum { get; set; }
+    [Parameter] public EventCallback<TEnum> RemoveEnum { get; set; }
+
+
+    public bool IsHidden(TEnum timeOfDay)
+    {
+        return typeof(TEnum).IsDefaultValue(timeOfDay);
+    }
+
+    public bool IsChecked(TEnum timeOfDay)
+    {
+
+        var ret = false;
+        if (isFlag)
+        {
+            ret = ProvidedEnum.HasFlag(timeOfDay);
+        }
+        else
+        {
+            ret = ProvidedEnum.Equals(timeOfDay);
+        }
+        ret |= IsHidden(timeOfDay);
+
+        return ret;
+    }
+
+    public async Task UpdateTimeOfDay(TEnum timeOfDay)
+    {
+        if (IsChecked(timeOfDay))
+        {
+            await RemoveEnum.InvokeAsync(timeOfDay);
+        }
+        else
+        {
+            await UpdateEnum.InvokeAsync(timeOfDay);
+        }
+    }
+
+
+}

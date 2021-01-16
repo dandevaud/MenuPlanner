@@ -5,6 +5,7 @@
 @using MenuPlanner.Shared.models
 @using MenuPlanner.Client.Controls.MenuControls
 @using MenuPlanner.Client.Controls.IngredientControls
+@using MenuPlanner.Shared.models.enums
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
 @attribute [Authorize]
@@ -34,7 +35,20 @@ else
 
             <StarRating Menu="@menu" IsEditable="true" Rating="@StoreRating"></StarRating>
 
-            <TimeOfDaySelector Menu="@menu"></TimeOfDaySelector>
+            <EnumControls 
+                ProvidedEnum="@menu.TimeOfDay" TEnum="TimeOfDay"
+                UpdateEnum="@((TimeOfDay enu) => { menu.TimeOfDay |= enu; })"
+                RemoveEnum="@((TimeOfDay enu) => { menu.TimeOfDay &= ~enu; })"
+                ></EnumControls> 
+            <EnumControls 
+                ProvidedEnum="@menu.MenuCategory" TEnum="MenuCategory"
+                UpdateEnum="@((MenuCategory enu) => { menu.MenuCategory = enu; })"
+                RemoveEnum="@((MenuCategory enu) => { menu.MenuCategory = MenuCategory.Unknown;})"
+                isFlag="false"></EnumControls> 
+            <EnumControls 
+                ProvidedEnum="@menu.Season" TEnum="Season"
+                UpdateEnum="@((Season enu) => { menu.Season |= enu; })"
+                RemoveEnum="@((Season enu) => { menu.Season &= ~enu; })"></EnumControls> 
             <MenuSteps Menu="@menu"></MenuSteps>
             <h5>Ingredients:</h5>
             <IngredientSearch DivClass="form-group" @bind-Ingredient="ingredient"></IngredientSearch>
@@ -42,7 +56,14 @@ else
 
             @if (ingredient.Name != null)
             {
-                <IngredientCard Ingredient="@ingredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
+                @if (menu.Ingredients.Any(i => i.Ingredient.IngredientId.Equals(ingredient.IngredientId)))
+                {
+                    <IngredientCard MenuIngredient="@menu.Ingredients.FirstOrDefault(i => i.Ingredient.IngredientId.Equals(ingredient.IngredientId))" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
+                }
+                else
+                {
+                    <IngredientCard Ingredient="@ingredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
+                }
             }
 
             @if (menu.Ingredients != null)
@@ -155,7 +176,10 @@ else
         {
             menu.Ingredients = new List<MenuIngredient>();
         }
-        //Multi ingredient Values Possible
+        if (menu.Ingredients.Any(mi => mi.Id.Equals(menuIngredient.Id)))
+        {
+            menu.Ingredients.Remove(menu.Ingredients.FirstOrDefault(i => i.Id.Equals(menuIngredient.Id)));
+        }
         menu.Ingredients.Add(menuIngredient);
 
         UpdateIngredientToMenu(menuIngredient);

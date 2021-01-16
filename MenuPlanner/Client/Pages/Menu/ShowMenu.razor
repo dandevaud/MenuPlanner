@@ -64,7 +64,14 @@ else
 
     <br />
     <br />
-    <a href="/">Back to List</a>
+    <div class="btn-group">
+        <AuthorizeView>
+            <Authorized>
+                <a class="btn btn-success" href="/AddEditDeleteMenu/@(Id)">Edit</a>
+            </Authorized>
+        </AuthorizeView>
+        <a class="btn btn-danger" href="/">Back to List</a>
+    </div>
 }
 
 
