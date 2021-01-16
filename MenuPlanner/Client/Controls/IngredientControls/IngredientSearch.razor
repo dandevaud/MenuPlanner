@@ -6,7 +6,7 @@
     <div class="hs-searchbox">
         <input class="search @InputClass" name="searchText"
                type="text" placeholder="Search..." autocomplete="off" spellcheck="false"
-               autocorrect="off" @oninput="@GetFilteredIngredients" value="@filter" />
+               autocorrect="off" @oninput="@GetFilteredIngredients" value="@filter" @onkeydown="@Enter" />
     </div>
     @if (FoundIngredients != null)
     {
@@ -43,10 +43,26 @@
     private async Task GetFilteredIngredients(ChangeEventArgs e)
     {
         filter = e.Value.ToString();
-        
-            FoundIngredients = ((await PublicClient.Client.GetFromJsonAsync<Ingredient[]>($"api/Search/IngredientBy?filter={filter}")) ?? Array.Empty<Ingredient>()).ToList();
-            StateHasChanged();
 
+        FoundIngredients = ((await PublicClient.Client.GetFromJsonAsync<Ingredient[]>($"api/Search/IngredientBy?filter={filter}")) ?? Array.Empty<Ingredient>()).ToList();
+        StateHasChanged();
+
+    }
+
+   
+
+    private async Task Enter(KeyboardEventArgs e)
+    {
+        //https://stackoverflow.com/questions/63861068/blazor-how-can-i-trigger-the-enter-key-event-to-action-a-button-function
+        //Enter will submit
+        if (e.Code == "Tab")
+        {
+            if (FoundIngredients.Count == 1)
+            {
+               await SetIngredient(FoundIngredients[0]);
+                
+            }
+        }
     }
 
     private async Task SetIngredient(Ingredient ing)

@@ -16,6 +16,10 @@ namespace MenuPlanner.Shared.models.enums
         Cheese,
         Milk,
         Seasoning,
-        Spice
+        Spice,
+        Liquids,
+        GrainProduct,
+        Nuts, 
+        Divers
     }
 }

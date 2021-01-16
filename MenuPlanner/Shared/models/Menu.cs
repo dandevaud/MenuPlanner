@@ -25,7 +25,7 @@ namespace MenuPlanner.Shared.models
         //[Required]
         public ICollection<string> Steps { get; set; }
         //[Required]
-        public ICollection<MenuIngredient> Ingredients { get; set; }
+        public ICollection<MenuIngredient> Ingredients { get; set; } = new List<MenuIngredient>();
         public ICollection<Comment> Comments { get; set; }
         public double AverageRating { get; set; }
         public int Votes { get; set; }
