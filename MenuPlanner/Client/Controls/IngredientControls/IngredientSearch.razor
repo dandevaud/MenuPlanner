@@ -6,25 +6,23 @@
     <div class="hs-searchbox">
         <input class="search @InputClass" name="searchText"
                type="text" placeholder="Search..." autocomplete="off" spellcheck="false"
-               autocorrect="off" @oninput="@GetFilteredIngredients" />
+               autocorrect="off" @oninput="@GetFilteredIngredients" value="@filter" />
     </div>
     @if (FoundIngredients != null)
     {
         <div class="hs-menu-inner">
-            @foreach(var ingredient in FoundIngredients)
+
+            @foreach (var ingredient in FoundIngredients)
             {
-                
-                    <a class="dropdown-item" data-value="@ingredient.Name" @onclick="@(() => SetIngredient(ingredient))">@ingredient.Name</a>
-               
+                <a class="dropdown-item" data-value="@ingredient.Name" @onclick="@(() => SetIngredient(ingredient))">@ingredient.Name</a>
             }
-        </div>
-    }
+        </div>}
 
 </div>
 
 @code {
 
-    private List<Ingredient> FoundIngredients {get; set; }
+    private List<Ingredient> FoundIngredients { get; set; }
 
     [Parameter]
     public Ingredient Ingredient { get; set; }
@@ -62,9 +60,11 @@
     {
         Ingredient = ing;
         FoundIngredients = new List<Ingredient>();
+        filter = "";
         await IngredientChanged.InvokeAsync(Ingredient);
         StateHasChanged();
     }
 
 
 }
+

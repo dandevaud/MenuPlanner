@@ -1,17 +1,21 @@
 ﻿@using MenuPlanner.Shared.models
 
-<div class="card" style="width: 18rem;">
+<div class="card m-2" style="width: 18rem; min-width: 18rem;">
     <Carousel Images="@Menu.Images"></Carousel>
-    <div class="card-body">
+
+    <div class="card-body" style="transform: rotate(0);">
+        <a href="ShowMenu/@Menu.MenuId" class="text-warning stretched-link"></a>
         <h5 class="card-title">@Menu.Name</h5>
         <StarRating Menu="@Menu" IsEditable="false"></StarRating>
         <p class="card-text">@Menu.Description</p>
     </div>
-    <div class="card-footer">
-        <a href="ShowMenu/@Menu.MenuId" class="btn btn-primary">Show</a>
-        <a href="AddEditMenu/@Menu.MenuId" class="btn btn-info">Edit</a>
-        <a href="DeleteMenu/@Menu.MenuId" class="btn btn-danger">Delete</a>
-    </div>
+
+    <AuthorizeView>
+        <Authorized>
+            <div class="card-footer"><a href="AddEditDeleteMenu/@Menu.MenuId" class="btn btn-info">Edit</a></div>
+        </Authorized>
+    </AuthorizeView>
+
 </div>
 
 @code {

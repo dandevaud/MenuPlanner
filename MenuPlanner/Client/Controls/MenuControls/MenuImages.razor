@@ -37,19 +37,20 @@
         {
             Menu.Images = new List<Image>();
         }
-        selectedFiles = e.GetMultipleFiles();
+        var maxFiles = 10;
+        var format = "image/jpeg";
+        selectedFiles = e.GetMultipleFiles(maxFiles);
         int i = 0;
-        foreach (var file in selectedFiles)
+        foreach (var imageFile in selectedFiles)
         {
-            Stream stream = file.OpenReadStream();
-            MemoryStream ms = new MemoryStream();
-            await stream.CopyToAsync(ms);
-            stream.Close();
+            var resizedImageFile = await imageFile.RequestImageFileAsync(format, 400, 400);
+            var buffer = new byte[resizedImageFile.Size];
+            await resizedImageFile.OpenReadStream().ReadAsync(buffer);
 
             Image image = new Image
             {
-                ImageBytes = ms.ToArray(),
-                AlternativeName = $"Picture {i++}",
+                ImageBytes = buffer,
+                AlternativeName = $"Picture {i++}"
             };
 
             Menu.Images.Add(image);

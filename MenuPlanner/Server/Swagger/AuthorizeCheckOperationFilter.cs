@@ -2,7 +2,7 @@
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
-// Class take from: https://stackoverflow.com/questions/45787711/how-can-i-setup-swashbuckle-aspnetcore-swagger-to-use-authorization
+// Class take from https://stackoverflow.com/a/61899245
 
 using System.Collections.Generic;
 using System.Linq;

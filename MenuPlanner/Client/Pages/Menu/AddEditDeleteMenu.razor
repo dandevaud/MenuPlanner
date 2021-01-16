@@ -1,5 +1,5 @@
-﻿@page "/AddEditMenu"
-@page "/AddEditMenu/{Id:guid}"
+﻿@page "/AddEditDeleteMenu"
+@page "/AddEditDeleteMenu/{Id:guid}"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using MenuPlanner.Shared.models
@@ -56,11 +56,28 @@ else
             <br />
 
             <button type="submit" class="btn btn-success">Save</button>
+            @if (Id != null)
+            {
+                <button @onclick="() => modal.Open()" class="btn btn-danger ml-1">Delete</button>
+            }
         </EditForm>
     </div>
     <br />
     <br />
     <a href="/MenuList">Back to List</a>
+
+    <Modal @ref="modal">
+        <Title>Delete?</Title>
+        <Body>
+            <p>
+                Are you sure to Delete?
+            </p>
+        </Body>
+        <Footer>
+            <button type="button" class="btn btn-primary" @onclick="DeleteMenu">Ok</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => modal.Close()">Cancel</button>
+        </Footer>
+    </Modal>
 }
 
 
@@ -74,6 +91,8 @@ else
     private Ingredient ingredient = new Ingredient();
 
     private int rating;
+
+    private Modal modal { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -98,6 +117,10 @@ else
     private async Task UpdateMenu()
     {
         SetRating();
+        if (modal.modalClass == "show")
+        {
+            return;
+        }
         HttpResponseMessage response;
         if (Id == null)
         {
@@ -111,7 +134,7 @@ else
         }
         if (response.IsSuccessStatusCode)
         {
-            NavigationManager.NavigateTo("MenuList");
+            NavigationManager.NavigateTo("/");
         }
         else
         {
@@ -156,6 +179,26 @@ else
     private void StoreRating(int rating)
     {
         this.rating = rating;
+    }
+
+    public async Task DeleteMenu()
+    {
+        //TODO: add confirmation dialog
+        bool confirm = true;
+        if (confirm)
+        {
+            var response = await Http.DeleteAsync($"api/Menus/{Id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                //var responseText = await response.Content.ReadAsStringAsync();
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                //NavigationManager.NavigateTo("MenuList");
+            }
+        }
     }
 
 }
