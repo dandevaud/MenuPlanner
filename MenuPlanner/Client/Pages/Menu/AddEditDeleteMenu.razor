@@ -61,14 +61,17 @@ else
                     <IngredientCard Ingredient="@ingredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
                 }
             }
+            
+        <div class="card-deck">
 
             @if (menu.Ingredients != null)
             {
                 @foreach (var menuIngredient in menu.Ingredients)
                 {
-                    <IngredientCard MenuIngredient="@menuIngredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="false" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
+                    <IngredientCard Css="m-2" MenuIngredient="@menuIngredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="false" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
                 }
             }
+        </div>
 
             <br />
             <div class="btn-group">

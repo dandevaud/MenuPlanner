@@ -2,7 +2,7 @@
 @using MenuPlanner.Client.Controls.IngredientControls.IngredientCardControls;
 @inject HttpClient Http
 
-<div class="card">
+<div class="card @Css">
     <div class="card-body">
         <h5 class="card-title">@Ingredient.Name</h5>
         <p class="card-text">Category: @Ingredient.Category.ToString()</p>
@@ -42,6 +42,9 @@
 
     [Parameter]
     public EventCallback<MenuIngredient> UpdateMenuIngredient { get; set; }
+
+    [Parameter]
+    public string Css { get; set; } = "";
 
     private Quantity quantity = new Quantity();
 
