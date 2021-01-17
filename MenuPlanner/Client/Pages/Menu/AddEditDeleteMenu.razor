@@ -62,7 +62,7 @@ else
                 }
             }
             
-        <div class="card-deck">
+        <div class="card-columns">
 
             @if (menu.Ingredients != null)
             {
@@ -75,13 +75,12 @@ else
 
             <br />
             <div class="btn-group">
-
-                <button type="submit" class="btn btn-success">Save</button>
+                <SaveButton IsLoading="@isLoading"></SaveButton>
                 @if (Id != null)
                 {
                     <button @onclick="() => modal.Open()" class="btn btn-danger mx-1">Delete</button>
                 }
-                <a class="btn btn-secondary" href="/MenuList">Back to List</a>
+                <a class="btn btn-secondary" href="/">Back to List</a>
             </div>
         </EditForm>
     </div>
@@ -115,6 +114,8 @@ else
 
     private int rating;
 
+    private bool isLoading = false;
+
     private Modal modal { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -139,31 +140,39 @@ else
 
     private async Task UpdateMenu()
     {
-        SetRating();
-        if (modal.modalClass == "show")
+        try
         {
-            return;
-        }
-        HttpResponseMessage response;
-        if (Id == null)
-        {
-            response = await Http.PostAsJsonAsync<Menu>("api/Menus", menu);
-            menu = await response.Content.ReadFromJsonAsync<Menu>();
-        }
-        else
-        {
-            response = await Http.PutAsJsonAsync<Menu>($"api/Menus/{Id}", menu);
+            isLoading = true;
+            SetRating();
+            if (modal.modalClass == "show")
+            {
+                return;
+            }
+            HttpResponseMessage response;
+            if (Id == null)
+            {
+                response = await Http.PostAsJsonAsync<Menu>("api/Menus", menu);
+                menu = await response.Content.ReadFromJsonAsync<Menu>();
+            }
+            else
+            {
+                response = await Http.PutAsJsonAsync<Menu>($"api/Menus/{Id}", menu);
 
+            }
+            if (response.IsSuccessStatusCode)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                string errorMessage = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(errorMessage);
+    //Implement ErrorComponent
+            }
         }
-        if (response.IsSuccessStatusCode)
+        finally
         {
-            NavigationManager.NavigateTo("/");
-        }
-        else
-        {
-            string errorMessage = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(errorMessage);
-            //Implement ErrorComponent
+            isLoading = false;
         }
     }
 

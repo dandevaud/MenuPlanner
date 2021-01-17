@@ -5,7 +5,7 @@
 @using MenuPlanner.Shared.Extension
 <div class="form-group">
     <label>Quantity</label>
-    <input type="text" class="form-control" @bind-value="Quantity.QuantityValue">
+    <input type="number" min="0.0" step="any" class="form-control" @bind-value="Quantity.QuantityValue">
 </div>
 <div class="form-group">
     <label>Unit</label>

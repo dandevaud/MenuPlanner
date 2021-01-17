@@ -46,7 +46,7 @@ namespace MenuPlanner.Server.Controllers
                 await loadChild;
                 await loadParent;
             });
-            return toReturn;
+            return toReturn.OrderBy(i => i.Name).ToList();
         }
 
         

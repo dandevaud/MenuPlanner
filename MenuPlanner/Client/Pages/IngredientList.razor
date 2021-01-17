@@ -54,8 +54,7 @@
             Parent Ingredient:
             <IngredientSearch IngredientChanged="StoreParentIngredient"></IngredientSearch>
         </div>
-
-        <button type="submit" class="btn btn-success">Save</button>
+        <SaveButton IsLoading="@isLoading"></SaveButton>
     </EditForm>
 </div>
 
@@ -109,6 +108,8 @@ else
 
     private bool isCategoryDisabled;
 
+    private bool isLoading = false;
+
     protected override async Task OnInitializedAsync()
     {
         newIngredient.ParentIngredients = new List<Ingredient>();
@@ -117,11 +118,20 @@ else
 
     private async Task AddIngredient()
     {
-        await Http.PostAsJsonAsync<Ingredient>("api/Ingredients", newIngredient);
-        newIngredient = new Ingredient();
-        newIngredient.ParentIngredients = new List<Ingredient>();
-        isCategoryDisabled = false;
-        await LoadIngredients();
+        try
+        {
+            isLoading = true;
+
+            await Http.PostAsJsonAsync<Ingredient>("api/Ingredients", newIngredient);
+            newIngredient = new Ingredient();
+            newIngredient.ParentIngredients = new List<Ingredient>();
+            isCategoryDisabled = false;
+            await LoadIngredients();
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
     private async Task DeleteIngredient(Guid id)
