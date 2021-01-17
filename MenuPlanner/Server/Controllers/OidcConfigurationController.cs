@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MenuPlanner.Server.Controllers
 {
+    /// <summary>Auto-generated Auth class</summary>
     public class OidcConfigurationController : Controller
     {
         private readonly ILogger<OidcConfigurationController> _logger;

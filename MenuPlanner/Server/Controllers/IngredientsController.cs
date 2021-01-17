@@ -5,19 +5,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 using System.Threading.Tasks;
+using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
-using MenuPlanner.Server.SqlImplementation;
 using MenuPlanner.Shared.models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileSystemGlobbing.Internal.PathSegments;
 
 namespace MenuPlanner.Server.Controllers
 {
+    /// <summary>Ingredients API Controller --&gt; Handles CRUD actions for all ingredients</summary>
     [Authorize]
     [Produces("application/json")]
     [Route("api/[controller]")]
@@ -49,7 +48,7 @@ namespace MenuPlanner.Server.Controllers
             return toReturn.OrderBy(i => i.Name).ToList();
         }
 
-        
+
         // GET: api/Ingredients/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Ingredient>> GetIngredient(Guid id)
@@ -113,7 +112,7 @@ namespace MenuPlanner.Server.Controllers
         /// </summary>
         /// <param name="ingredient">The ingredient.</param>
         [ApiExplorerSettings(IgnoreApi = true)]
-       
+
 
         // DELETE: api/Ingredients/5
         [HttpDelete("{id}")]

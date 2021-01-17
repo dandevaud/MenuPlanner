@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Castle.Core.Internal;
-using MenuPlanner.Server.SqlImplementation;
+using MenuPlanner.Server.Data;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.models.enums;
 using Moq;

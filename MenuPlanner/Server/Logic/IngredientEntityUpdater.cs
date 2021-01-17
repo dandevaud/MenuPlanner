@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MenuPlanner.Server.SqlImplementation;
+using MenuPlanner.Server.Data;
 using MenuPlanner.Shared.models;
 using Microsoft.EntityFrameworkCore;
 
 namespace MenuPlanner.Server.Logic
 {
+    /// <summary>Class used to update Ingredient entities in Database</summary>
     public class IngredientEntityUpdater
     {
         private readonly MenuPlannerContext _context;
@@ -17,6 +18,13 @@ namespace MenuPlanner.Server.Logic
             _context = dbContext;
         }
 
+        /// <summary>
+        ///   <para>
+        /// Checks if ingredient exists and update or adds it accordingly.
+        /// </para>
+        ///   <para>Will check by name or ID</para>
+        /// </summary>
+        /// <param name="ingredient">The ingredient.</param>
         public async Task CheckIfIngredientExistsAndUpdateOrAdd(Ingredient ingredient)
         {
             if (await _context.Ingredients.AnyAsync(x => x.Name.Equals(ingredient.Name)))

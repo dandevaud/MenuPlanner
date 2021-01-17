@@ -8,7 +8,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Extensions;
-using MenuPlanner.Server.SqlImplementation;
+using MenuPlanner.Server.Data;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.models.enums;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -42,7 +42,7 @@ namespace MenuPlanner.Server.Logic
              menuList = GetMenuByIngredient(searchRequest, menuList);
              menuList = FilterByEnums(searchRequest.TimeOfDay, menuList,((TimeOfDay t, Menu m) =>  m.TimeOfDay.HasFlag(t)));
              menuList = FilterByEnums(searchRequest.Season, menuList, ((Season t, Menu m) => m.Season.HasFlag(t)));
-             menuList = FilterByEnums(searchRequest.MenuCategory, menuList, ((MenuCategory t, Menu m) => m.Season.HasFlag(t)));
+             menuList = FilterByEnums(searchRequest.MenuCategory, menuList, ((MenuCategory t, Menu m) => m.MenuCategory.HasFlag(t)));
 
              if (searchRequest.Votes > 0)
              {
@@ -117,7 +117,10 @@ namespace MenuPlanner.Server.Logic
                  List<T> listOfSetEnumFilter = new List<T>();
                  foreach (var enumValue in Enum.GetValues<T>())
                  {
-                    if (enumIn.HasFlag(enumValue))  listOfSetEnumFilter.Add(enumValue);
+                     if (!enumValue.GetType().GetDefaultValue().Equals(enumValue))
+                     {
+                         if (enumIn.HasFlag(enumValue)) listOfSetEnumFilter.Add(enumValue);
+                     }
                  }
                  return listOfSetEnumFilter;
          }

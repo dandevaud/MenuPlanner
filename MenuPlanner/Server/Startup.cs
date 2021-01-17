@@ -1,7 +1,5 @@
 ﻿using MenuPlanner.Server.Data;
-using MenuPlanner.Server.IoC;
 using MenuPlanner.Server.Models;
-using MenuPlanner.Server.SqlImplementation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,9 +26,6 @@ namespace MenuPlanner.Server
         public void ConfigureServices(IServiceCollection services)
         {
 
-            //Bind IoC
-            IoCContainer ioCContainer = new IoCContainer(Configuration);
-            ioCContainer.BindIoC(services);
             if (Configuration["AuthDataBase:DataBaseUsed"].Equals("SQLite"))
             {
                 services.AddDbContext<ApplicationDbContext>(options =>

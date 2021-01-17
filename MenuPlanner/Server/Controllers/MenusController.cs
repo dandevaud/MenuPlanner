@@ -1,21 +1,26 @@
-﻿using System;
+﻿// <copyright file="MenusController.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper.Internal;
+using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MenuPlanner.Server.SqlImplementation;
 using MenuPlanner.Shared.models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MenuPlanner.Server.Controllers
 {
+    /// <summary>
+    ///   <para>Menu API Controller --&gt; handle all CRUD actions for the Menus</para>
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-     public class MenusController : ControllerBase
+    public class MenusController : ControllerBase
     {
         private readonly MenuPlannerContext _context;
         private readonly MenuEntityUpdater entityUpdater;
@@ -25,7 +30,7 @@ namespace MenuPlanner.Server.Controllers
         {
             _context = context;
             entityUpdater = new MenuEntityUpdater(context);
-           
+
         }
 
         // GET: api/Menus
@@ -48,14 +53,14 @@ namespace MenuPlanner.Server.Controllers
             }
             //load ingredients
             await _context.Entry(menu).Collection(m => m.Ingredients).LoadAsync();
-            
-                menu?.Ingredients?.ToList().ForEach(m =>
-                    _context.Entry(m).Reference<Ingredient>(
-                            i => i.Ingredient
-                        )
-                        .Load());
-            
-           
+
+            menu?.Ingredients?.ToList().ForEach(m =>
+                _context.Entry(m).Reference<Ingredient>(
+                        i => i.Ingredient
+                    )
+                    .Load());
+
+
 
             //load images
             await _context.Entry(menu).Collection(m => m.Images).LoadAsync();
@@ -83,7 +88,7 @@ namespace MenuPlanner.Server.Controllers
             return Ok(menu.Images);
         }
 
-       // PUT: api/Menus/5
+        // PUT: api/Menus/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize]
         [HttpPut("{id}")]
@@ -93,7 +98,7 @@ namespace MenuPlanner.Server.Controllers
             {
                 return BadRequest();
             }
-            
+
             //to improve -> remove all the images from this menu
             var foundMenu = await _context.Menus.FindAsync(id);
             if (foundMenu == null)

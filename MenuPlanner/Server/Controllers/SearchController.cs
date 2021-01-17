@@ -1,24 +1,20 @@
-﻿// <copyright file="ValuesController.cs" company="Alessandro Marra & Daniel Devaud">
+﻿// <copyright file="SearchController.cs" company="Alessandro Marra & Daniel Devaud">
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper.Internal;
+using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
-using MenuPlanner.Server.SqlImplementation;
 using MenuPlanner.Shared.models;
-using MenuPlanner.Shared.models.enums;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shared.models.Search;
 
 namespace MenuPlanner.Server.Controllers
 {
+    /// <summary>Search API Controller --&gt; handles all Searches for Menus and Ingredients</summary>
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
@@ -46,7 +42,8 @@ namespace MenuPlanner.Server.Controllers
         public async Task<ActionResult<List<Menu>>> GetMenuForIngredient(Ingredient ingredient)
         {
 
-            var menuList = await searchLogic.SearchMenus(new MenuSearchRequestModel(){
+            var menuList = await searchLogic.SearchMenus(new MenuSearchRequestModel()
+            {
                 Ingredients = new List<Ingredient>(){
                     ingredient}
             });
@@ -58,17 +55,17 @@ namespace MenuPlanner.Server.Controllers
         [HttpGet("MenuWithIngredient")]
         public async Task<ActionResult<List<Menu>>> GetMenuByIngredientName(String filter)
         {
-           var ingredients = await searchLogic.SearchIngredients(new IngredientSearchRequestModel()
-           {
-               Name = filter
-           });
+            var ingredients = await searchLogic.SearchIngredients(new IngredientSearchRequestModel()
+            {
+                Name = filter
+            });
 
-           var toReturn = await searchLogic.SearchMenus(new MenuSearchRequestModel()
-           {
-               Ingredients = ingredients.Result
-           });
+            var toReturn = await searchLogic.SearchMenus(new MenuSearchRequestModel()
+            {
+                Ingredients = ingredients.Result
+            });
 
-           return toReturn.Result;
+            return toReturn.Result;
         }
 
         // GET: api/Search/MenuBy?timeOfDay={TimeOfDay}&category={category}&season={season}&filter={string}&...
@@ -103,8 +100,10 @@ namespace MenuPlanner.Server.Controllers
         [HttpGet("Menu")]
         public async Task<ActionResult<List<Menu>>> GetMenu(String filter)
         {
-           var toRet = await searchLogic.SearchMenus(new MenuSearchRequestModel(){
-                Filter = filter});
+            var toRet = await searchLogic.SearchMenus(new MenuSearchRequestModel()
+            {
+                Filter = filter
+            });
 
             return toRet.Result;
         }

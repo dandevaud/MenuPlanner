@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using DbContext = Microsoft.EntityFrameworkCore.DbContext;
 
 
-namespace MenuPlanner.Server.SqlImplementation
+namespace MenuPlanner.Server.Data
 {
     public class MenuPlannerContext : DbContext
     {

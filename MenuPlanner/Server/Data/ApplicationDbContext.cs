@@ -1,12 +1,12 @@
-﻿using IdentityServer4.EntityFramework.Options;
+﻿// <copyright file="ApplicationDbContext.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using IdentityServer4.EntityFramework.Options;
 using MenuPlanner.Server.Models;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MenuPlanner.Server.Data
 {

@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MenuPlanner.Server.Controllers;
-using MenuPlanner.Server.SqlImplementation;
+using MenuPlanner.Server.Data;
 using MenuPlanner.ServerTests;
 using MenuPlanner.Shared.models;
 using Moq;
@@ -26,7 +26,7 @@ namespace MenuPlanner.Server.Logic.Tests
         private SearchLogic searchLogic;
         private Mock<MenuPlannerContext> dbContext;
 
-            [SetUp]
+        [SetUp]
         public void SetUp()
         {
             mockDb = new MockDbSetUp();
