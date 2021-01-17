@@ -5,9 +5,7 @@
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using MenuPlanner.Shared.models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using Moq;
 
 namespace MenuPlanner.ServerTests

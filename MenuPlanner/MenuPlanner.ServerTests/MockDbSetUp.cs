@@ -1,6 +1,9 @@
-﻿using System;
+﻿// <copyright file="DbContextMock.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using Castle.Core.Internal;
 using MenuPlanner.Server.SqlImplementation;
 using MenuPlanner.Shared.models;
@@ -11,14 +14,11 @@ namespace MenuPlanner.ServerTests
 {
     public class MockDbSetUp
     {
-        
         public List<Ingredient> Ingredients { get; } = new List<Ingredient>();
         public List<MenuIngredient> MenuIngredients { get; } = new List<MenuIngredient>();
         public List<Menu> Menus { get; } = new List<Menu>();
+        public Mock<MenuPlannerContext> menuPlannerMock { get; } = new Mock<MenuPlannerContext>();
 
-        public Mock<MenuPlannerContext> menuPlannerMock { get; }= new Mock<MenuPlannerContext>();
-
-        
         public Mock<MenuPlannerContext> SetUpDBContext()
         {
             SetUpIngredients();
@@ -38,8 +38,8 @@ namespace MenuPlanner.ServerTests
             {
                 IngredientId = Guid.NewGuid(),
                 Name = "Poulet Geschnetzletes",
-                
             };
+
             var poulet = new Ingredient()
             {
                 IngredientId = Guid.NewGuid(),
@@ -49,24 +49,30 @@ namespace MenuPlanner.ServerTests
                     pouletGschnetzlets
                 }
             };
-            var huhn = new Ingredient() { IngredientId = Guid.NewGuid(), Name = "Huhn" , ChildIngredients = new List<Ingredient>()
+
+            var huhn = new Ingredient()
             {
-                poulet
-            }};
-           
+                IngredientId = Guid.NewGuid(),
+                Name = "Huhn",
+                ChildIngredients = new List<Ingredient>()
+                {
+                    poulet
+                }
+            };
+
             var rind = new Ingredient() { IngredientId = Guid.NewGuid(), Name = "Rind" };
-            
+
             Ingredients.Add(huhn);
             Ingredients.Add(poulet);
             Ingredients.Add(rind);
             Ingredients.Add(pouletGschnetzlets);
-
         }
 
         private void SetUpMenuIngredients()
         {
             if (Menus.IsNullOrEmpty()) SetUpMenus();
             if (Ingredients.IsNullOrEmpty()) SetUpIngredients();
+
             MenuIngredients.Add(new MenuIngredient()
             {
                 Id = Guid.NewGuid(),
@@ -77,8 +83,8 @@ namespace MenuPlanner.ServerTests
                 },
                 Ingredient = Ingredients.Find(i => i.Name.Equals("Poulet Geschnetzletes")),
                 Menu = Menus.Find(m => m.Name.Equals("Chicken Nuggets"))
-
             });
+
             MenuIngredients.Add(new MenuIngredient()
             {
                 Id = Guid.NewGuid(),
@@ -89,8 +95,8 @@ namespace MenuPlanner.ServerTests
                 },
                 Ingredient = Ingredients.Find(i => i.Name.Equals("Poulet")),
                 Menu = Menus.Find(m => m.Name.Equals("Pouletbrüstli"))
-
             });
+
             MenuIngredients.Add(new MenuIngredient()
             {
                 Id = Guid.NewGuid(),
@@ -101,7 +107,6 @@ namespace MenuPlanner.ServerTests
                 },
                 Ingredient = Ingredients.Find(i => i.Name.Equals("Huhn")),
                 Menu = Menus.Find(m => m.Name.Equals("Ofen Huhn"))
-
             });
 
             MenuIngredients.Add(new MenuIngredient()
@@ -114,11 +119,7 @@ namespace MenuPlanner.ServerTests
                 },
                 Ingredient = Ingredients.Find(i => i.Name.Equals("Rind")),
                 Menu = Menus.Find(m => m.Name.Equals("Steak"))
-
             });
-
-
-
         }
 
         private void SetUpMenus()
@@ -128,17 +129,16 @@ namespace MenuPlanner.ServerTests
                 MenuId = Guid.NewGuid(),
                 Name = "Chicken Nuggets"
             });
+
             Menus.Add(new Menu()
             {
                 MenuId = Guid.NewGuid(),
                 Name = "Pouletbrüstli"
             });
+
             Menus.Add(new Menu() { MenuId = Guid.NewGuid(), Name = "Ofen Huhn" });
             Menus.Add(new Menu() { MenuId = Guid.NewGuid(), Name = "Steak" });
-
-
         }
-
 
         #endregion
 
@@ -170,9 +170,7 @@ namespace MenuPlanner.ServerTests
             menuPlannerMock.Setup(c => c.MenuIngredients).Returns(mockDbSet.Object);
         }
 
-
         #endregion
-
 
     }
 }
