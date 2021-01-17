@@ -60,12 +60,23 @@ namespace MenuPlanner.ServerTests
                 }
             };
 
-            var rind = new Ingredient() { IngredientId = Guid.NewGuid(), Name = "Rind" };
+            var rind = new Ingredient()
+            {
+                IngredientId = Guid.NewGuid(),
+                Name = "Rind"
+            };
+
+            var oel = new Ingredient()
+            {
+                IngredientId = Guid.NewGuid(),
+                Name = "Öl"
+            };
 
             Ingredients.Add(huhn);
             Ingredients.Add(poulet);
             Ingredients.Add(rind);
             Ingredients.Add(pouletGschnetzlets);
+            Ingredients.Add(oel);
         }
 
         private void SetUpMenuIngredients()
@@ -136,8 +147,23 @@ namespace MenuPlanner.ServerTests
                 Name = "Pouletbrüstli"
             });
 
-            Menus.Add(new Menu() { MenuId = Guid.NewGuid(), Name = "Ofen Huhn" });
-            Menus.Add(new Menu() { MenuId = Guid.NewGuid(), Name = "Steak" });
+            Menus.Add(new Menu()
+            {
+                MenuId = Guid.NewGuid(),
+                Name = "Ofen Huhn"
+            });
+
+            Menus.Add(new Menu()
+            {
+                MenuId = Guid.NewGuid(),
+                Name = "Steak"
+            });
+
+            Menus.Add(new Menu()
+            {
+                MenuId = Guid.NewGuid(),
+                Name = "Old Name"
+            });
         }
 
         #endregion

@@ -26,7 +26,7 @@ namespace MenuPlanner.ServerTests.Logic
         /// <summary>
         /// Checks if ingredient exists and update or add test using a duplicate.
         /// </summary>
-        [Test]
+        //[Test]
         //Mock DB Context Entity not working --> Test not possible
         public async Task CheckIfIngredientExistsAndUpdateOrAddTestDuplicate()
         {
@@ -42,7 +42,7 @@ namespace MenuPlanner.ServerTests.Logic
         /// <summary>
         /// Checks if ingredient exists and update or add test Using a new ingredient.
         /// </summary>
-        [Test]
+        //[Test]
         //Mock DB Context Entity not working --> Test not possible
         public async Task CheckIfIngredientExistsAndUpdateOrAddTestNewIngredient()
         {
