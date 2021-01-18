@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using MenuPlanner.Server.SqlImplementation;
+using MenuPlanner.Server.Data;
 using MenuPlanner.ServerTests;
 using MenuPlanner.Shared.models;
 using Moq;
