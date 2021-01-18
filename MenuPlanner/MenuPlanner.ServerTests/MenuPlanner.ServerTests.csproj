@@ -24,4 +24,7 @@
          <ProjectReference Include="..\Server\MenuPlanner.Server.csproj" />
          <ProjectReference Include="..\Shared\MenuPlanner.Shared.csproj" />
      </ItemGroup>
+     <ItemGroup>
+       <Folder Include="Controllers\" />
+     </ItemGroup>
 </Project>
