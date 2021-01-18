@@ -1,4 +1,4 @@
-﻿// <copyright file="MenuEntityUpdaterTest.cs" company="Alessandro Marra & Daniel Devaud">
+﻿// <copyright file="MenuEntityUpdaterTests.cs" company="Alessandro Marra & Daniel Devaud">
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
@@ -45,7 +45,7 @@ namespace MenuPlanner.ServerTests.Logic
         }
 
         /// <summary>
-        /// Checks if adding a menu ingredient to the menu works
+        /// Checks if adding a menu ingredient to the menu works and if the menu ingredient exists in the DB
         /// </summary>
         //[Test]
         //Mock DB Context Entity not working --> Test not possible
@@ -75,8 +75,11 @@ namespace MenuPlanner.ServerTests.Logic
 
             await controller.UpdateMenuInContext(menu, mockDb.Menus.Find(i => i.Name.Equals("Pouletbrüstli")));
 
+            var foundMenuIngredient = mockDb.MenuIngredients.Find(i => i.Id == menuIngredient.Id);
+
             expected.ForEach(i => Assert.Contains(i, menu.Ingredients.ToList()));
             Assert.IsEmpty(menu.Ingredients.ToList().FindAll(i => notExpected.Contains(i)));
+            Assert.NotNull(foundMenuIngredient);
         }
 
     }

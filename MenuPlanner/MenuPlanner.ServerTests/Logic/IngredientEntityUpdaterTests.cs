@@ -1,4 +1,4 @@
-﻿// <copyright file="MenuEntityUpdaterTest.cs" company="Alessandro Marra & Daniel Devaud">
+﻿// <copyright file="IngredientEntityUpdaterTests.cs" company="Alessandro Marra & Daniel Devaud">
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
