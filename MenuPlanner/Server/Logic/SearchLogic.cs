@@ -129,12 +129,21 @@ namespace MenuPlanner.Server.Logic
          {
              if (!searchRequest.Ingredients.IsNullOrEmpty())
              {
-                 var ingredients = searchRequest.Ingredients.ToList();
-                 var ingredientsToLookFor = new List<Ingredient>(ingredients);
+                 var ingredients = new List<Ingredient>();
+                     searchRequest.Ingredients.ToList().ForEach(async i=>
+                     {
+                         var entity = await _context.Ingredients.FindAsync(i.IngredientId);
+                         ingredients.Add(entity);
+
+                     });
+
+                 var ingredientsToLookFor = new List<Ingredient>();
+                 ingredientsToLookFor.AddRange(ingredients);
                  ingredients.ForEach(async i =>
                  {
                      await LoadSubIngredients(i);
                  });
+
                  ingredients.ForEach(async i => ingredientsToLookFor.AddRange(await GetSubIngredients(i)));
                  menuList = menuList.
                      Where(m => m.Ingredients.
@@ -218,9 +227,10 @@ namespace MenuPlanner.Server.Logic
              } else if (entry.State == EntityState.Detached)
              {
                  await entry.ReloadAsync();
-             } 
+             }
 
              await entry.Collection(i => i.ChildIngredients).LoadAsync();
+             ing = entry.Entity;
              if (ing.ChildIngredients != null)
              {
                  foreach (var i in ing.ChildIngredients)
