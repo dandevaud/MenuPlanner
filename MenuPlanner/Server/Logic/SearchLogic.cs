@@ -118,8 +118,15 @@ namespace MenuPlanner.Server.Logic
         {
             if (!searchRequest.Ingredients.IsNullOrEmpty())
             {
-                var ingredients = searchRequest.Ingredients.ToList();
-                var ingredientsToLookFor = new List<Ingredient>(ingredients);
+                var ingredients = new List<Ingredient>();
+                searchRequest.Ingredients.ToList().ForEach(async i =>
+                {
+                    var entity = await _context.Ingredients.FindAsync(i.IngredientId);
+                    ingredients.Add(entity);
+
+                });
+
+                var ingredientsToLookFor = new List<Ingredient>();
                 ingredients.ForEach(async i =>
                 {
                     await LoadSubIngredients(i);
