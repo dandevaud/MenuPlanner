@@ -1,4 +1,8 @@
-﻿using MenuPlanner.Server.Data;
+﻿// <copyright file="IngredientsController.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;

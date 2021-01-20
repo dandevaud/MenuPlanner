@@ -15,9 +15,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MenuPlanner.Server.Controllers
 {
-    /// <summary>
-    ///   <para>Menu API Controller --&gt; handle all CRUD actions for the Menus</para>
-    /// </summary>
+    /// <summary>Menu API Controller --&gt; handle all CRUD actions for the Menus</summary>
+    [Authorize]
+    [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
     public class MenusController : ControllerBase
@@ -25,12 +25,10 @@ namespace MenuPlanner.Server.Controllers
         private readonly MenuPlannerContext _context;
         private readonly MenuEntityUpdater entityUpdater;
 
-
         public MenusController(MenuPlannerContext context)
         {
             _context = context;
             entityUpdater = new MenuEntityUpdater(context);
-
         }
 
         // GET: api/Menus
@@ -43,6 +41,7 @@ namespace MenuPlanner.Server.Controllers
 
         // GET: api/Menus/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Menu>> GetMenu(Guid id)
         {
             var menu = await _context.Menus.FindAsync(id);
@@ -60,8 +59,6 @@ namespace MenuPlanner.Server.Controllers
                     )
                     .Load());
 
-
-
             //load images
             await _context.Entry(menu).Collection(m => m.Images).LoadAsync();
             //load Comments
@@ -70,11 +67,12 @@ namespace MenuPlanner.Server.Controllers
         }
 
         /// <summary>
-        /// GET: api/Menus/Images/5
+        /// Get images by Menu Id. GET: api/Menus/Images/5
         /// </summary>
         /// <param name="id">Menu Id</param>
         /// <returns>Image Collection</returns>
         [HttpGet("Images/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<Image>>> GetImages(Guid id)
         {
             var menu = await _context.Menus.FindAsync(id);
@@ -90,7 +88,6 @@ namespace MenuPlanner.Server.Controllers
 
         // PUT: api/Menus/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMenu(Guid id, Menu menu)
         {
@@ -115,7 +112,6 @@ namespace MenuPlanner.Server.Controllers
 
         // POST: api/Menus
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Menu>> PostMenu(Menu menu)
         {
@@ -130,7 +126,6 @@ namespace MenuPlanner.Server.Controllers
         }
 
         // DELETE: api/Menus/5
-        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMenu(Guid id)
         {
@@ -145,9 +140,5 @@ namespace MenuPlanner.Server.Controllers
             return NoContent();
         }
 
-        private bool MenuExists(Guid id)
-        {
-            return _context.Menus.Any(e => e.MenuId == id);
-        }
     }
 }

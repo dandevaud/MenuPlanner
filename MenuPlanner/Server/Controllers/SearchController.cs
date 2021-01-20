@@ -16,6 +16,7 @@ namespace MenuPlanner.Server.Controllers
 {
     /// <summary>Search API Controller --&gt; handles all Searches for Menus and Ingredients</summary>
     [Authorize]
+    [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
     public class SearchController : ControllerBase

@@ -2,8 +2,6 @@
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
-// Class take from https://stackoverflow.com/a/61899245
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -14,6 +12,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace MenuPlanner.Server
 {
+    // Class take from https://stackoverflow.com/a/61899245
     internal class AuthorizeCheckOperationFilter : IOperationFilter
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
@@ -50,25 +49,25 @@ namespace MenuPlanner.Server
             //       we can also pass through the names of the policies in the string[]
             //       which will indicate which permission you require.
             operation.Security = new List<OpenApiSecurityRequirement>
-        {
-            new OpenApiSecurityRequirement
             {
+                new OpenApiSecurityRequirement
                 {
-                    new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
+                        new OpenApiSecurityScheme
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header
                         },
-                        Scheme = "oauth2",
-                        Name = "Bearer",
-                        In = ParameterLocation.Header
-                    },
-                    new List<string>()
+                        new List<string>()
+                    }
                 }
-            }
-        };
+            };
         }
     }
 }

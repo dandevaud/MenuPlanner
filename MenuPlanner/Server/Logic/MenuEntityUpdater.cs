@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="IngredientsController.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,15 +12,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MenuPlanner.Server.Logic
 {
+    /// <summary>Class used to update Menu entities in Database</summary>
     public class MenuEntityUpdater
     {
-
-        public delegate Boolean ProvidedContains(Guid guid);
-
+        public delegate bool ProvidedContains(Guid guid);
         public delegate Task RemoveFromContext<T>(Guid guid);
-
         public delegate void DetachEntity(Guid guid);
-
         private readonly MenuPlannerContext _context;
 
         public MenuEntityUpdater(MenuPlannerContext dbContext)
@@ -24,20 +25,18 @@ namespace MenuPlanner.Server.Logic
             _context = dbContext;
         }
 
-
         /// <summary>Updates the menu in the Database.</summary>
         /// <param name="menu">The menu provided (new values)</param>
         /// <param name="entityInDatabase">The entity in database (old Values)</param>
         public async Task UpdateMenuInContext(Menu menu, Menu entityInDatabase)
         {
-            //load images & Menuingredients
+            //load images & MenuIngredients
             await LoadMenuSubEntities(entityInDatabase);
 
             //Get IDs of provided entities
             var providedImages = menu.Images.Select(
                 i => i.ImageId).ToList();
             var providedMenuIngredients = menu.Ingredients.Select(i => i.Id).ToList();
-
 
             //Remove all deleted Images from DB
             DeleteRemovedEntitiesFromMenu<Image>(
@@ -65,10 +64,9 @@ namespace MenuPlanner.Server.Logic
             );
 
             _context.Entry(entityInDatabase).State = EntityState.Detached;
-            await UnLoadMenuSubEntities(entityInDatabase);
-            await UnLoadMenuSubEntities(menu);
+            UnLoadMenuSubEntities(entityInDatabase);
+            UnLoadMenuSubEntities(menu);
             _context.Update(menu).CurrentValues.SetValues(menu);
-
 
             await _context.SaveChangesAsync();
         }
@@ -85,9 +83,6 @@ namespace MenuPlanner.Server.Logic
             _context.Menus.Remove(menu);
             await _context.SaveChangesAsync();
         }
-
-        
-
 
         private RemoveFromContext<T> RemoveSubEntities<T>(DbSet<T> dbSet, List<Guid> providedList) where T : class
         {
@@ -132,7 +127,7 @@ namespace MenuPlanner.Server.Logic
             foundMenu.Ingredients.ToList().ForEach(async mi => await _context.Entry(mi).Reference(i => i.Ingredient).LoadAsync());
         }
 
-        private async Task UnLoadMenuSubEntities(Menu foundMenu)
+        private void UnLoadMenuSubEntities(Menu foundMenu)
         {
             foundMenu.Ingredients.ToList().ForEach(mi =>
             {
@@ -146,7 +141,6 @@ namespace MenuPlanner.Server.Logic
                 }
             });
 
-
             foundMenu.Ingredients.ToList().ForEach(mi =>
             {
                 var entity = _context.ChangeTracker.Entries<MenuIngredient>().FirstOrDefault(i => mi.Id.Equals(i.Entity.Id));
@@ -158,6 +152,7 @@ namespace MenuPlanner.Server.Logic
                     }
                 }
             });
+
             foundMenu.Images.ToList().ForEach(mi =>
             {
                 var entity = _context.ChangeTracker.Entries<Image>().FirstOrDefault(i => mi.ImageId.Equals(i.Entity.ImageId));

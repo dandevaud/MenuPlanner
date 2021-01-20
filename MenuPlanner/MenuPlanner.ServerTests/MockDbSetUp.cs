@@ -12,6 +12,7 @@ using Moq;
 
 namespace MenuPlanner.ServerTests
 {
+    /// <summary>Class used to mock the Database</summary>
     public class MockDbSetUp
     {
         public List<Ingredient> Ingredients { get; } = new List<Ingredient>();

@@ -18,8 +18,6 @@ namespace MenuPlanner.Shared.models
         [Required]
         public string LastName { get; set; }
         public string Email { get; set; }
-
         public ICollection<Menu> Favorites { get; set; }
-
     }
 }

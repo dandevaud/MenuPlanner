@@ -1,6 +1,11 @@
-﻿using System.Collections.Generic;
+﻿// <copyright file="IngredientCategory.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using System.Collections.Generic;
 using MenuPlanner.Shared.models.enums;
 using MenuPlanner.Shared.models;
+
 namespace Shared.models.Search
 {
     public class MenuSearchRequestModel : SearchRequestModel
@@ -11,6 +16,5 @@ namespace Shared.models.Search
         public Season Season { get; set; }
         public MenuCategory MenuCategory { get; set; }
         public ICollection<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
-
     }
 }

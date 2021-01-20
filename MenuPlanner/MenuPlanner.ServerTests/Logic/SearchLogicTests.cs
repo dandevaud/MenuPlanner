@@ -15,6 +15,7 @@ using Shared.models.Search;
 
 namespace MenuPlanner.Server.Logic.Tests
 {
+    /// <summary>Class to test the Search Logic</summary>
     [TestFixture()]
     public class SearchLogicTests
     {
