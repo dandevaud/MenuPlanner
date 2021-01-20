@@ -31,6 +31,11 @@ namespace MenuPlanner.Server.Controllers
         }
 
         // GET: api/Search/MenuWithIngredient/5
+        /// <summary>Gets the menu for ingredient.</summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet("MenuWithIngredient/{id}")]
         public async Task<ActionResult<List<Menu>>> GetMenuForIngredient(Guid id)
         {
@@ -39,6 +44,11 @@ namespace MenuPlanner.Server.Controllers
         }
 
         // Post: api/Search/MenuWithIngredient
+        /// <summary>Gets the menu for ingredient.</summary>
+        /// <param name="ingredient">The ingredient.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpPost("MenuWithIngredient")]
         public async Task<ActionResult<List<Menu>>> GetMenuForIngredient(Ingredient ingredient)
         {
@@ -53,6 +63,11 @@ namespace MenuPlanner.Server.Controllers
         }
 
         // GET: api/Search/MenuWithIngredient?filter={filter}
+        /// <summary>Gets the name of the menu by ingredient.</summary>
+        /// <param name="filter">The filter.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet("MenuWithIngredient")]
         public async Task<ActionResult<List<Menu>>> GetMenuByIngredientName(String filter)
         {
@@ -70,6 +85,11 @@ namespace MenuPlanner.Server.Controllers
         }
 
         // GET: api/Search/MenuBy?timeOfDay={TimeOfDay}&category={category}&season={season}&filter={string}&...
+        /// <summary>Gets the menu by.</summary>
+        /// <param name="searchRequestModel">The search request model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet("MenuBy")]
         public async Task<ActionResult<List<Menu>>> GetMenuBy([FromQuery] MenuSearchRequestModel searchRequestModel)
         {
@@ -78,6 +98,11 @@ namespace MenuPlanner.Server.Controllers
         }
 
         // Post: api/Search/MenuBy
+        /// <summary>Gets the menu by post.</summary>
+        /// <param name="searchRequestModel">The search request model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpPost("MenuBy")]
         [AllowAnonymous]
         public async Task<ActionResult<List<Menu>>> GetMenuByPost(MenuSearchRequestModel searchRequestModel)
@@ -88,6 +113,11 @@ namespace MenuPlanner.Server.Controllers
 
         // GET: api/Search/MenuBy?timeOfDay={TimeOfDay}&category={category}&season={season}&filter={string}&...
 
+        /// <summary>Gets the ingredient by.</summary>
+        /// <param name="searchRequestModel">The search request model.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet("IngredientBy")]
         [AllowAnonymous]
         public async Task<ActionResult<List<Ingredient>>> GetIngredientBy([FromQuery] IngredientSearchRequestModel searchRequestModel)
@@ -98,6 +128,11 @@ namespace MenuPlanner.Server.Controllers
 
 
         // GET: api/Search/Menu?filter={filter}
+        /// <summary>Gets the menu.</summary>
+        /// <param name="filter">The filter.</param>
+        /// <returns>
+        ///   <br />
+        /// </returns>
         [HttpGet("Menu")]
         public async Task<ActionResult<List<Menu>>> GetMenu(String filter)
         {

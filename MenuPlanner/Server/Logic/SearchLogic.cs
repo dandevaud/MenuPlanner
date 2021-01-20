@@ -126,7 +126,7 @@ namespace MenuPlanner.Server.Logic
 
                 });
 
-                var ingredientsToLookFor = new List<Ingredient>();
+                var ingredientsToLookFor = new List<Ingredient>(ingredients);
                 ingredients.ForEach(async i =>
                 {
                     await LoadSubIngredients(i);
