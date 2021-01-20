@@ -10,9 +10,9 @@ using IdentityServer4.Extensions;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.models.enums;
+using MenuPlanner.Shared.models.Search;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Shared.models.Search;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace MenuPlanner.Server.Logic

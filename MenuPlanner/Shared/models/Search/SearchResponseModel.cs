@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Shared.models.Search
+namespace MenuPlanner.Shared.models.Search
 {
     public class SearchResponseModel<TResult>
     {

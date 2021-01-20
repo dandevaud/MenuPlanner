@@ -2,7 +2,7 @@
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
-namespace Shared.models.Search
+namespace MenuPlanner.Shared.models.Search
 {
     public abstract class SearchRequestModel
     {

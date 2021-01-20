@@ -4,9 +4,8 @@
 
 using System.Collections.Generic;
 using MenuPlanner.Shared.models.enums;
-using MenuPlanner.Shared.models;
 
-namespace Shared.models.Search
+namespace MenuPlanner.Shared.models.Search
 {
     public class MenuSearchRequestModel : SearchRequestModel
     {

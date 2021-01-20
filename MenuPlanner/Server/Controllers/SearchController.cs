@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
 using MenuPlanner.Shared.models;
+using MenuPlanner.Shared.models.Search;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.models.Search;
 
 namespace MenuPlanner.Server.Controllers
 {
