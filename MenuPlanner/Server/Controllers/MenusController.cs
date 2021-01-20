@@ -140,8 +140,7 @@ namespace MenuPlanner.Server.Controllers
                 return NotFound();
             }
 
-            _context.Menus.Remove(menu);
-            await _context.SaveChangesAsync();
+            await entityUpdater.DeleteMenuFromDatabase(menu);
 
             return NoContent();
         }

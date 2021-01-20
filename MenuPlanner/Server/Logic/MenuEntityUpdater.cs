@@ -51,7 +51,7 @@ namespace MenuPlanner.Server.Logic
                 entityInDatabase.Ingredients,
                 (MenuIngredient i) => i.Id,
                 (Guid guid) => providedMenuIngredients.Contains(guid),
-                RemoveSubEntities<MenuIngredient>(_context.MenuIngredients, providedImages));
+                RemoveSubEntities<MenuIngredient>(_context.MenuIngredients, providedMenuIngredients));
 
             menu.Ingredients.Select(i => i.Ingredient).ToList()
                 .ForEach( ing => 
@@ -73,6 +73,19 @@ namespace MenuPlanner.Server.Logic
             await _context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Deletes the menu from database.
+        /// </summary>
+        /// <param name="menu">The menu to delete</param>
+        public async Task DeleteMenuFromDatabase(Menu menu)
+        {
+            await LoadMenuSubEntities(menu);
+            menu.Ingredients.ToList().ForEach(mi => RemoveSubEntities<MenuIngredient>(_context.MenuIngredients,null).Invoke(mi.Id));
+            menu.Images.ToList().ForEach(i => RemoveSubEntities<Image>(_context.Image, null).Invoke(i.ImageId));
+            _context.Menus.Remove(menu);
+            await _context.SaveChangesAsync();
+        }
+
         
 
 
@@ -81,7 +94,7 @@ namespace MenuPlanner.Server.Logic
             return async (Guid guid) =>
             {
                 var menuEntity = dbSet.FindAsync(guid);
-                providedList.Remove(guid);
+                providedList?.Remove(guid);
                 dbSet.Remove(await menuEntity);
             };
         }
@@ -108,6 +121,10 @@ namespace MenuPlanner.Server.Logic
                 .ForEach(async id => { await removeFromContext(id); });
         }
 
+        /// <summary>
+        /// Loads the menu sub entities such as MenuIngredient and Images.
+        /// </summary>
+        /// <param name="foundMenu">The menu to Load the entities from</param>
         private async Task LoadMenuSubEntities(Menu foundMenu)
         {
             await _context.Entry(foundMenu).Collection(m => m.Images).LoadAsync();
