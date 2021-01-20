@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿// <copyright file="DbContextMock.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
@@ -19,7 +23,6 @@ namespace MenuPlanner.ServerTests
         {
             _inner = inner;
         }
-
 
         public IQueryable CreateQuery(Expression expression)
         {
@@ -53,7 +56,7 @@ namespace MenuPlanner.ServerTests
 
         TResult IAsyncQueryProvider.ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
-            var result = Execute<dynamic>(Expression.Convert(expression,typeof(object)));
+            var result = Execute<dynamic>(Expression.Convert(expression, typeof(object)));
             return Task.FromResult(result);
         }
     }
