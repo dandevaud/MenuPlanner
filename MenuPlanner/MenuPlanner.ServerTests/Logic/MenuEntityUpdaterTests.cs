@@ -13,6 +13,7 @@ using NUnit.Framework;
 
 namespace MenuPlanner.ServerTests.Logic
 {
+    /// <summary>Class to test the Menu Entity Updater Logic</summary>
     [TestFixture]
     class MenuEntityUpdaterTest
     {

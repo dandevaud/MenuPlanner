@@ -6,7 +6,6 @@ using System;
 
 namespace MenuPlanner.Shared.models.enums
 {
-
     [Flags]
     public enum TimeOfDay : short
     {
@@ -14,6 +13,5 @@ namespace MenuPlanner.Shared.models.enums
         Breakfast = 1,
         Lunch = 2,
         Dinner = 4
-
     }
 }

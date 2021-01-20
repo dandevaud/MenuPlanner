@@ -78,7 +78,7 @@ else
                 <SaveButton IsLoading="@isLoading"></SaveButton>
                 @if (Id != null)
                 {
-                    <button @onclick="() => modal.Open()" class="btn btn-danger mx-1">Delete</button>
+                    <a @onclick="() => modal.Open()" class="btn btn-danger">Delete</a>
                 }
                 <a class="btn btn-secondary" href="/">Back to List</a>
             </div>
@@ -144,10 +144,6 @@ else
         {
             isLoading = true;
             SetRating();
-            if (modal.modalClass == "show")
-            {
-                return;
-            }
             HttpResponseMessage response;
             if (Id == null)
             {
@@ -218,7 +214,6 @@ else
 
     public async Task DeleteMenu()
     {
-        //TODO: add confirmation dialog
         bool confirm = true;
         if (confirm)
         {
@@ -226,12 +221,7 @@ else
 
             if (response.IsSuccessStatusCode)
             {
-                //var responseText = await response.Content.ReadAsStringAsync();
                 NavigationManager.NavigateTo("/");
-            }
-            else
-            {
-                //NavigationManager.NavigateTo("MenuList");
             }
         }
     }

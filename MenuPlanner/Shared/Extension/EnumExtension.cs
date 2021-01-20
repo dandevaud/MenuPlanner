@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="IngredientCategory.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using System;
 using System.ComponentModel;
 
 namespace MenuPlanner.Shared.Extension

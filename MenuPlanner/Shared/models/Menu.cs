@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using MenuPlanner.Shared.models.enums;
 
 namespace MenuPlanner.Shared.models
@@ -32,7 +30,5 @@ namespace MenuPlanner.Shared.models
         public MenuCategory MenuCategory { get; set; } //Flags
         public ICollection<Image> Images { get; set; }
         public Uri Video { get; set; }
-      
     }
-
 }

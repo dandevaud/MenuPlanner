@@ -48,7 +48,6 @@ namespace MenuPlanner.Server.Controllers
             return toReturn.OrderBy(i => i.Name).ToList();
         }
 
-
         // GET: api/Ingredients/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Ingredient>> GetIngredient(Guid id)
@@ -101,18 +100,10 @@ namespace MenuPlanner.Server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Ingredient>> PostIngredient(Ingredient ingredient)
         {
-
             await ingredientEntityUpdater.CheckIfIngredientExistsAndUpdateOrAdd(ingredient);
 
             return CreatedAtAction("GetIngredient", new { id = ingredient.IngredientId }, ingredient);
         }
-
-        /// <summary>
-        /// Checks if ingredient exists and update it if yes or adds a new if not.
-        /// </summary>
-        /// <param name="ingredient">The ingredient.</param>
-        [ApiExplorerSettings(IgnoreApi = true)]
-
 
         // DELETE: api/Ingredients/5
         [HttpDelete("{id}")]

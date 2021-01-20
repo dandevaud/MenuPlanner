@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="IngredientsController.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,7 +46,6 @@ namespace MenuPlanner.Server.Logic
             {
                 await UpdateEachParentIngredient(ingredient, ingredient);
                 _context.Ingredients.Add(ingredient);
-
             }
 
             await _context.SaveChangesAsync();
@@ -81,8 +84,6 @@ namespace MenuPlanner.Server.Logic
                 {
                     updatedList = await AddIngredientToChildIngredientOfParent(ingredient, uapi, updatedList);
                 });
-
-
             }
             else
             {
@@ -91,12 +92,9 @@ namespace MenuPlanner.Server.Logic
                 {
                     updatedList = await AddIngredientToChildIngredientOfParent(ingredient, uapi, updatedList);
                 });
-
             }
 
             ingredient.ParentIngredients = updatedList;
-
-
         }
 
         private async Task<ICollection<Ingredient>> AddIngredientToChildIngredientOfParent(Ingredient ingredient, Guid parentIngGuid, ICollection<Ingredient> updatedList)

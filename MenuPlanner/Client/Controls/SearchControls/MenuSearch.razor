@@ -1,11 +1,6 @@
 ﻿@using MenuPlanner.Shared.models
 @using MenuPlanner.Shared.models.enums
-@using global::Shared.models.Search
-@using Microsoft.Data.SqlClient
-@using Newtonsoft.Json.Serialization
-@using System.ComponentModel
-@using Microsoft.CodeAnalysis.CSharp.Syntax
-@using Microsoft.CodeAnalysis.Operations
+@using MenuPlanner.Shared.models.Search
 @inject PublicClient PublicClient
 
 <EditForm Model="searchModel" OnValidSubmit="@GetMenus">
@@ -13,10 +8,10 @@
         <div class="row g-3 m-3 form-group">
             <div class="col col-9">
                 <input type="search" @bind="searchString" id="menuSearch" class="form-control m-0" placeholder="Search" />
-             
+
             </div>
             <div class="col col-1">
-                <button  type="submit" class="btn btn-primary form-control m-0" >
+                <button type="submit" class="btn btn-primary form-control m-0">
                     <i class="fas fa-search"></i>
                 </button>
             </div>
@@ -32,7 +27,7 @@
                 {
                     <div class="btn-group" role="group">
                         <button class="btn btn-primary" @onclick="@ChangeAdvanced" type="button">Advanced</button>
-                        <button class="btn btn-secondary" @onclick="Reset" type="reset"><i class="fa fa-redo"/></button>
+                        <button class="btn btn-secondary" @onclick="Reset" type="reset"><i class="fa fa-redo" /></button>
                     </div>
                 }
             </div>
@@ -52,7 +47,7 @@
         <div class="row m-4 form-group" hidden=@(!isAdvanced)>
             <div class="col col-4">
                 <label for="TimeOfDay" class="form-label">Time of Day</label>
-                <ul id="TimeOfDay" class="list-group" >
+                <ul id="TimeOfDay" class="list-group">
 
                     @foreach (var e in Enum.GetValues<TimeOfDay>())
                     {
@@ -70,7 +65,7 @@
                     {
                         @if (!e.Equals(Season.Unknown))
                         {
-                        <li class="list-group-item @GetActiveAttribute(e)" @onclick="@(args => selectedEnums.UpdateValues(e))">@e.ToString()</li>
+                            <li class="list-group-item @GetActiveAttribute(e)" @onclick="@(args => selectedEnums.UpdateValues(e))">@e.ToString()</li>
                         }
                     }
                 </ul>
@@ -86,173 +81,168 @@
                         }
                     }
                 </ul>
-               
+
 
             </div>
         </div>
-        
+
         <div class="row" hidden=@(!isAdvanced)>
             <div class="col col-6"></div>
             <div class="col col-6 btn-group" role="group">
-                <button class="btn btn-secondary" @onclick="@Reset" type="reset"><i class="fa fa-redo"/> Reset</button>
-                <button class="btn btn-danger" @onclick="@ChangeAdvanced" type="button"><i class="fa fa-times-circle"/> Close</button>
-                <button class="btn btn-success" type="submit"><i class="fa fa-search"/> Search</button>
+                <button class="btn btn-secondary" @onclick="@Reset" type="reset"><i class="fa fa-redo" /> Reset</button>
+                <button class="btn btn-danger" @onclick="@ChangeAdvanced" type="button"><i class="fa fa-times-circle" /> Close</button>
+                <button class="btn btn-success" type="submit"><i class="fa fa-search" /> Search</button>
             </div>
         </div>
     </fieldset>
 </EditForm>
 
 
-    @code {
-        [Parameter]
-        public Menu[] Results { get; set; }
+@code {
+    [Parameter]
+    public Menu[] Results { get; set; }
 
-        [Parameter]
-        public EventCallback<Menu[]> ResultsChanged { get; set; }
+    [Parameter]
+    public EventCallback<Menu[]> ResultsChanged { get; set; }
 
-        public delegate R HandleList<T,R>(T value);
+    public delegate R HandleList<T, R>(T value);
 
-        private MenuSearchRequestModel searchModel;
-        private SelectedEnums selectedEnums = new SelectedEnums();
+    private MenuSearchRequestModel searchModel;
+    private SelectedEnums selectedEnums = new SelectedEnums();
 
-        private Ingredient ing;
+    private Ingredient ing;
 
-        private string searchString = String.Empty;
+    private string searchString = String.Empty;
 
-        private Boolean isAdvanced = false;
+    private Boolean isAdvanced = false;
 
-        private bool isAnyMatch = true;
+    private bool isAnyMatch = true;
 
-        private class SelectedEnums
+    private class SelectedEnums
+    {
+        public List<TimeOfDay> TimeOfDays { get; set; } = new List<TimeOfDay>();
+        public List<MenuCategory> MenuCategories { get; set; } = new List<MenuCategory>();
+        public List<Season> Seasons { get; set; } = new List<Season>();
+
+        public void UpdateValues<T>(T provided) where T : struct, Enum
         {
-            public List<TimeOfDay> TimeOfDays { get; set; } = new List<TimeOfDay>();
-            public List<MenuCategory> MenuCategories { get; set; } = new List<MenuCategory>();
-            public List<Season> Seasons { get; set; } = new List<Season>();
-
-            public void UpdateValues<T>(T provided) where T:struct,Enum
+            CheckTypeAndHandleList(provided, true, (TimeOfDay t) =>
             {
-                CheckTypeAndHandleList(provided,true,(TimeOfDay t) =>
-                {
-                    return RemoveOrAddToList(TimeOfDays, t);
-                },(value =>
-                {
-                    return RemoveOrAddToList(Seasons, value);
-                }),value =>
-                {
-                    return RemoveOrAddToList(MenuCategories, value);
-                });
-            }
-
-            public bool IsSelected<T>(T provided) where T : struct,Enum
+                return RemoveOrAddToList(TimeOfDays, t);
+            }, (value =>
             {
-                return CheckTypeAndHandleList(provided,false,new HandleList<TimeOfDay, bool>((TimeOfDay t) => { return TimeOfDays.Contains(t);}),new HandleList<Season, bool>((Season s) => { return Seasons.Contains(s);}),new HandleList<MenuCategory, bool>((MenuCategory m) => { return MenuCategories.Contains(m);})  );
-            }
-
-
-
-
-            private R CheckTypeAndHandleList<T,R>(T provided, R defaultReturn, HandleList<TimeOfDay,R> handleTimeOfDay, HandleList<Season,R> handleSeason, HandleList<MenuCategory,R> handleMenuCategory) where T : struct, Enum where R:struct
+                return RemoveOrAddToList(Seasons, value);
+            }), value =>
             {
-                if (provided is TimeOfDay day)
-                {
-                    return handleTimeOfDay(day);
-                }
-                else if (provided is MenuCategory category)
-                {
-                    return handleMenuCategory(category);
-                }
-                else if (provided is Season season)
-                {
-                    return handleSeason(season);
-                }
-                return defaultReturn;
-            }
+                return RemoveOrAddToList(MenuCategories, value);
+            });
+        }
 
-            private bool RemoveOrAddToList<T>(List<T> list,T element) where T : struct, Enum
+        public bool IsSelected<T>(T provided) where T : struct, Enum
+        {
+            return CheckTypeAndHandleList(provided, false, new HandleList<TimeOfDay, bool>((TimeOfDay t) => { return TimeOfDays.Contains(t); }), new HandleList<Season, bool>((Season s) => { return Seasons.Contains(s); }), new HandleList<MenuCategory, bool>((MenuCategory m) => { return MenuCategories.Contains(m); }));
+        }
+
+        private R CheckTypeAndHandleList<T, R>(T provided, R defaultReturn, HandleList<TimeOfDay, R> handleTimeOfDay, HandleList<Season, R> handleSeason, HandleList<MenuCategory, R> handleMenuCategory) where T : struct, Enum where R : struct
+        {
+            if (provided is TimeOfDay day)
             {
-                if (list.Contains(element)) list.Remove(element);
-
-                else list.Add(element);
-                return true;
+                return handleTimeOfDay(day);
             }
-
-
-        }
-
-        private void RemoveIngredient(Ingredient ingr)
-        {
-            searchModel.Ingredients.Remove(ingr);
-            StateHasChanged();
-        }
-
-        private void AddToIngredientList(Ingredient ingr)
-        {
-            if (!searchModel.Ingredients.Contains(ingr)) searchModel.Ingredients.Add(ingr);
-            StateHasChanged();
-        }
-
-        protected override void OnInitialized()
-        {
-            searchModel = new MenuSearchRequestModel();
-        }
-
-        private string GetActiveAttribute<T>(T option) where T :struct,Enum
-        {
-            if (selectedEnums.IsSelected(option)) return "active";
-            return "";
-        }
-
-        private void ChangeAdvanced()
-        {
-            isAdvanced = !isAdvanced;
-        }
-
-        private async Task Reset()
-        {
-            isAdvanced = false;
-            var list = await PublicClient.Client.GetFromJsonAsync<List<Menu>>("api/Menus");
-            Results = list.ToArray();
-            var resultChange = ResultsChanged.InvokeAsync(Results);
-            selectedEnums.MenuCategories = new List<MenuCategory>();
-            selectedEnums.Seasons = new List<Season>();
-            selectedEnums.TimeOfDays = new List<TimeOfDay>();
-            searchModel.Ingredients = new List<Ingredient>();
-            searchString = String.Empty;
-            await resultChange;
-        }
-
-        private void UpdateList<T>(ChangeEventArgs e) where T : struct,Enum
-        {
-            T selected;
-            Enum.TryParse<T>(e.Value.ToString(), out selected);
-            selectedEnums.UpdateValues<T>(selected);
-
-        }
-
-        private bool EnumHasFlag<T>(T searchEnum, T toCheck) where T : struct,Enum
-        {
-            return searchEnum.HasFlag(toCheck);
-        }
-
-        private async Task GetMenus()
-        {
-            isAdvanced = false;
-            selectedEnums.MenuCategories.ForEach(e => searchModel.MenuCategory |= e);
-            selectedEnums.Seasons.ForEach(e => searchModel.Season |= e);
-            selectedEnums.TimeOfDays.ForEach(e => searchModel.TimeOfDay |= e);
-
-            if (isAnyMatch)
+            else if (provided is MenuCategory category)
             {
-                searchModel.Filter = searchString;
+                return handleMenuCategory(category);
             }
-            else
+            else if (provided is Season season)
             {
-                searchModel.Name = searchString;
+                return handleSeason(season);
             }
-
-            var response = await PublicClient.Client.PostAsJsonAsync<MenuSearchRequestModel>("api/Search/MenuBy",searchModel);
-            var list = await response.Content.ReadFromJsonAsync<List<Menu>>();
-            Results = list.ToArray();
-            await ResultsChanged.InvokeAsync(Results);
+            return defaultReturn;
         }
+
+        private bool RemoveOrAddToList<T>(List<T> list, T element) where T : struct, Enum
+        {
+            if (list.Contains(element)) list.Remove(element);
+            else list.Add(element);
+            return true;
+        }
+
     }
+
+    private void RemoveIngredient(Ingredient ingr)
+    {
+        searchModel.Ingredients.Remove(ingr);
+        StateHasChanged();
+    }
+
+    private void AddToIngredientList(Ingredient ingr)
+    {
+        if (!searchModel.Ingredients.Contains(ingr)) searchModel.Ingredients.Add(ingr);
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        searchModel = new MenuSearchRequestModel();
+    }
+
+    private string GetActiveAttribute<T>(T option) where T : struct, Enum
+    {
+        if (selectedEnums.IsSelected(option)) return "active";
+        return "";
+    }
+
+    private void ChangeAdvanced()
+    {
+        isAdvanced = !isAdvanced;
+    }
+
+    private async Task Reset()
+    {
+        isAdvanced = false;
+        var list = await PublicClient.Client.GetFromJsonAsync<List<Menu>>("api/Menus");
+        Results = list.ToArray();
+        var resultChange = ResultsChanged.InvokeAsync(Results);
+        selectedEnums.MenuCategories = new List<MenuCategory>();
+        selectedEnums.Seasons = new List<Season>();
+        selectedEnums.TimeOfDays = new List<TimeOfDay>();
+        searchModel.Ingredients = new List<Ingredient>();
+        searchString = String.Empty;
+        await resultChange;
+    }
+
+    private void UpdateList<T>(ChangeEventArgs e) where T : struct, Enum
+    {
+        T selected;
+        Enum.TryParse<T>(e.Value.ToString(), out selected);
+        selectedEnums.UpdateValues<T>(selected);
+
+    }
+
+    private bool EnumHasFlag<T>(T searchEnum, T toCheck) where T : struct, Enum
+    {
+        return searchEnum.HasFlag(toCheck);
+    }
+
+    private async Task GetMenus()
+    {
+        isAdvanced = false;
+        selectedEnums.MenuCategories.ForEach(e => searchModel.MenuCategory |= e);
+        selectedEnums.Seasons.ForEach(e => searchModel.Season |= e);
+        selectedEnums.TimeOfDays.ForEach(e => searchModel.TimeOfDay |= e);
+
+        if (isAnyMatch)
+        {
+            searchModel.Filter = searchString;
+        }
+        else
+        {
+            searchModel.Name = searchString;
+        }
+
+        var response = await PublicClient.Client.PostAsJsonAsync<MenuSearchRequestModel>("api/Search/MenuBy", searchModel);
+        var list = await response.Content.ReadFromJsonAsync<List<Menu>>();
+        Results = list.ToArray();
+        await ResultsChanged.InvokeAsync(Results);
+    }
+}

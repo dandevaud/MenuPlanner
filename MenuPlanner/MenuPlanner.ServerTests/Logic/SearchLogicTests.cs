@@ -9,12 +9,13 @@ using System.Threading.Tasks;
 using MenuPlanner.Server.Data;
 using MenuPlanner.ServerTests;
 using MenuPlanner.Shared.models;
+using MenuPlanner.Shared.models.Search;
 using Moq;
 using NUnit.Framework;
-using Shared.models.Search;
 
 namespace MenuPlanner.Server.Logic.Tests
 {
+    /// <summary>Class to test the Search Logic</summary>
     [TestFixture()]
     public class SearchLogicTests
     {

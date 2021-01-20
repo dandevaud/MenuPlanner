@@ -10,11 +10,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Query;
 
-/// <summary>
-/// Taken from https://docs.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking
-/// </summary>
 namespace MenuPlanner.ServerTests
 {
+    // from https://docs.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking
     internal class TestDbAsyncQueryProvider<TEntity> : IDbAsyncQueryProvider, IAsyncQueryProvider
     {
         private readonly IQueryProvider _inner;

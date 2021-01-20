@@ -8,7 +8,6 @@ namespace MenuPlanner.Shared.models.enums
 {
     public enum UnitEnum
     {
-        //TODO: Defines Units
         [Description("Gram")]
         g = 0,
         [Description("Kilo Gram")]

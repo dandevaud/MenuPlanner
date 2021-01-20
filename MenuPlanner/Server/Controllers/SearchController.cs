@@ -8,14 +8,15 @@ using System.Threading.Tasks;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
 using MenuPlanner.Shared.models;
+using MenuPlanner.Shared.models.Search;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.models.Search;
 
 namespace MenuPlanner.Server.Controllers
 {
     /// <summary>Search API Controller --&gt; handles all Searches for Menus and Ingredients</summary>
     [Authorize]
+    [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
     public class SearchController : ControllerBase

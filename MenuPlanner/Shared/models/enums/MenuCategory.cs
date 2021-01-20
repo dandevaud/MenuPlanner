@@ -16,6 +16,5 @@ namespace MenuPlanner.Shared.models.enums
         Dessert,
         Snacks,
         Drinks
-
     }
 }
