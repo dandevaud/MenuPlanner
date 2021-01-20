@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace MenuPlanner.Server.Controllers
 {
     /// <summary>Auto-generated Auth class</summary>
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class OidcConfigurationController : Controller
     {
         private readonly ILogger<OidcConfigurationController> _logger;
