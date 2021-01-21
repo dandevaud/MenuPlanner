@@ -16,7 +16,7 @@
     <br />
     <br />
     <div class="custom-file">
-        <InputFile OnChange="OnInputFileChange" class="custom-file-input" multiple />
+        <InputFile OnChange="OnInputFileChange" class="custom-file-input" multiple/>
         <label class="custom-file-label">Add Pictures</label>
     </div>
     <br />
@@ -43,17 +43,24 @@
         int i = 0;
         foreach (var imageFile in selectedFiles)
         {
-            var resizedImageFile = await imageFile.RequestImageFileAsync(format, 400, 400);
-            var buffer = new byte[resizedImageFile.Size];
-            await resizedImageFile.OpenReadStream().ReadAsync(buffer);
-
-            Image image = new Image
+            try
             {
-                ImageBytes = buffer,
-                AlternativeName = $"Picture {i++}"
-            };
+                var resizedImageFile = await imageFile.RequestImageFileAsync(format, 400, 400);
+                var buffer = new byte[resizedImageFile.Size];
+                await resizedImageFile.OpenReadStream().ReadAsync(buffer);
 
-            Menu.Images.Add(image);
+                Image image = new Image
+                {
+                    ImageBytes = buffer,
+                    AlternativeName = $"Picture {i++}"
+                };
+
+                Menu.Images.Add(image);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Not a valid jpg File");
+            }
         }
         filesMessage = $"{selectedFiles.Count} file(s) selected";
         this.StateHasChanged();
