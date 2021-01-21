@@ -46,27 +46,12 @@ else
     public async Task GetMenus()
     {
         menus = await PublicClient.Client.GetFromJsonAsync<Menu[]>("api/Menus");
-        foreach (var menu in menus)
-        {
-            LazyLoadImages(menu);
-        }
     }
 
     private void MenusChanged(Menu[] menusChanged)
     {
         menus = menusChanged;
-        foreach (var menu in menus)
-        {
-            LazyLoadImages(menu);
-        }
     }
-
-    public async void LazyLoadImages(Menu menu)
-    {
-        menu.Images = await PublicClient.Client.GetFromJsonAsync<List<Image>>($"api/Menus/Images/{menu.MenuId}");
-        StateHasChanged();
-    }
-
 
 }
 
