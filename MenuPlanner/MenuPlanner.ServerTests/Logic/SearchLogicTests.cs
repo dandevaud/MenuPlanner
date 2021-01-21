@@ -80,10 +80,9 @@ namespace MenuPlanner.Server.Logic.Tests
             var notExpected = mockDb.Ingredients
                 .Where(i => i.Name.Equals("Rind"))
                 .ToList();
-            await ingredientList;
 
-            expected.ForEach(i => Assert.Contains(i, ingredientList.Result.Result));
-            Assert.IsEmpty(ingredientList.Result.Result.FindAll(i => notExpected.Contains(i)));
+            expected.ForEach(i => Assert.Contains(i, ingredientList.Result));
+            Assert.IsEmpty(ingredientList.Result.FindAll(i => notExpected.Contains(i)));
         }
 
         /// <summary>
@@ -107,10 +106,9 @@ namespace MenuPlanner.Server.Logic.Tests
             var notExpected = mockDb.Ingredients
                 .Where(i => i.Name.Equals("Rind"))
                 .ToList();
-            await ingredientList;
 
-            expected.ForEach(i => Assert.Contains(i, ingredientList.Result.Result));
-            Assert.IsEmpty(ingredientList.Result.Result.FindAll(i => notExpected.Contains(i)));
+            expected.ForEach(i => Assert.Contains(i, ingredientList.Result));
+            Assert.IsEmpty(ingredientList.Result.FindAll(i => notExpected.Contains(i)));
         }
 
     }

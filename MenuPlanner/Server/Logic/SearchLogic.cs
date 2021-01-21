@@ -56,12 +56,12 @@ namespace MenuPlanner.Server.Logic
                     .Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || m.Season.ToString().Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || m.TimeOfDay.ToString()
                     .Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || m.Ingredients.Any(i => i.Ingredient.Name.Contains(searchRequest.Filter));
 
-            menuList = GeneralSearchRequestModelHandling<Menu>(searchRequest, menuList, NamePredicate, FilterPredicate);
+            menuList = GeneralSearchRequestModelHandling(searchRequest, menuList, NamePredicate, FilterPredicate);
 
             return new SearchResponseModel<Menu>() { Result = menuList };
         }
 
-        public async Task<SearchResponseModel<Ingredient>> SearchIngredients(IngredientSearchRequestModel searchRequest)
+        public SearchResponseModel<Ingredient> SearchIngredients(IngredientSearchRequestModel searchRequest)
         {
             var ingredientList = _context.Ingredients.ToList();
 
@@ -83,7 +83,7 @@ namespace MenuPlanner.Server.Logic
                 i.Name.Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) ||
                 i.Category.ToString().Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase);
 
-            ingredientList = GeneralSearchRequestModelHandling<Ingredient>(searchRequest, ingredientList, NamePredicate, FilterPredicate);
+            ingredientList = GeneralSearchRequestModelHandling(searchRequest, ingredientList, NamePredicate, FilterPredicate);
 
             return new SearchResponseModel<Ingredient>() { Result = ingredientList };
         }
@@ -186,7 +186,6 @@ namespace MenuPlanner.Server.Logic
                 var menuEntity = _context.Entry(m);
                 menuEntity.State = EntityState.Unchanged;
                 var ingredients = menuEntity.Collection(sm => sm.Ingredients).LoadAsync();
-                var images = menuEntity.Collection(sm => sm.Images).LoadAsync();
                 var comments = menuEntity.Collection(sm => sm.Comments).LoadAsync();
                 foreach (var menuIngredient in m.Ingredients)
                 {
@@ -194,7 +193,6 @@ namespace MenuPlanner.Server.Logic
                     await LoadSubIngredients(menuIngredient.Ingredient);
                 }
                 await ingredients;
-                await images;
                 await comments;
             });
         }

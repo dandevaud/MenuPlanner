@@ -3,14 +3,12 @@
 @inject NavigationManager NavigationManager
 @inject PublicClient PublicClient
 
-
 <MenuSearch Results="@menus" ResultsChanged="@MenusChanged"></MenuSearch>
 <AuthorizeView>
     <Authorized>
         <a href="/AddEditDeleteMenu/" class="btn btn-info" role="button">Add Menu</a>
     </Authorized>
 </AuthorizeView>
-
 
 <hr />
 
@@ -57,7 +55,10 @@ else
     private void MenusChanged(Menu[] menusChanged)
     {
         menus = menusChanged;
-        StateHasChanged();
+        foreach (var menu in menus)
+        {
+            LazyLoadImages(menu);
+        }
     }
 
     public async void LazyLoadImages(Menu menu)

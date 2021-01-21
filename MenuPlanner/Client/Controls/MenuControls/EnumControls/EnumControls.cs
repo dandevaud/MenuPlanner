@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.AspNetCore.Components;
 
 namespace MenuPlanner.Client.Controls.MenuControls.EnumControls
 {

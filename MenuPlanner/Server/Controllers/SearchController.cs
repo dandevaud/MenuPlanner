@@ -62,7 +62,7 @@ namespace MenuPlanner.Server.Controllers
         [HttpGet("MenuWithIngredient")]
         public async Task<ActionResult<List<Menu>>> GetMenuByIngredientName(String filter)
         {
-            var ingredients = await searchLogic.SearchIngredients(new IngredientSearchRequestModel()
+            var ingredients = searchLogic.SearchIngredients(new IngredientSearchRequestModel()
             {
                 Name = filter
             });
@@ -105,9 +105,9 @@ namespace MenuPlanner.Server.Controllers
         /// <returns>Menu Collection</returns>
         [HttpGet("IngredientBy")]
         [AllowAnonymous]
-        public async Task<ActionResult<List<Ingredient>>> GetIngredientBy([FromQuery] IngredientSearchRequestModel searchRequestModel)
+        public ActionResult<List<Ingredient>> GetIngredientBy([FromQuery] IngredientSearchRequestModel searchRequestModel)
         {
-            var searchResponse = await searchLogic.SearchIngredients(searchRequestModel);
+            var searchResponse = searchLogic.SearchIngredients(searchRequestModel);
             return searchResponse.Result;
         }
 

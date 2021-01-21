@@ -33,7 +33,7 @@ else
 
             <MenuImages Menu="@menu"></MenuImages>
 
-            <StarRating Menu="@menu" IsEditable="true" Rating="@StoreRating"></StarRating>
+            <StarRating Menu="@menu" IsEditable="true" Rating="@Rating" StoreRating="@StoreRating"></StarRating>
 
             <EnumControls ProvidedEnum="@menu.TimeOfDay" TEnum="TimeOfDay"
                           UpdateEnum="@((TimeOfDay enu) => { menu.TimeOfDay |= enu; })"
@@ -61,17 +61,17 @@ else
                     <IngredientCard Ingredient="@ingredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
                 }
             }
-            
-        <div class="card-columns">
 
-            @if (menu.Ingredients != null)
-            {
-                @foreach (var menuIngredient in menu.Ingredients)
+            <div class="card-columns">
+
+                @if (menu.Ingredients != null)
                 {
-                    <IngredientCard Css="m-2" MenuIngredient="@menuIngredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="false" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
+                    @foreach (var menuIngredient in menu.Ingredients)
+                    {
+                        <IngredientCard Css="m-2" MenuIngredient="@menuIngredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="false" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
+                    }
                 }
-            }
-        </div>
+            </div>
 
             <br />
             <div class="btn-group">
@@ -86,7 +86,7 @@ else
     </div>
     <br />
     <br />
-    
+
 
     <Modal @ref="modal">
         <Title>Delete?</Title>
@@ -112,7 +112,7 @@ else
 
     private Ingredient ingredient = new Ingredient();
 
-    private int rating;
+    private Double Rating;
 
     private bool isLoading = false;
 
@@ -163,7 +163,7 @@ else
             {
                 string errorMessage = await response.Content.ReadAsStringAsync();
                 Console.WriteLine(errorMessage);
-    //Implement ErrorComponent
+                //Implement ErrorComponent
             }
         }
         finally
@@ -200,16 +200,16 @@ else
 
     private void SetRating()
     {
-        if (rating > 0)
+        if (Rating > 0)
         {
-            menu.AverageRating = ((menu.AverageRating * menu.Votes) + rating) / (menu.Votes + 1);
+            menu.AverageRating = ((menu.AverageRating * menu.Votes) + Rating) / (menu.Votes + 1);
             menu.Votes++;
         }
     }
 
     private void StoreRating(int rating)
     {
-        this.rating = rating;
+        Rating = rating;
     }
 
     public async Task DeleteMenu()

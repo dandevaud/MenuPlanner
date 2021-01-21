@@ -207,7 +207,9 @@
         selectedEnums.Seasons = new List<Season>();
         selectedEnums.TimeOfDays = new List<TimeOfDay>();
         searchModel.Ingredients = new List<Ingredient>();
-        searchString = String.Empty;
+        searchModel.Name = string.Empty;
+        searchModel.Filter = string.Empty;
+        searchString = string.Empty;
         await resultChange;
     }
 
