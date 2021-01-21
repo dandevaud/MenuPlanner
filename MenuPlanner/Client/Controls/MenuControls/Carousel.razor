@@ -4,11 +4,11 @@
 
 @if (images == null)
 {
-    <div style="height: 300px;" class="text-center pt-5">Loading...</div>
+    <div style="height: 2500px;" class="text-center pt-5">Loading...</div>
 }
 else if (images.Count == 0)
 {
-    <div style="height: 300px;" class="text-center pt-5">No images</div>
+    <div style="height: 250px;" class="text-center pt-5">No images</div>
 }
 else
 {
@@ -25,12 +25,12 @@ else
                     @ResetRenderCounter()
                 </ol>
             }
-            <div class="carousel-inner">
+            <div class="carousel-inner" >
                 @foreach (var image in images)
                 {
                     <div class="text-center carousel-item @GetActive()">
                         <!-- TODO: Read correct content type, or add it in the model and add it on reading file -->
-                        <img src="data:image/jpeg;base64, @(Convert.ToBase64String(image.ImageBytes))" alt="@image.AlternativeName">
+                        <img class="d-block w-100" src="data:image/jpeg;base64, @(Convert.ToBase64String(image.ImageBytes))" alt="@image.AlternativeName" style="height: 250px;">
                     </div>
                 }
                 @ResetRenderCounter()
