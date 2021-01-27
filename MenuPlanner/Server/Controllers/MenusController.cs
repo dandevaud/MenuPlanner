@@ -36,7 +36,8 @@ namespace MenuPlanner.Server.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Menu>>> GetMenus()
         {
-            return await _context.Menus.ToListAsync();
+            var menus = (await _context.Menus.ToListAsync()).OrderByDescending(a => a.AverageRating).ToList();
+            return menus;
         }
 
         // GET: api/Menus/5
