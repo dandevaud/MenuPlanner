@@ -35,9 +35,9 @@ namespace MenuPlanner.Server.Logic
             await LoadMenuSubEntities(menuList);
 
             menuList = GetMenuByIngredient(searchRequest, menuList);
-            menuList = FilterByEnums(searchRequest.TimeOfDay, menuList, ((TimeOfDay t, Menu m) => m.TimeOfDay.HasFlag(t)));
-            menuList = FilterByEnums(searchRequest.Season, menuList, ((Season t, Menu m) => m.Season.HasFlag(t)));
-            menuList = FilterByEnums(searchRequest.MenuCategory, menuList, ((MenuCategory t, Menu m) => m.MenuCategory.HasFlag(t)));
+            menuList = FilterByEnumsFlags(searchRequest.TimeOfDay, menuList, ((TimeOfDay t, Menu m) => m.TimeOfDay.HasFlag(t)));
+            menuList = FilterByEnumsFlags(searchRequest.Season, menuList, ((Season t, Menu m) => m.Season.HasFlag(t)));
+            menuList = FilterByEnums(searchRequest.MenuCategory, menuList, ((MenuCategory t, Menu m) => m.MenuCategory.Equals(t)));
 
             if (searchRequest.Votes > 0)
             {
@@ -88,7 +88,7 @@ namespace MenuPlanner.Server.Logic
             return new SearchResponseModel<Ingredient>() { Result = ingredientList };
         }
 
-        private List<M> FilterByEnums<T, M>(T enumFilter, List<M> list, ContainsAnyOf<T, M> anyPredicate) where T : struct, Enum
+        private List<M> FilterByEnumsFlags<T, M>(T enumFilter, List<M> list, ContainsAnyOf<T, M> anyPredicate) where T : struct, Enum
         {
             //Handle default value (is always true if checked by HasFlags)
             if (!enumFilter.GetType().GetDefaultValue().Equals(enumFilter))
@@ -96,6 +96,17 @@ namespace MenuPlanner.Server.Logic
                 var enumList = handleEnums(enumFilter);
                 list = list.Where(m => enumList.Any(en => anyPredicate(en, m)
                  )).ToList();
+            }
+
+            return list;
+        }
+
+        private List<M> FilterByEnums<T, M>(T enumFilter, List<M> list, ContainsAnyOf<T, M> anyPredicate) where T : struct, Enum
+        {
+            //Handle default value (is always true if checked by HasFlags)
+            if (!enumFilter.GetType().GetDefaultValue().Equals(enumFilter))
+            {
+                list = list.Where(m => anyPredicate(enumFilter,m)).ToList();
             }
 
             return list;
