@@ -17,9 +17,10 @@ namespace MenuPlanner.Server.Data
         public virtual DbSet<Ingredient> Ingredients { get; set; }
         public virtual DbSet<MenuIngredient> MenuIngredients { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
+
+        public virtual DbSet<Tag> Tags { get; set; }
         public virtual DbSet<User> Users { get; set; }
-        //why table was created as "Image" and not as "Images"?
-        public virtual DbSet<Image> Image { get; set; }
+        public virtual DbSet<Image> Images { get; set; }
 
         public MenuPlannerContext(DbContextOptions<MenuPlannerContext> dbContextOptions) : base(dbContextOptions)
         {
@@ -40,6 +41,7 @@ namespace MenuPlanner.Server.Data
                     v => string.Join("|", v),
                     v => v.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList()
              );
+            
             modelBuilder
                 .Entity<Ingredient>()
                 .HasIndex(i => i.Name)
