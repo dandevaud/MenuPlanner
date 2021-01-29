@@ -43,7 +43,7 @@ namespace MenuPlanner.Server.Logic
                 entityInDatabase.Images,
                 (Image i) => i.ImageId,
                 (Guid guid) => providedImages.Contains(guid),
-                RemoveSubEntities<Image>(_context.Image, providedImages));
+                RemoveSubEntities<Image>(_context.Images, providedImages));
 
             //Remove all deleted MenuIngredients from DB
             DeleteRemovedEntitiesFromMenu<MenuIngredient>(
@@ -60,7 +60,7 @@ namespace MenuPlanner.Server.Logic
                 DetachEntityFromContext<MenuIngredient>(_context.MenuIngredients).Invoke(menuIngr)
             );
             providedImages.ForEach(imageProv =>
-                DetachEntityFromContext<Image>(_context.Image).Invoke(imageProv)
+                DetachEntityFromContext<Image>(_context.Images).Invoke(imageProv)
             );
 
             _context.Entry(entityInDatabase).State = EntityState.Detached;
@@ -79,7 +79,7 @@ namespace MenuPlanner.Server.Logic
         {
             await LoadMenuSubEntities(menu);
             menu.Ingredients.ToList().ForEach(mi => RemoveSubEntities<MenuIngredient>(_context.MenuIngredients,null).Invoke(mi.Id));
-            menu.Images.ToList().ForEach(i => RemoveSubEntities<Image>(_context.Image, null).Invoke(i.ImageId));
+            menu.Images.ToList().ForEach(i => RemoveSubEntities<Image>(_context.Images, null).Invoke(i.ImageId));
             _context.Menus.Remove(menu);
             await _context.SaveChangesAsync();
         }

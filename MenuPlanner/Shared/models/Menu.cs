@@ -16,13 +16,16 @@ namespace MenuPlanner.Shared.models
         public Guid MenuId { get; set; }
         [Required]
         public string Name { get; set; }
+        public ICollection<Tag> Tags { get; set; }
         public TimeOfDay TimeOfDay { get; set; } //Flags
         public Season Season { get; set; } //Flags
+        public int Portionen { get; set; }
+        public string PortionenDescription { get; set; }
         [Required]
         public string Description { get; set; }
-        //[Required]
+        [Required]
         public ICollection<string> Steps { get; set; }
-        //[Required]
+        [Required]
         public ICollection<MenuIngredient> Ingredients { get; set; } = new List<MenuIngredient>();
         public ICollection<Comment> Comments { get; set; }
         public double AverageRating { get; set; }
