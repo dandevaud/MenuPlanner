@@ -2,6 +2,7 @@
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
+using MenuPlanner.Server.Contracts.Sql;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Models;
 using Microsoft.AspNetCore.Authentication;
@@ -30,25 +31,11 @@ namespace MenuPlanner.Server
         public void ConfigureServices(IServiceCollection services)
         {
 
-            if (Configuration["AuthDataBase:DataBaseUsed"].Equals("SQLite"))
-            {
-                services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite($"Data Source={Configuration["AuthDataBase:ConnectionStrings:DataSource"]}"));
-            }
-            if (Configuration["DataBase:DataBaseUsed"].Equals("SQLite"))
-            {
-                services.AddDbContext<MenuPlannerContext>(options =>
-                    {
-                        options.UseSqlite($"Data Source={Configuration["DataBase:ConnectionStrings:DataSource"]}");
-                        options.EnableSensitiveDataLogging(true);
-                    }
-
-                );
-            }
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //    options.UseSqlServer(
-            //        Configuration.GetConnectionString("DefaultConnection")));
-
+            ISqlConnectionHandler sqlConnection = new SqlConnectionHandler() {Configuration = Configuration};
+            sqlConnection.CredentialsData = sqlConnection.GetCredentialsFromConfiguration("Data");
+            sqlConnection.CredentialsAuth = sqlConnection.GetCredentialsFromConfiguration("Auth");
+            services = sqlConnection.HandleSQLServers(services);
+           
             //Added to handle the EF Reference Loop in Ingredient Model taken from https://stackoverflow.com/a/58155532
             services.AddControllers().AddNewtonsoftJson(o =>
             {
@@ -88,6 +75,8 @@ namespace MenuPlanner.Server
             });
 
         }
+
+       
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
