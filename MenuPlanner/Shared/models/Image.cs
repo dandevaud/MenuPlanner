@@ -14,5 +14,6 @@ namespace MenuPlanner.Shared.models
         public Guid ImageId { get; set; }
         public string AlternativeName { get; set; }
         public Uri Path { get; set; }
+        public byte[] ImageBytes { get; set; }
     }
 }
