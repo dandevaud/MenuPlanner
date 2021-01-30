@@ -13,7 +13,7 @@ namespace MenuPlanner.Shared.models
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-        [Required]
+        [Required,ForeignKey("IngredientId")]
         public Ingredient Ingredient { get; set; }
         [NotMapped]
         public Quantity Quantity { get; set; }

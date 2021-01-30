@@ -3,14 +3,16 @@ using System;
 using MenuPlanner.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MenuPlanner.Server.Migrations
 {
     [DbContext(typeof(MenuPlannerContext))]
-    partial class MenuPlannerContextModelSnapshot : ModelSnapshot
+    [Migration("20210130112841_MenuPlanner-V0.3")]
+    partial class MenuPlannerV03
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

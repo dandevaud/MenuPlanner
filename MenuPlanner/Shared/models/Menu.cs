@@ -19,8 +19,8 @@ namespace MenuPlanner.Shared.models
         public ICollection<Tag> Tags { get; set; }
         public TimeOfDay TimeOfDay { get; set; } //Flags
         public Season Season { get; set; } //Flags
-        public int Portionen { get; set; }
-        public string PortionenDescription { get; set; }
+        public int Portion { get; set; }
+        public string PortionDescription { get; set; }
         [Required]
         public string Description { get; set; }
         [Required]

@@ -16,8 +16,8 @@ namespace MenuPlanner.Shared.models
         public Guid IngredientId { get; set; }
         [Required]
         public string Name { get; set; }
-        public ICollection<Ingredient> ParentIngredients { get; set; }
-        public ICollection<Ingredient> ChildIngredients { get; set; }
+        public ICollection<IngredientToIngredient> ParentIngredients { get; set; }
+        public ICollection<IngredientToIngredient> ChildIngredients { get; set; }
         public ICollection<Ingredient> SimilarIngredients { get; set; }
         public IngredientCategory Category { get; set; }
         [Range(0, int.MaxValue, ErrorMessage = "Only positive number allowed.")]
