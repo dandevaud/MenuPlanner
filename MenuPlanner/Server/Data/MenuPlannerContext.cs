@@ -19,7 +19,7 @@ namespace MenuPlanner.Server.Data
         public virtual DbSet<Comment> Comments { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Image> Images { get; set; }
-        public virtual DbSet<IngredientToIngredient> IngredientToIngredients { get; set; }
+       
 
         public MenuPlannerContext(DbContextOptions<MenuPlannerContext> dbContextOptions) : base(dbContextOptions)
         {
@@ -40,32 +40,13 @@ namespace MenuPlanner.Server.Data
                     v => string.Join("|", v),
                     v => v.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList()
              );
-            modelBuilder
-                .Entity<IngredientToIngredient>()
-                .HasKey(ii => new {ii.Parent, ii.Child});
-            modelBuilder
+           modelBuilder
                 .Entity<Ingredient>()
                 .HasIndex(i => i.Name)
                 .IsUnique();
-            modelBuilder
-                .Entity<IngredientToIngredient>()
-                .HasOne<Ingredient>(ing => ing.Parent)
-                .WithMany(ing => ing.ChildIngredients)
-                .HasForeignKey(sc => sc.ParentId);
+         
 
-            modelBuilder
-                .Entity<IngredientToIngredient>()
-                .HasOne<Ingredient>(ing => ing.Child)
-                .WithMany(ing => ing.ParentIngredients)
-                .HasForeignKey(sc => sc.ChildId);
-
-            modelBuilder
-                .Entity<Ingredient>()
-                .HasMany<Ingredient>(ing => ing.SimilarIngredients)
-                .WithMany(ing => ing.SimilarIngredients);
-                
-
-            modelBuilder
+           modelBuilder
                 .Entity<Menu>()
                 .HasIndex(i => i.Name)
                 .IsUnique();
