@@ -6,11 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MenuPlanner.Shared.Models;
 using MenuPlanner.Shared.models.enums;
 
 namespace MenuPlanner.Shared.models
 {
-    public class Ingredient
+    public class Ingredient : IEntity
     {
         [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid IngredientId { get; set; }

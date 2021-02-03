@@ -24,11 +24,13 @@ namespace MenuPlanner.Server.Controllers
     {
         private readonly MenuPlannerContext _context;
         private readonly MenuEntityUpdater entityUpdater;
+        private readonly SearchLogic search;
 
         public MenusController(MenuPlannerContext context)
         {
             _context = context;
             entityUpdater = new MenuEntityUpdater(context);
+            search = new SearchLogic(context);
         }
 
         // GET: api/Menus
@@ -36,8 +38,7 @@ namespace MenuPlanner.Server.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Menu>>> GetMenus()
         {
-            var menus = (await _context.Menus.ToListAsync()).OrderByDescending(a => a.AverageRating).ToList();
-            return menus;
+            return search.GetAllMenus().Result.Result;
         }
 
         // GET: api/Menus/5

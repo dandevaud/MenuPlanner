@@ -7,10 +7,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using MenuPlanner.Shared.models.enums;
+using MenuPlanner.Shared.Models;
 
 namespace MenuPlanner.Shared.models
 {
-    public class Menu
+    public class Menu :IEntity
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid MenuId { get; set; }
@@ -19,8 +20,9 @@ namespace MenuPlanner.Shared.models
         public ICollection<Tag> Tags { get; set; }
         public TimeOfDay TimeOfDay { get; set; } //Flags
         public Season Season { get; set; } //Flags
-        public int Portion { get; set; }
-        public string PortionDescription { get; set; }
+        public int Portion { get; set; } = 4;
+        [StringLength(35, ErrorMessage = "Portion Description is to long (25 Character limit)")]
+        public string PortionDescription { get; set; } = "Persons";
         [Required]
         public string Description { get; set; }
         [Required]

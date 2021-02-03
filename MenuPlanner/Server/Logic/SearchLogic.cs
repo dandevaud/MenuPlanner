@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using IdentityServer4.Extensions;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Shared.models;
+using MenuPlanner.Shared.Models;
 using MenuPlanner.Shared.models.enums;
 using MenuPlanner.Shared.models.Search;
 using Microsoft.EntityFrameworkCore;
@@ -29,8 +30,20 @@ namespace MenuPlanner.Server.Logic
             _context = context;
         }
 
+        public async Task<SearchResponseModel<Menu>> GetAllMenus()
+        {
+            var menus = (await _context.Menus.ToListAsync()).OrderByDescending(a => a.AverageRating).ToList();
+            return new SearchResponseModel<Menu>() {Result = menus};
+        }
+
         public async Task<SearchResponseModel<Menu>> SearchMenus(MenuSearchRequestModel searchRequest)
         {
+            
+          
+            if (!searchRequest.Id.Equals(Guid.Empty))
+            {
+                var menuList = _context.FindAsync<Menu>(searchRequest.Id);
+            }
             var menuList = _context.Menus.ToList();
             await LoadMenuSubEntities(menuList);
 
@@ -188,6 +201,13 @@ namespace MenuPlanner.Server.Logic
             }
 
             return list;
+        }
+
+        private async Task<List<T>> GetEntityById<T>(SearchRequestModel searchRequest) where T : class,IEntity
+        {
+            return new List<T>(){
+                await _context.FindAsync<T>(searchRequest.Id)
+            };
         }
 
         private async Task LoadMenuSubEntities(List<Menu> menuList)
