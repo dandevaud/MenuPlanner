@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
 using MenuPlanner.Shared.models;
@@ -24,12 +25,14 @@ namespace MenuPlanner.Server.Controllers
     public class IngredientsController : ControllerBase
     {
         private readonly MenuPlannerContext _context;
-        private IngredientEntityUpdater ingredientEntityUpdater;
+        private readonly IIngredientEntityUpdater _ingredientEntityUpdater;
+        private readonly ISearchLogic _searchLogic;
 
         public IngredientsController(MenuPlannerContext context)
         {
             _context = context;
-            ingredientEntityUpdater = new IngredientEntityUpdater(context);
+            _ingredientEntityUpdater = new IngredientEntityUpdater(context);
+            _searchLogic = new SearchLogic(context);
         }
 
         // GET: api/Ingredients
@@ -67,7 +70,7 @@ namespace MenuPlanner.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutIngredient(Guid id, Ingredient ingredient)
         {
-            if (id != ingredient.IngredientId)
+            if (id != ingredient.Id)
             {
                 return BadRequest();
             }
@@ -100,9 +103,9 @@ namespace MenuPlanner.Server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Ingredient>> PostIngredient(Ingredient ingredient)
         {
-            await ingredientEntityUpdater.CheckIfIngredientExistsAndUpdateOrAdd(ingredient);
+            await _ingredientEntityUpdater.CheckIfIngredientExistsAndUpdateOrAdd(ingredient);
 
-            return CreatedAtAction("GetIngredient", new { id = ingredient.IngredientId }, ingredient);
+            return CreatedAtAction("GetIngredient", new { id = ingredient.Id }, ingredient);
         }
 
         // DELETE: api/Ingredients/5
@@ -123,7 +126,7 @@ namespace MenuPlanner.Server.Controllers
 
         private bool IngredientExists(Guid id)
         {
-            return _context.Ingredients.Any(e => e.IngredientId == id);
+            return _context.Ingredients.Any(e => e.Id == id);
         }
     }
 }

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
 using MenuPlanner.Shared.models;
@@ -22,12 +23,12 @@ namespace MenuPlanner.Server.Controllers
     public class SearchController : ControllerBase
     {
         private readonly MenuPlannerContext _context;
-        private readonly SearchLogic searchLogic;
+        private readonly ISearchLogic _searchLogic;
 
         public SearchController(MenuPlannerContext context)
         {
             _context = context;
-            searchLogic = new SearchLogic(context);
+            _searchLogic = new SearchLogic(context);
         }
 
         /// <summary>Gets the menu for ingredient. GET: api/Search/MenuWithIngredient/5</summary>
@@ -47,7 +48,7 @@ namespace MenuPlanner.Server.Controllers
         public async Task<ActionResult<List<Menu>>> GetMenuForIngredient(Ingredient ingredient)
         {
 
-            var menuList = await searchLogic.SearchMenus(new MenuSearchRequestModel()
+            var menuList = await _searchLogic.SearchMenus(new MenuSearchRequestModel()
             {
                 Ingredients = new List<Ingredient>(){
                     ingredient}
@@ -62,12 +63,12 @@ namespace MenuPlanner.Server.Controllers
         [HttpGet("MenuWithIngredient")]
         public async Task<ActionResult<List<Menu>>> GetMenuByIngredientName(String filter)
         {
-            var ingredients = searchLogic.SearchIngredients(new IngredientSearchRequestModel()
+            var ingredients = await _searchLogic.SearchIngredients(new IngredientSearchRequestModel()
             {
                 Name = filter
             });
 
-            var toReturn = await searchLogic.SearchMenus(new MenuSearchRequestModel()
+            var toReturn = await _searchLogic.SearchMenus(new MenuSearchRequestModel()
             {
                 Ingredients = ingredients.Result
             });
@@ -83,7 +84,7 @@ namespace MenuPlanner.Server.Controllers
         [HttpGet("MenuBy")]
         public async Task<ActionResult<List<Menu>>> GetMenuBy([FromQuery] MenuSearchRequestModel searchRequestModel)
         {
-            var searchResponse = await searchLogic.SearchMenus(searchRequestModel);
+            var searchResponse = await _searchLogic.SearchMenus(searchRequestModel);
             return searchResponse.Result;
         }
 
@@ -94,7 +95,7 @@ namespace MenuPlanner.Server.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<List<Menu>>> GetMenuByPost(MenuSearchRequestModel searchRequestModel)
         {
-            var searchResponse = await searchLogic.SearchMenus(searchRequestModel);
+            var searchResponse = await _searchLogic.SearchMenus(searchRequestModel);
             return searchResponse.Result;
         }
 
@@ -105,9 +106,9 @@ namespace MenuPlanner.Server.Controllers
         /// <returns>Menu Collection</returns>
         [HttpGet("IngredientBy")]
         [AllowAnonymous]
-        public ActionResult<List<Ingredient>> GetIngredientBy([FromQuery] IngredientSearchRequestModel searchRequestModel)
+        public async Task<ActionResult<List<Ingredient>>> GetIngredientBy([FromQuery] IngredientSearchRequestModel searchRequestModel)
         {
-            var searchResponse = searchLogic.SearchIngredients(searchRequestModel);
+            var searchResponse = await _searchLogic.SearchIngredients(searchRequestModel);
             return searchResponse.Result;
         }
 
@@ -117,7 +118,7 @@ namespace MenuPlanner.Server.Controllers
         [HttpGet("Menu")]
         public async Task<ActionResult<List<Menu>>> GetMenu(String filter)
         {
-            var toRet = await searchLogic.SearchMenus(new MenuSearchRequestModel()
+            var toRet = await _searchLogic.SearchMenus(new MenuSearchRequestModel()
             {
                 Filter = filter
             });

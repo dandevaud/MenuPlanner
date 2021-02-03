@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Extensions;
+using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.Models;
@@ -21,7 +22,7 @@ namespace MenuPlanner.Server.Logic
     public delegate bool ContainsAnyOf<T, M>(T enumIn, M model);
 
     /// <summary>Class used to return the Menus from Database, based on filter object</summary>
-    public class SearchLogic
+    public class SearchLogic : ISearchLogic
     {
         private readonly MenuPlannerContext _context;
 
@@ -38,15 +39,18 @@ namespace MenuPlanner.Server.Logic
 
         public async Task<SearchResponseModel<Menu>> SearchMenus(MenuSearchRequestModel searchRequest)
         {
-            
-          
+           
             if (!searchRequest.Id.Equals(Guid.Empty))
             {
-                var menuList = _context.FindAsync<Menu>(searchRequest.Id);
-            }
-            var menuList = _context.Menus.ToList();
-            await LoadMenuSubEntities(menuList);
 
+                var entities = await GetEntityById<Menu>(searchRequest);
+                entities.ForEach(async i => await LoadMenuSubEntities(i));
+                return new SearchResponseModel<Menu>() { Result = entities };
+
+            }
+           var menuList = _context.Menus.ToList();
+           menuList.ForEach(async m => await LoadMenuSubEntities(m));
+            
             menuList = GetMenuByIngredient(searchRequest, menuList);
             menuList = FilterByEnumsFlags(searchRequest.TimeOfDay, menuList, ((TimeOfDay t, Menu m) => m.TimeOfDay.HasFlag(t)));
             menuList = FilterByEnumsFlags(searchRequest.Season, menuList, ((Season t, Menu m) => m.Season.HasFlag(t)));
@@ -74,8 +78,15 @@ namespace MenuPlanner.Server.Logic
             return new SearchResponseModel<Menu>() { Result = menuList };
         }
 
-        public SearchResponseModel<Ingredient> SearchIngredients(IngredientSearchRequestModel searchRequest)
+        public async Task<SearchResponseModel<Ingredient>> SearchIngredients(IngredientSearchRequestModel searchRequest)
         {
+            if (!searchRequest.Id.Equals(Guid.Empty))
+            {
+                var entities = await GetEntityById<Ingredient>(searchRequest);
+                entities.ForEach(async i => await LoadSubIngredients(i));
+                return new SearchResponseModel<Ingredient>() { Result = entities  };
+
+            }
             var ingredientList = _context.Ingredients.ToList();
 
             if (searchRequest.Calories > 0)
@@ -145,7 +156,7 @@ namespace MenuPlanner.Server.Logic
                 var ingredients = new List<Ingredient>();
                 searchRequest.Ingredients.ToList().ForEach(async i =>
                 {
-                    var entity = await _context.Ingredients.FindAsync(i.IngredientId);
+                    var entity = await _context.Ingredients.FindAsync(i.Id);
                     ingredients.Add(entity);
 
                 });
@@ -161,7 +172,7 @@ namespace MenuPlanner.Server.Logic
                         Any(i =>
                             ingredientsToLookFor.
                                 Any(itlf =>
-                                    itlf.IngredientId.Equals(i.Ingredient.IngredientId)))).
+                                    itlf.Id.Equals(i.Ingredient.Id)))).
                     ToList();
             }
 
@@ -203,29 +214,30 @@ namespace MenuPlanner.Server.Logic
             return list;
         }
 
-        private async Task<List<T>> GetEntityById<T>(SearchRequestModel searchRequest) where T : class,IEntity
+        private async Task<List<T>> GetEntityById<T>(SearchRequestModel searchRequest) where T : Entity
         {
             return new List<T>(){
                 await _context.FindAsync<T>(searchRequest.Id)
             };
         }
 
-        private async Task LoadMenuSubEntities(List<Menu> menuList)
+        private async Task LoadMenuSubEntities(Menu menu)
         {
-            menuList.ForEach(async m =>
-            {
-                var menuEntity = _context.Entry(m);
+            
+                var menuEntity = _context.Entry(menu);
                 menuEntity.State = EntityState.Unchanged;
                 var ingredients = menuEntity.Collection(sm => sm.Ingredients).LoadAsync();
                 var comments = menuEntity.Collection(sm => sm.Comments).LoadAsync();
-                foreach (var menuIngredient in m.Ingredients)
+                var images = menuEntity.Collection(m => m.Images).LoadAsync();
+            foreach (var menuIngredient in menu.Ingredients)
                 {
                     await _context.Entry(menuIngredient).Reference(mi => mi.Ingredient).LoadAsync();
                     await LoadSubIngredients(menuIngredient.Ingredient);
                 }
                 await ingredients;
                 await comments;
-            });
+                await images;
+
         }
 
         private async Task LoadSubIngredients(Ingredient ing)
@@ -233,7 +245,7 @@ namespace MenuPlanner.Server.Logic
             EntityEntry<Ingredient> entry;
 
             entry = _context.ChangeTracker.Entries<Ingredient>()
-                 .FirstOrDefault(i => i.Entity.IngredientId.Equals(ing.IngredientId));
+                 .FirstOrDefault(i => i.Entity.Id.Equals(ing.Id));
 
             if (entry == null)
             {

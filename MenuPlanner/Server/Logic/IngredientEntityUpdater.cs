@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Shared.models;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MenuPlanner.Server.Logic
 {
     /// <summary>Class used to update Ingredient entities in Database</summary>
-    public class IngredientEntityUpdater
+    public class IngredientEntityUpdater : IIngredientEntityUpdater
     {
         private readonly MenuPlannerContext _context;
 
@@ -33,12 +34,12 @@ namespace MenuPlanner.Server.Logic
         {
             if (await _context.Ingredients.AnyAsync(x => x.Name.Equals(ingredient.Name)))
             {
-                var existing = await _context.Ingredients.FirstAsync(x => x.Name.Equals(ingredient.Name)) ?? await _context.Ingredients.FindAsync(ingredient.IngredientId);
+                var existing = await _context.Ingredients.FirstAsync(x => x.Name.Equals(ingredient.Name)) ?? await _context.Ingredients.FindAsync(ingredient.Id);
                 await HandleExitstingEntity(ingredient, existing);
             }
-            else if (_context.Ingredients.FindAsync(ingredient.IngredientId).Result != null)
+            else if (_context.Ingredients.FindAsync(ingredient.Id).Result != null)
             {
-                var existing = await _context.Ingredients.FindAsync(ingredient.IngredientId);
+                var existing = await _context.Ingredients.FindAsync(ingredient.Id);
 
                 await HandleExitstingEntity(ingredient, existing);
             }
@@ -55,7 +56,7 @@ namespace MenuPlanner.Server.Logic
         {
             await _context.Entry(existing).Collection(i => i.ChildIngredients).LoadAsync();
             await _context.Entry(existing).Collection(i => i.ParentIngredients).LoadAsync();
-            ingredient.IngredientId = existing.IngredientId;
+            ingredient.Id = existing.Id;
             _context.Ingredients.Update(existing)?.CurrentValues?.SetValues(ingredient);
             await UpdateEachParentIngredient(existing, ingredient);
         }
@@ -69,11 +70,11 @@ namespace MenuPlanner.Server.Logic
                 await _context.Entry(ingredient)?.Collection(i => i.ChildIngredients).LoadAsync();
                 await _context.Entry(ingredient)?.Collection(i => i.ParentIngredients).LoadAsync();
 
-                var updatedAddedParentIngredients = provided.ParentIngredients.Select(ppi => ppi.IngredientId).ToList()
-                    .Except(ingredient.ParentIngredients.Select(ipi => ipi.IngredientId).ToList()).ToList();
+                var updatedAddedParentIngredients = provided.ParentIngredients.Select(ppi => ppi.Id).ToList()
+                    .Except(ingredient.ParentIngredients.Select(ipi => ipi.Id).ToList()).ToList();
 
                 //remove Child Ingredients from removed Parents
-                ingredient.ParentIngredients.Select(pi => pi.IngredientId).ToList().Except(provided.ParentIngredients.Select(ppi => ppi.IngredientId).ToList()).ToList().ForEach(async i =>
+                ingredient.ParentIngredients.Select(pi => pi.Id).ToList().Except(provided.ParentIngredients.Select(ppi => ppi.Id).ToList()).ToList().ForEach(async i =>
                 {
                     var entry = await _context.Ingredients.FindAsync(i);
                     var entity = _context.Ingredients.Update(entry);
@@ -88,7 +89,7 @@ namespace MenuPlanner.Server.Logic
             else
             {
                 updatedList = new List<Ingredient>();
-                ingredient.ParentIngredients.Select(i => i.IngredientId).ToList().ForEach(async uapi =>
+                ingredient.ParentIngredients.Select(i => i.Id).ToList().ForEach(async uapi =>
                 {
                     updatedList = await AddIngredientToChildIngredientOfParent(ingredient, uapi, updatedList);
                 });

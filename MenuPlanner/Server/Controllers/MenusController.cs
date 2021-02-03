@@ -4,14 +4,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using IdentityServer4.Extensions;
+using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
 using MenuPlanner.Shared.models;
+using MenuPlanner.Shared.models.Search;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace MenuPlanner.Server.Controllers
 {
@@ -23,14 +24,14 @@ namespace MenuPlanner.Server.Controllers
     public class MenusController : ControllerBase
     {
         private readonly MenuPlannerContext _context;
-        private readonly MenuEntityUpdater entityUpdater;
-        private readonly SearchLogic search;
+        private readonly IMenuEntityUpdater _entityUpdater;
+        private readonly ISearchLogic _search;
 
         public MenusController(MenuPlannerContext context)
         {
             _context = context;
-            entityUpdater = new MenuEntityUpdater(context);
-            search = new SearchLogic(context);
+            _entityUpdater = new MenuEntityUpdater(context);
+            _search = new SearchLogic(context);
         }
 
         // GET: api/Menus
@@ -38,7 +39,7 @@ namespace MenuPlanner.Server.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Menu>>> GetMenus()
         {
-            return search.GetAllMenus().Result.Result;
+            return _search.GetAllMenus().Result.Result;
         }
 
         // GET: api/Menus/5
@@ -46,26 +47,17 @@ namespace MenuPlanner.Server.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<Menu>> GetMenu(Guid id)
         {
-            var menu = await _context.Menus.FindAsync(id);
+            var menu = await _search.SearchMenus(new MenuSearchRequestModel()
+            {
+                Id = id
+            });
 
-            if (menu == null)
+            if (menu.Result.IsNullOrEmpty())
             {
                 return NotFound();
             }
-            //load ingredients
-            await _context.Entry(menu).Collection(m => m.Ingredients).LoadAsync();
 
-            menu?.Ingredients?.ToList().ForEach(m =>
-                _context.Entry(m).Reference<Ingredient>(
-                        i => i.Ingredient
-                    )
-                    .Load());
-
-            //load images
-            await _context.Entry(menu).Collection(m => m.Images).LoadAsync();
-            //load Comments
-            await _context.Entry(menu).Collection(m => m.Comments).LoadAsync();
-            return menu;
+            return menu.Result[0];
         }
 
         /// <summary>
@@ -77,15 +69,15 @@ namespace MenuPlanner.Server.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<List<Image>>> GetImages(Guid id)
         {
-            var menu = await _context.Menus.FindAsync(id);
+            var menu = await _search.SearchMenus(new MenuSearchRequestModel() { Id = id });
 
-            if (menu == null)
+            if (menu.Result.IsNullOrEmpty())
             {
                 return NotFound();
             }
             //load images
-            await _context.Entry(menu).Collection(m => m.Images).LoadAsync();
-            return Ok(menu.Images);
+
+            return Ok(menu.Result[0].Images);
         }
 
         // PUT: api/Menus/5
@@ -93,20 +85,12 @@ namespace MenuPlanner.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMenu(Guid id, Menu menu)
         {
-            if (id != menu.MenuId)
+            if (id != menu.Id)
             {
                 return BadRequest();
             }
 
-            //to improve -> remove all the images from this menu
-            var foundMenu = await _context.Menus.FindAsync(id);
-            if (foundMenu == null)
-            {
-                return NotFound();
-            }
-
-            await entityUpdater.UpdateMenuInContext(menu, foundMenu);
-
+            await _entityUpdater.UpdateMenuInContext(menu);
 
             return NoContent();
         }
@@ -117,27 +101,19 @@ namespace MenuPlanner.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<Menu>> PostMenu(Menu menu)
         {
-            _context.Menus.Add(menu);
-            foreach (var menuIngredient in menu.Ingredients)
-            {
-                _context.Entry(menuIngredient.Ingredient).State = EntityState.Detached;
-            }
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMenu", new { id = menu.MenuId }, menu);
+            await _entityUpdater.UpdateMenuInContext(menu);
+
+            return CreatedAtAction("GetMenu", new { id = menu.Id }, menu);
         }
 
         // DELETE: api/Menus/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMenu(Guid id)
         {
-            var menu = await _context.Menus.FindAsync(id);
-            if (menu == null)
-            {
-                return NotFound();
-            }
 
-            await entityUpdater.DeleteMenuFromDatabase(menu);
+
+            await _entityUpdater.DeleteMenuFromDatabase(new Menu() { Id = id });
 
             return NoContent();
         }
