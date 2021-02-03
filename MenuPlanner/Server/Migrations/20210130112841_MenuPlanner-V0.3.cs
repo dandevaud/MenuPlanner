@@ -56,7 +56,7 @@ namespace MenuPlanner.Server.Migrations
                 nullable: true);
 
             migrationBuilder.AlterColumn<Guid>(
-                name: "IngredientId",
+                name: "Id",
                 table: "MenuIngredients",
                 type: "TEXT",
                 nullable: false,
@@ -86,13 +86,13 @@ namespace MenuPlanner.Server.Migrations
                         name: "FK_IngredientToIngredient_Ingredients_Ing1IngredientId",
                         column: x => x.Ing1IngredientId,
                         principalTable: "Ingredients",
-                        principalColumn: "IngredientId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_IngredientToIngredient_Ingredients_Ing2IngredientId",
                         column: x => x.Ing2IngredientId,
                         principalTable: "Ingredients",
-                        principalColumn: "IngredientId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -122,7 +122,7 @@ namespace MenuPlanner.Server.Migrations
                         name: "FK_MenuTag_Menus_MenusMenuId",
                         column: x => x.MenusMenuId,
                         principalTable: "Menus",
-                        principalColumn: "MenuId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_MenuTag_Tag_TagsTagId",
@@ -150,17 +150,17 @@ namespace MenuPlanner.Server.Migrations
             migrationBuilder.AddForeignKey(
                 name: "FK_Images_Menus_MenuId",
                 table: "Images",
-                column: "MenuId",
+                column: "Id",
                 principalTable: "Menus",
-                principalColumn: "MenuId",
+                principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_MenuIngredients_Ingredients_IngredientId",
                 table: "MenuIngredients",
-                column: "IngredientId",
+                column: "Id",
                 principalTable: "Ingredients",
-                principalColumn: "IngredientId",
+                principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
 
@@ -220,7 +220,7 @@ namespace MenuPlanner.Server.Migrations
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AlterColumn<Guid>(
-                name: "IngredientId",
+                name: "Id",
                 table: "MenuIngredients",
                 type: "TEXT",
                 nullable: true,
@@ -235,17 +235,17 @@ namespace MenuPlanner.Server.Migrations
             migrationBuilder.AddForeignKey(
                 name: "FK_Image_Menus_MenuId",
                 table: "Image",
-                column: "MenuId",
+                column: "Id",
                 principalTable: "Menus",
-                principalColumn: "MenuId",
+                principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_MenuIngredients_Ingredients_IngredientId",
                 table: "MenuIngredients",
-                column: "IngredientId",
+                column: "Id",
                 principalTable: "Ingredients",
-                principalColumn: "IngredientId",
+                principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }
     }

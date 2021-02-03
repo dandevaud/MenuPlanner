@@ -33,13 +33,13 @@ namespace MenuPlanner.Server.Migrations
                         name: "FK_IngredientIngredient_Ingredients_ChildIngredientsIngredientId",
                         column: x => x.ChildIngredientsIngredientId,
                         principalTable: "Ingredients",
-                        principalColumn: "IngredientId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_IngredientIngredient_Ingredients_ParentIngredientsIngredientId",
                         column: x => x.ParentIngredientsIngredientId,
                         principalTable: "Ingredients",
-                        principalColumn: "IngredientId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -70,7 +70,7 @@ namespace MenuPlanner.Server.Migrations
                 table: "Ingredients",
                 column: "IngredientId1",
                 principalTable: "Ingredients",
-                principalColumn: "IngredientId",
+                principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }
     }

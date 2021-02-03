@@ -11,12 +11,8 @@ using MenuPlanner.Shared.Models;
 
 namespace MenuPlanner.Shared.models
 {
-    public class Menu :IEntity
+    public class Menu :Entity
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid MenuId { get; set; }
-        [Required]
-        public string Name { get; set; }
         public ICollection<Tag> Tags { get; set; }
         public TimeOfDay TimeOfDay { get; set; } //Flags
         public Season Season { get; set; } //Flags

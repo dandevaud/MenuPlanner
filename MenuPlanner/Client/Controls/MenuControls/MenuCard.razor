@@ -1,10 +1,10 @@
 ﻿@using MenuPlanner.Shared.models
 
 <div class="card m-2" style="width: 22rem">
-    <Carousel Id="@Menu.MenuId"></Carousel>
+    <Carousel Id="@Menu.Id"></Carousel>
 
     <div class="card-body" style="transform: rotate(0);">
-        <a href="ShowMenu/@Menu.MenuId" class="text-warning stretched-link"></a>
+        <a href="ShowMenu/@Menu.Id" class="text-warning stretched-link"></a>
         <h5 class="card-title">@Menu.Name</h5>
         <StarRating Menu="@Menu" IsEditable="false"></StarRating>
         <p class="card-text">@Menu.Description</p>
@@ -12,7 +12,7 @@
 
     <AuthorizeView>
         <Authorized>
-            <div class="card-footer"><a href="AddEditDeleteMenu/@Menu.MenuId" class="btn btn-info">Edit</a></div>
+            <div class="card-footer"><a href="AddEditDeleteMenu/@Menu.Id" class="btn btn-info">Edit</a></div>
         </Authorized>
     </AuthorizeView>
 

@@ -37,13 +37,13 @@ namespace MenuPlanner.ServerTests
         {
             var pouletGschnetzlets = new Ingredient()
             {
-                IngredientId = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 Name = "Poulet Geschnetzletes",
             };
 
             var poulet = new Ingredient()
             {
-                IngredientId = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 Name = "Poulet",
                 ChildIngredients = new List<Ingredient>()
                 {
@@ -53,7 +53,7 @@ namespace MenuPlanner.ServerTests
 
             var huhn = new Ingredient()
             {
-                IngredientId = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 Name = "Huhn",
                 ChildIngredients = new List<Ingredient>()
                 {
@@ -63,13 +63,13 @@ namespace MenuPlanner.ServerTests
 
             var rind = new Ingredient()
             {
-                IngredientId = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 Name = "Rind"
             };
 
             var oel = new Ingredient()
             {
-                IngredientId = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 Name = "Öl"
             };
 
@@ -138,31 +138,31 @@ namespace MenuPlanner.ServerTests
         {
             Menus.Add(new Menu()
             {
-                MenuId = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 Name = "Chicken Nuggets"
             });
 
             Menus.Add(new Menu()
             {
-                MenuId = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 Name = "Pouletbrüstli"
             });
 
             Menus.Add(new Menu()
             {
-                MenuId = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 Name = "Ofen Huhn"
             });
 
             Menus.Add(new Menu()
             {
-                MenuId = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 Name = "Steak"
             });
 
             Menus.Add(new Menu()
             {
-                MenuId = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 Name = "Old Name"
             });
         }

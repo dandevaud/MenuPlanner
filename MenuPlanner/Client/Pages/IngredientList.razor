@@ -93,7 +93,7 @@ else
                     <td>@ingredient.Calories</td>
                     <td>@ingredient.Price</td>
                     <td><a @onclick="(() => newIngredient = ingredient)" class="btn btn-primary" href="@(NavigationManager.Uri)#edit">Edit</a></td>
-                    <td><a @onclick="(() => DeleteIngredient(ingredient.IngredientId))" class="btn btn-danger">Delete</a></td>
+                    <td><a @onclick="(() => DeleteIngredient(ingredient.Id))" class="btn btn-danger">Delete</a></td>
                 </tr>
             }
         </tbody>
@@ -165,7 +165,7 @@ else
 
     private void StoreParentIngredient(Ingredient ingredient)
     {
-        if (!newIngredient.ParentIngredients.Any(i => i.IngredientId == ingredient.IngredientId))
+        if (!newIngredient.ParentIngredients.Any(i => i.Id == ingredient.Id))
         {
             newIngredient.ParentIngredients.Add(ingredient);
         }

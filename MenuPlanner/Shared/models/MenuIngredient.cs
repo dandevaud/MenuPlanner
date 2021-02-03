@@ -13,11 +13,11 @@ namespace MenuPlanner.Shared.models
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-        [Required,ForeignKey("IngredientId")]
+        [Required,ForeignKey("Id")]
         public Ingredient Ingredient { get; set; }
         [NotMapped]
         public Quantity Quantity { get; set; }
-        [ForeignKey("MenuId")]
+        [ForeignKey("Id")]
         public Menu Menu { get; set; }
         [Required]
         //https://stackoverflow.com/questions/8973027/ef-code-first-map-dictionary-or-custom-type-as-an-nvarchar

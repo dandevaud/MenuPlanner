@@ -37,12 +37,12 @@ namespace MenuPlanner.ServerTests.Logic
         {
             var newMenuName = "New Name";
             Menu existingMenu = mockDb.Menus.Find(i => i.Name.Equals("Old Name"));
-            Menu menu = new Menu() { MenuId = existingMenu.MenuId, Name = newMenuName };
+            Menu menu = new Menu() { Id = existingMenu.Id, Name = newMenuName };
 
             await controller.UpdateMenuInContext(menu, existingMenu);
 
-            Assert.AreEqual(menu.MenuId, existingMenu.MenuId);
-            Assert.AreEqual(mockDb.Menus.Find(i => i.MenuId == menu.MenuId).Name, newMenuName);
+            Assert.AreEqual(menu.Id, existingMenu.Id);
+            Assert.AreEqual(mockDb.Menus.Find(i => i.Id == menu.Id).Name, newMenuName);
         }
 
         /// <summary>

@@ -27,7 +27,7 @@ namespace MenuPlanner.Server.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("MenuId")
+                    b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Text")
@@ -39,7 +39,7 @@ namespace MenuPlanner.Server.Migrations
 
                     b.HasKey("CommentId");
 
-                    b.HasIndex("MenuId");
+                    b.HasIndex("Id");
 
                     b.HasIndex("UserId");
 
@@ -58,7 +58,7 @@ namespace MenuPlanner.Server.Migrations
                     b.Property<byte[]>("ImageBytes")
                         .HasColumnType("BLOB");
 
-                    b.Property<Guid?>("MenuId")
+                    b.Property<Guid?>("Id")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Path")
@@ -66,14 +66,14 @@ namespace MenuPlanner.Server.Migrations
 
                     b.HasKey("ImageId");
 
-                    b.HasIndex("MenuId");
+                    b.HasIndex("Id");
 
                     b.ToTable("Image");
                 });
 
             modelBuilder.Entity("MenuPlanner.Shared.models.Ingredient", b =>
                 {
-                    b.Property<Guid>("IngredientId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -93,7 +93,7 @@ namespace MenuPlanner.Server.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("REAL");
 
-                    b.HasKey("IngredientId");
+                    b.HasKey("Id");
 
                     b.HasIndex("IngredientId1");
 
@@ -105,7 +105,7 @@ namespace MenuPlanner.Server.Migrations
 
             modelBuilder.Entity("MenuPlanner.Shared.models.Menu", b =>
                 {
-                    b.Property<Guid>("MenuId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
@@ -145,7 +145,7 @@ namespace MenuPlanner.Server.Migrations
                     b.Property<int>("Votes")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("MenuId");
+                    b.HasKey("Id");
 
                     b.HasIndex("Name")
                         .IsUnique();
@@ -161,10 +161,10 @@ namespace MenuPlanner.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("IngredientId")
+                    b.Property<Guid?>("Id")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("MenuId")
+                    b.Property<Guid?>("Id")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("QuantityAsJson")
@@ -173,9 +173,9 @@ namespace MenuPlanner.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IngredientId");
+                    b.HasIndex("Id");
 
-                    b.HasIndex("MenuId");
+                    b.HasIndex("Id");
 
                     b.ToTable("MenuIngredients");
                 });
@@ -217,7 +217,7 @@ namespace MenuPlanner.Server.Migrations
                 {
                     b.HasOne("MenuPlanner.Shared.models.Menu", "Menu")
                         .WithMany("Comments")
-                        .HasForeignKey("MenuId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -234,7 +234,7 @@ namespace MenuPlanner.Server.Migrations
                 {
                     b.HasOne("MenuPlanner.Shared.models.Menu", null)
                         .WithMany("Images")
-                        .HasForeignKey("MenuId");
+                        .HasForeignKey("Id");
                 });
 
             modelBuilder.Entity("MenuPlanner.Shared.models.Ingredient", b =>
@@ -255,11 +255,11 @@ namespace MenuPlanner.Server.Migrations
                 {
                     b.HasOne("MenuPlanner.Shared.models.Ingredient", "Ingredient")
                         .WithMany()
-                        .HasForeignKey("IngredientId");
+                        .HasForeignKey("Id");
 
                     b.HasOne("MenuPlanner.Shared.models.Menu", "Menu")
                         .WithMany("Ingredients")
-                        .HasForeignKey("MenuId");
+                        .HasForeignKey("Id");
 
                     b.Navigation("Ingredient");
 

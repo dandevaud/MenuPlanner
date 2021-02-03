@@ -32,12 +32,12 @@ namespace MenuPlanner.ServerTests.Logic
         public async Task CheckIfIngredientExistsAndUpdateOrAddTestDuplicate()
         {
             Guid newGuid = Guid.NewGuid();
-            Ingredient pouletDuplicate = new Ingredient() { IngredientId = newGuid, Name = "Poulet" };
+            Ingredient pouletDuplicate = new Ingredient() { Id = newGuid, Name = "Poulet" };
 
             await controller.CheckIfIngredientExistsAndUpdateOrAdd(pouletDuplicate);
 
-            Assert.AreNotEqual(pouletDuplicate.IngredientId, newGuid);
-            Assert.AreEqual(mockDb.Ingredients.Find(i => i.Name.Equals("Poulet")).IngredientId, pouletDuplicate.IngredientId);
+            Assert.AreNotEqual(pouletDuplicate.Id, newGuid);
+            Assert.AreEqual(mockDb.Ingredients.Find(i => i.Name.Equals("Poulet")).Id, pouletDuplicate.Id);
         }
 
         /// <summary>
@@ -48,12 +48,12 @@ namespace MenuPlanner.ServerTests.Logic
         public async Task CheckIfIngredientExistsAndUpdateOrAddTestNewIngredient()
         {
             Guid newGuid = Guid.NewGuid();
-            Ingredient poulet2 = new Ingredient() { IngredientId = newGuid, Name = "Poulet2" };
+            Ingredient poulet2 = new Ingredient() { Id = newGuid, Name = "Poulet2" };
 
             await controller.CheckIfIngredientExistsAndUpdateOrAdd(poulet2);
 
-            Assert.AreEqual(poulet2.IngredientId, newGuid);
-            mockDb.Ingredients.ForEach(i => Assert.AreNotEqual(i.IngredientId, poulet2.IngredientId));
+            Assert.AreEqual(poulet2.Id, newGuid);
+            mockDb.Ingredients.ForEach(i => Assert.AreNotEqual(i.Id, poulet2.Id));
         }
     }
 }
