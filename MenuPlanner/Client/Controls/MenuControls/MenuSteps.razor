@@ -5,11 +5,12 @@
     <h5>Steps:</h5>
     @foreach (var element in Steps.Select((e, i) => new {Step = e, Index = i}))
     {
-        <p>
+        <div class="form-group">
             <label class="steplabel" for="@($"Steps{element.Index}")">Step @(element.Index + 1):</label>
             <textarea class="form-control" rows="3" id="@($"Steps{element.Index}")" value="@(element.Step ?? String.Empty)" @onchange="@(e => OnChange(e,element.Index) )" ></textarea>
             <a class="btn btn-danger steplabel" @onclick="@(() => RemoveStep(element.Step))">Remove</a>
-            </p>
+        
+            </div>
     }
     <a class="btn btn-success" @onclick="@AddStep">Add step</a>
 </div>

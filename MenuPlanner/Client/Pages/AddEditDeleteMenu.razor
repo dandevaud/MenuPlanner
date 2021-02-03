@@ -46,6 +46,12 @@ else
                           UpdateEnum="@((Season enu) => { menu.Season |= enu; })"
                           RemoveEnum="@((Season enu) => { menu.Season &= ~enu; })"></EnumControls>
             <MenuSteps Menu="@menu"></MenuSteps>
+            
+            <div class="form-group">
+                <label>Portions: <InputNumber @bind-Value="menu.Portion" class="form-control" placeholder="4"></InputNumber> </label>
+                <label>Portion description: <InputText @bind-Value="menu.PortionDescription" class="form-control" placeholder="persons" data-toggle="tooltip" title="Description of Portion"></InputText></label>
+            </div>
+
             <h5>Ingredients:</h5>
             <IngredientSearch DivClass="form-group" @bind-Ingredient="ingredient"></IngredientSearch>
 
