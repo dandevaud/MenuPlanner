@@ -11,9 +11,12 @@ using MenuPlanner.Shared.models.enums;
 
 namespace MenuPlanner.Shared.models
 {
-    public class Ingredient : Entity
+    public class Ingredient : IEntity
     {
-       
+        [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid IngredientId { get; set; }
+        [Required]
+        public string Name { get; set; }
         public ICollection<Ingredient> ParentIngredients { get; set; }
         public ICollection<Ingredient> ChildIngredients { get; set; }
          public IngredientCategory Category { get; set; }
@@ -21,7 +24,5 @@ namespace MenuPlanner.Shared.models
         public int Calories { get; set; }
         [Range(0, double.MaxValue, ErrorMessage = "Only positive number allowed.")]
         public double Price { get; set; }
-
-        
     }
 }
