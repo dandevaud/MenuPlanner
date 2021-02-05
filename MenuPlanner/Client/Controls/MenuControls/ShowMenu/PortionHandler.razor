@@ -1,0 +1,9 @@
+﻿<h4>Portion</h4>
+
+<div class="form-group">
+    <button type="button" class="btn rounded-circle btn-danger" value="sub"  disabled="@isDisabled" @onclick="()=>ChangePortion(-1)"><i class="fas fa-minus"></i></button>
+    <text class="m-3 h5">@portion @PortionDescription</text>
+    <button type="button" class="btn rounded-circle btn-success" value="add"  @onclick="()=>ChangePortion(1)"><i class="fas fa-plus"></i></button>
+</div>
+
+

@@ -20,8 +20,10 @@ else
     <p>@menu.Description</p>
     <br />
 
-    <StarRating Menu="@menu" IsEditable="false"></StarRating>
 
+
+    <StarRating Menu="@menu" IsEditable="false"></StarRating>
+    <PortionHandler OriginalPortion="@(menu.Portion)" @bind-Fraction="Fraction" PortionDescription="@(menu.PortionDescription)"></PortionHandler>
     @if (menu.Steps != null)
     {
         <h4>Steps</h4>
@@ -29,7 +31,7 @@ else
             @foreach (var step in menu.Steps)
             {
                 counter++;
-                <li class="list-group-item">@counter - @step</li>
+                <Step Counter="@counter" StepString="@step"></Step>
             }
             @resetCounter()
         </ul>
@@ -42,8 +44,7 @@ else
         <ul class="list-group">
             @foreach (var ingredient in menu.Ingredients)
             {
-                counter++;
-                <li class="list-group-item">@counter - @ingredient.Ingredient.Name (@ingredient.Quantity.QuantityValue @ingredient.Quantity.Unit)</li>
+                <IngredientDisplay Ing="@ingredient" Fraction="@Fraction"></IngredientDisplay>
             }
             @resetCounter()
         </ul>
@@ -55,7 +56,7 @@ else
         <ul class="list-group">
             @foreach (var comment in menu.Comments)
             {
-                <li class="list-group-item">@comment.Date - @comment.Text</li>
+                <CommentDisplay Com="@comment"></CommentDisplay>
             }
             @resetCounter()
         </ul>
@@ -82,6 +83,7 @@ else
 
     private Menu menu;
     private int counter = 0;
+    private decimal Fraction { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -91,6 +93,7 @@ else
             menu = new Menu();
             return;
         }
+        Fraction = 1;
 
         menu = await PublicClient.Client.GetFromJsonAsync<Menu>($"api/Menus/{Id}");
     }
