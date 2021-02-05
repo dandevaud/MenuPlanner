@@ -11,15 +11,12 @@ using MenuPlanner.Shared.Models;
 
 namespace MenuPlanner.Shared.models
 {
-    public class Menu :IEntity
+    public class Menu :Entity
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid MenuId { get; set; }
-        [Required]
-        public string Name { get; set; }
         public ICollection<Tag> Tags { get; set; }
         public TimeOfDay TimeOfDay { get; set; } //Flags
         public Season Season { get; set; } //Flags
+        [Range(1,int.MaxValue, ErrorMessage= "Please enter a value bigger than {1}")]
         public int Portion { get; set; } = 4;
         [StringLength(35, ErrorMessage = "Portion Description is to long (25 Character limit)")]
         public string PortionDescription { get; set; } = "Persons";

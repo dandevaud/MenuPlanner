@@ -11,12 +11,9 @@ using MenuPlanner.Shared.models.enums;
 
 namespace MenuPlanner.Shared.models
 {
-    public class Ingredient : IEntity
+    public class Ingredient : Entity
     {
-        [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid IngredientId { get; set; }
-        [Required]
-        public string Name { get; set; }
+       
         public ICollection<Ingredient> ParentIngredients { get; set; }
         public ICollection<Ingredient> ChildIngredients { get; set; }
          public IngredientCategory Category { get; set; }
