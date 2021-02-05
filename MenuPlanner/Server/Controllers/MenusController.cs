@@ -9,6 +9,7 @@ using IdentityServer4.Extensions;
 using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
+using MenuPlanner.Server.Logic.EntityUpdater;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.models.Search;
 using Microsoft.AspNetCore.Authorization;
@@ -39,7 +40,7 @@ namespace MenuPlanner.Server.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Menu>>> GetMenus()
         {
-            return _search.GetAllMenus().Result.Result;
+            return (await _search.GetAllMenus()).Result;
         }
 
         // GET: api/Menus/5

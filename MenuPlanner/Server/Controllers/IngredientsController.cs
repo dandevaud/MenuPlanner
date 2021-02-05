@@ -6,9 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using IdentityServer4.Extensions;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
+using MenuPlanner.Server.Logic.EntityUpdater;
 using MenuPlanner.Shared.models;
+using MenuPlanner.Shared.models.Search;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,40 +27,35 @@ namespace MenuPlanner.Server.Controllers
     public class IngredientsController : ControllerBase
     {
         private readonly MenuPlannerContext _context;
-        private IngredientEntityUpdater ingredientEntityUpdater;
+        private readonly IngredientEntityUpdater ingredientEntityUpdater;
+        private readonly SearchLogic searchLogic;
 
         public IngredientsController(MenuPlannerContext context)
         {
             _context = context;
             ingredientEntityUpdater = new IngredientEntityUpdater(context);
+            searchLogic = new SearchLogic(context);
+
         }
 
         // GET: api/Ingredients
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients()
         {
-            var toReturn = await _context.Ingredients.ToListAsync();
-            toReturn.ForEach(async i =>
-            {
-                var loadChild = _context.Entry(i).Collection(ing => ing.ChildIngredients).LoadAsync();
-                var loadParent = _context.Entry(i).Collection(ing => ing.ParentIngredients).LoadAsync();
-
-                await loadChild;
-                await loadParent;
-            });
-            return toReturn.OrderBy(i => i.Name).ToList();
+            var toReturn = await searchLogic.GetAllIngredients();
+            return toReturn.Result.OrderBy(i => i.Name).ToList();
         }
 
         // GET: api/Ingredients/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Ingredient>> GetIngredient(Guid id)
         {
-            var ingredient = await _context.Ingredients.FindAsync(id);
-
-            if (ingredient == null)
+            var ingredients = await searchLogic.SearchIngredients(new IngredientSearchRequestModel() {Id = id});
+            if (ingredients.Result.IsNullOrEmpty())
             {
                 return NotFound();
             }
+            var ingredient = ingredients.Result[0];
 
             return ingredient;
         }
@@ -67,28 +65,13 @@ namespace MenuPlanner.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutIngredient(Guid id, Ingredient ingredient)
         {
-            if (id != ingredient.IngredientId)
+           
+            if (id != ingredient.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(ingredient).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!IngredientExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await ingredientEntityUpdater.CheckIfIngredientExistsAndUpdateOrAdd(ingredient);
 
             return NoContent();
         }
@@ -102,28 +85,19 @@ namespace MenuPlanner.Server.Controllers
         {
             await ingredientEntityUpdater.CheckIfIngredientExistsAndUpdateOrAdd(ingredient);
 
-            return CreatedAtAction("GetIngredient", new { id = ingredient.IngredientId }, ingredient);
+            return CreatedAtAction("GetIngredient", new { id = ingredient.Id }, ingredient);
         }
 
         // DELETE: api/Ingredients/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteIngredient(Guid id)
         {
-            var ingredient = await _context.Ingredients.FindAsync(id);
-            if (ingredient == null)
+            if (await ingredientEntityUpdater.DeleteEntity<Ingredient>(id))
             {
-                return NotFound();
+                return NoContent();
             }
-
-            _context.Ingredients.Remove(ingredient);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool IngredientExists(Guid id)
-        {
-            return _context.Ingredients.Any(e => e.IngredientId == id);
+            return NotFound();
+           
         }
     }
 }

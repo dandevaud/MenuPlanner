@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using MenuPlanner.Server.Logic;
+using MenuPlanner.Server.Logic.EntityUpdater;
 using MenuPlanner.Shared.models;
 using NUnit.Framework;
 

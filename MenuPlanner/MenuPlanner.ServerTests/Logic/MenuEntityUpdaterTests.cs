@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MenuPlanner.Server.Logic;
+using MenuPlanner.Server.Logic.EntityUpdater;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.models.enums;
 using NUnit.Framework;
@@ -39,7 +40,7 @@ namespace MenuPlanner.ServerTests.Logic
             Menu existingMenu = mockDb.Menus.Find(i => i.Name.Equals("Old Name"));
             Menu menu = new Menu() { Id = existingMenu.Id, Name = newMenuName };
 
-            await controller.UpdateMenuInContext(menu, existingMenu);
+            await controller.UpdateMenuInContext(menu);
 
             Assert.AreEqual(menu.Id, existingMenu.Id);
             Assert.AreEqual(mockDb.Menus.Find(i => i.Id == menu.Id).Name, newMenuName);
@@ -74,7 +75,7 @@ namespace MenuPlanner.ServerTests.Logic
                 .Where(i => i.Ingredient.Name.Equals("Rind"))
                 .ToList();
 
-            await controller.UpdateMenuInContext(menu, mockDb.Menus.Find(i => i.Name.Equals("Pouletbrüstli")));
+            await controller.UpdateMenuInContext(menu);
 
             var foundMenuIngredient = mockDb.MenuIngredients.Find(i => i.Id == menuIngredient.Id);
 

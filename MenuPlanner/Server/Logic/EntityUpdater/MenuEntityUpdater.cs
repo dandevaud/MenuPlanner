@@ -11,17 +11,17 @@ using MenuPlanner.Server.Data;
 using MenuPlanner.Shared.models;
 using Microsoft.EntityFrameworkCore;
 
-namespace MenuPlanner.Server.Logic
+namespace MenuPlanner.Server.Logic.EntityUpdater
 {
     /// <summary>Class used to update Menu entities in Database</summary>
-    public class MenuEntityUpdater : IMenuEntityUpdater
+    public class MenuEntityUpdater : EntityUpdater, IMenuEntityUpdater
     {
         public delegate bool ProvidedContains(Guid guid);
         public delegate Task RemoveFromContext<T>(Guid guid);
         public delegate void DetachEntity(Guid guid);
         private readonly MenuPlannerContext _context;
 
-        public MenuEntityUpdater(MenuPlannerContext dbContext)
+        public MenuEntityUpdater(MenuPlannerContext dbContext) : base(dbContext)
         {
             _context = dbContext;
         }
@@ -48,14 +48,14 @@ namespace MenuPlanner.Server.Logic
             var providedMenuIngredients = menu.Ingredients.Select(i => i.Id).ToList();
 
             //Remove all deleted Images from DB
-            DeleteRemovedEntitiesFromMenu<Image>(
+            await DeleteRemovedEntitiesFromMenu<Image>(
                 entityInDatabase.Images,
                 (Image i) => i.ImageId,
                 (Guid guid) => providedImages.Contains(guid),
                 RemoveSubEntities<Image>(_context.Images, providedImages));
 
             //Remove all deleted MenuIngredients from DB
-            DeleteRemovedEntitiesFromMenu<MenuIngredient>(
+           await  DeleteRemovedEntitiesFromMenu<MenuIngredient>(
                 entityInDatabase.Ingredients,
                 (MenuIngredient i) => i.Id,
                 (Guid guid) => providedMenuIngredients.Contains(guid),
@@ -77,18 +77,18 @@ namespace MenuPlanner.Server.Logic
             UnLoadMenuSubEntities(menu);
             _context.Update(menu).CurrentValues.SetValues(menu);
 
-            await _context.SaveChangesAsync();
+            SaveChanges();
         }
 
         private async Task CreateMenuInContext(Menu menu)
         {
-            _context.Menus.Add(menu);
+            await _context.Menus.AddAsync(menu);
             foreach (var menuIngredient in menu.Ingredients)
             {
                 _context.Entry(menuIngredient.Ingredient).State = EntityState.Detached;
             }
 
-            await _context.SaveChangesAsync();
+            SaveChanges();
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace MenuPlanner.Server.Logic
             menu.Ingredients.ToList().ForEach(mi => RemoveSubEntities<MenuIngredient>(_context.MenuIngredients,null).Invoke(mi.Id));
             menu.Images.ToList().ForEach(i => RemoveSubEntities<Image>(_context.Images, null).Invoke(i.ImageId));
             _context.Menus.Remove(menu);
-            await _context.SaveChangesAsync();
+            SaveChanges();
         }
 
         private RemoveFromContext<T> RemoveSubEntities<T>(DbSet<T> dbSet, List<Guid> providedList) where T : class
@@ -132,13 +132,18 @@ namespace MenuPlanner.Server.Logic
                 }
             };
         }
-        private void DeleteRemovedEntitiesFromMenu<T>(ICollection<T> entities, Func<T, Guid> selector, ProvidedContains providedContains, RemoveFromContext<T> removeFromContext)
+        private async Task DeleteRemovedEntitiesFromMenu<T>(ICollection<T> entities, Func<T, Guid> selector, ProvidedContains providedContains, RemoveFromContext<T> removeFromContext)
         {
-            entities
+            var toDelete = entities
                 .Select(selector)
                 .Where(guid => !providedContains(guid))
-                .ToList()
-                .ForEach(async id => { await removeFromContext(id); });
+                .ToList();
+            foreach (var id in toDelete)
+            {
+                await removeFromContext(id);
+            }
+
+           
         }
 
         /// <summary>
@@ -149,7 +154,12 @@ namespace MenuPlanner.Server.Logic
         {
             await _context.Entry(foundMenu).Collection(m => m.Images).LoadAsync();
             await _context.Entry(foundMenu).Collection(m => m.Ingredients).LoadAsync();
-            foundMenu.Ingredients.ToList().ForEach(async mi => await _context.Entry(mi).Reference(i => i.Ingredient).LoadAsync());
+            var toLoad = foundMenu.Ingredients.ToList();
+            foreach (var mi in toLoad)
+            {
+                await _context.Entry(mi).Reference(i => i.Ingredient).LoadAsync();
+            }
+
         }
 
         private void UnLoadMenuSubEntities(Menu foundMenu)

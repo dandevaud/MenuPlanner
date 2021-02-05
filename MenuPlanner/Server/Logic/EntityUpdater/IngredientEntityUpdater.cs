@@ -11,14 +11,14 @@ using MenuPlanner.Server.Data;
 using MenuPlanner.Shared.models;
 using Microsoft.EntityFrameworkCore;
 
-namespace MenuPlanner.Server.Logic
+namespace MenuPlanner.Server.Logic.EntityUpdater
 {
     /// <summary>Class used to update Ingredient entities in Database</summary>
-    public class IngredientEntityUpdater : IIngredientEntityUpdater
+    public class IngredientEntityUpdater : EntityUpdater, IIngredientEntityUpdater
     {
         private readonly MenuPlannerContext _context;
 
-        public IngredientEntityUpdater(MenuPlannerContext dbContext)
+        public IngredientEntityUpdater(MenuPlannerContext dbContext) : base(dbContext)
         {
             _context = dbContext;
         }
@@ -49,7 +49,7 @@ namespace MenuPlanner.Server.Logic
                 _context.Ingredients.Add(ingredient);
             }
 
-            await _context.SaveChangesAsync();
+            SaveChanges();
         }
 
         private async Task HandleExitstingEntity(Ingredient ingredient, Ingredient existing)
@@ -74,25 +74,26 @@ namespace MenuPlanner.Server.Logic
                     .Except(ingredient.ParentIngredients.Select(ipi => ipi.Id).ToList()).ToList();
 
                 //remove Child Ingredients from removed Parents
-                ingredient.ParentIngredients.Select(pi => pi.Id).ToList().Except(provided.ParentIngredients.Select(ppi => ppi.Id).ToList()).ToList().ForEach(async i =>
+                var toRemove = ingredient.ParentIngredients.Select(pi => pi.Id).ToList().Except(provided.ParentIngredients.Select(ppi => ppi.Id).ToList()).ToList();
+                 foreach(Guid i in toRemove)
                 {
                     var entry = await _context.Ingredients.FindAsync(i);
                     var entity = _context.Ingredients.Update(entry);
                     await entity.Collection(pi => pi.ChildIngredients).LoadAsync();
                     entity.Entity.ChildIngredients.Remove(ingredient);
-                });
-                updatedAddedParentIngredients.ForEach(async uapi =>
+                };
+                foreach (Guid uapi in updatedAddedParentIngredients)
                 {
                     updatedList = await AddIngredientToChildIngredientOfParent(ingredient, uapi, updatedList);
-                });
+                }
             }
             else
             {
                 updatedList = new List<Ingredient>();
-                ingredient.ParentIngredients.Select(i => i.Id).ToList().ForEach(async uapi =>
-                {
+                var list = ingredient.ParentIngredients.Select(i => i.Id).ToList();
+                foreach(Guid uapi in list){
                     updatedList = await AddIngredientToChildIngredientOfParent(ingredient, uapi, updatedList);
-                });
+                };
             }
 
             ingredient.ParentIngredients = updatedList;
