@@ -64,11 +64,9 @@ namespace MenuPlanner.Server.Data
         private void HandleMariaDb<T>(IServiceCollection services, SqlCredentials credentials) where T : DbContext
         {
             var password = credentials.Password;
-            Console.WriteLine("credentials "+JsonSerializer.Serialize<SqlCredentials>(credentials));
             if (password.IsNullOrEmpty())
             {
                 password = Configuration[credentials.UserSecretsKey];
-                Console.WriteLine("new PW is " + password);
             }
 
             var version = credentials.ServerVersion.Split(".");
