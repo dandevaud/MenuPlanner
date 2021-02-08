@@ -9,52 +9,54 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MenuPlanner.Server.Migrations
 {
     [DbContext(typeof(MenuPlannerContext))]
-    [Migration("20210130112841_MenuPlanner-V0.3")]
-    partial class MenuPlannerV03
+    [Migration("20210207105055_V_1.0.2")]
+    partial class V_102
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasAnnotation("Relational:MaxIdentifierLength", 64)
                 .HasAnnotation("ProductVersion", "5.0.2");
 
             modelBuilder.Entity("IngredientIngredient", b =>
                 {
-                    b.Property<Guid>("ChildIngredientsIngredientId")
-                        .HasColumnType("TEXT");
+                    b.Property<Guid>("ChildIngredientsId")
+                        .HasColumnType("char(255)");
 
-                    b.Property<Guid>("ParentIngredientsIngredientId")
-                        .HasColumnType("TEXT");
+                    b.Property<Guid>("ParentIngredientsId")
+                        .HasColumnType("char(255)");
 
-                    b.HasKey("ChildIngredientsIngredientId", "ParentIngredientsIngredientId");
+                    b.HasKey("ChildIngredientsId", "ParentIngredientsId");
 
-                    b.HasIndex("ParentIngredientsIngredientId");
+                    b.HasIndex("ParentIngredientsId");
 
                     b.ToTable("IngredientIngredient");
                 });
 
             modelBuilder.Entity("MenuPlanner.Shared.models.Comment", b =>
                 {
-                    b.Property<Guid>("CommentId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(255)
+                        .HasColumnType("char(255)");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("Id")
-                        .HasColumnType("TEXT");
+                    b.Property<Guid>("MenuId")
+                        .HasColumnType("char(255)");
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<Guid?>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("char(36)");
 
-                    b.HasKey("CommentId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("Id");
+                    b.HasIndex("MenuId");
 
                     b.HasIndex("UserId");
 
@@ -63,25 +65,32 @@ namespace MenuPlanner.Server.Migrations
 
             modelBuilder.Entity("MenuPlanner.Shared.models.Image", b =>
                 {
-                    b.Property<Guid>("ImageId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(255)
+                        .HasColumnType("char(255)");
 
                     b.Property<string>("AlternativeName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<byte[]>("ImageBytes")
-                        .HasColumnType("BLOB");
+                    b.Property<DateTime>("ChangeDate")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<Guid?>("Id")
-                        .HasColumnType("TEXT");
+                    b.Property<Guid?>("MenuId")
+                        .HasColumnType("char(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("Path")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.HasKey("ImageId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("Id");
+                    b.HasIndex("MenuId");
 
                     b.ToTable("Images");
                 });
@@ -90,20 +99,26 @@ namespace MenuPlanner.Server.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(255)
+                        .HasColumnType("char(255)");
 
                     b.Property<int>("Calories")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("Category")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ChangeDate")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<double>("Price")
-                        .HasColumnType("REAL");
+                        .HasColumnType("double");
 
                     b.HasKey("Id");
 
@@ -113,71 +128,57 @@ namespace MenuPlanner.Server.Migrations
                     b.ToTable("Ingredients");
                 });
 
-            modelBuilder.Entity("MenuPlanner.Shared.models.IngredientToIngredient", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<Guid?>("Ing1IngredientId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("Ing2IngredientId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Ing1IngredientId");
-
-                    b.HasIndex("Ing2IngredientId");
-
-                    b.ToTable("IngredientToIngredient");
-                });
-
             modelBuilder.Entity("MenuPlanner.Shared.models.Menu", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(255)
+                        .HasColumnType("char(255)");
 
                     b.Property<double>("AverageRating")
-                        .HasColumnType("REAL");
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("ChangeDate")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int>("MenuCategory")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<int>("Portion")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("PortionDescription")
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(35)
+                        .HasColumnType("varchar(35) CHARACTER SET utf8mb4");
 
                     b.Property<short>("Season")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("smallint");
 
                     b.Property<string>("Steps")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<short>("TimeOfDay")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("smallint");
 
                     b.Property<Guid?>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Video")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int>("Votes")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -193,23 +194,24 @@ namespace MenuPlanner.Server.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(255)
+                        .HasColumnType("char(255)");
 
-                    b.Property<Guid>("Id")
-                        .HasColumnType("TEXT");
+                    b.Property<Guid?>("IngredientId")
+                        .HasColumnType("char(255)");
 
-                    b.Property<Guid?>("Id")
-                        .HasColumnType("TEXT");
+                    b.Property<Guid?>("MenuIngredientId")
+                        .HasColumnType("char(255)");
 
                     b.Property<string>("QuantityAsJson")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Id");
+                    b.HasIndex("IngredientId");
 
-                    b.HasIndex("Id");
+                    b.HasIndex("MenuIngredientId");
 
                     b.ToTable("MenuIngredients");
                 });
@@ -217,61 +219,63 @@ namespace MenuPlanner.Server.Migrations
             modelBuilder.Entity("MenuPlanner.Shared.models.Quantity", b =>
                 {
                     b.Property<double>("QuantityValue")
-                        .HasColumnType("REAL");
+                        .HasColumnType("double");
 
                     b.Property<int>("Unit")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.ToTable("Quantity");
                 });
 
             modelBuilder.Entity("MenuPlanner.Shared.models.Tag", b =>
                 {
-                    b.Property<Guid>("TagId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(255)
+                        .HasColumnType("char(255)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.HasKey("TagId");
+                    b.HasKey("Id");
 
-                    b.ToTable("Tag");
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("MenuPlanner.Shared.models.User", b =>
                 {
                     b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("MenuTag", b =>
                 {
-                    b.Property<Guid>("MenusMenuId")
-                        .HasColumnType("TEXT");
+                    b.Property<Guid>("MenusId")
+                        .HasColumnType("char(255)");
 
-                    b.Property<Guid>("TagsTagId")
-                        .HasColumnType("TEXT");
+                    b.Property<Guid>("TagsId")
+                        .HasColumnType("char(255)");
 
-                    b.HasKey("MenusMenuId", "TagsTagId");
+                    b.HasKey("MenusId", "TagsId");
 
-                    b.HasIndex("TagsTagId");
+                    b.HasIndex("TagsId");
 
                     b.ToTable("MenuTag");
                 });
@@ -280,13 +284,13 @@ namespace MenuPlanner.Server.Migrations
                 {
                     b.HasOne("MenuPlanner.Shared.models.Ingredient", null)
                         .WithMany()
-                        .HasForeignKey("ChildIngredientsIngredientId")
+                        .HasForeignKey("ChildIngredientsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MenuPlanner.Shared.models.Ingredient", null)
                         .WithMany()
-                        .HasForeignKey("ParentIngredientsIngredientId")
+                        .HasForeignKey("ParentIngredientsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -295,7 +299,7 @@ namespace MenuPlanner.Server.Migrations
                 {
                     b.HasOne("MenuPlanner.Shared.models.Menu", "Menu")
                         .WithMany("Comments")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("MenuId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -312,22 +316,7 @@ namespace MenuPlanner.Server.Migrations
                 {
                     b.HasOne("MenuPlanner.Shared.models.Menu", null)
                         .WithMany("Images")
-                        .HasForeignKey("Id");
-                });
-
-            modelBuilder.Entity("MenuPlanner.Shared.models.IngredientToIngredient", b =>
-                {
-                    b.HasOne("MenuPlanner.Shared.models.Ingredient", "Ing1")
-                        .WithMany("SimilarIngredients")
-                        .HasForeignKey("Ing1IngredientId");
-
-                    b.HasOne("MenuPlanner.Shared.models.Ingredient", "Ing2")
-                        .WithMany()
-                        .HasForeignKey("Ing2IngredientId");
-
-                    b.Navigation("Ing1");
-
-                    b.Navigation("Ing2");
+                        .HasForeignKey("MenuId");
                 });
 
             modelBuilder.Entity("MenuPlanner.Shared.models.Menu", b =>
@@ -341,13 +330,11 @@ namespace MenuPlanner.Server.Migrations
                 {
                     b.HasOne("MenuPlanner.Shared.models.Ingredient", "Ingredient")
                         .WithMany()
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("IngredientId");
 
                     b.HasOne("MenuPlanner.Shared.models.Menu", "Menu")
                         .WithMany("Ingredients")
-                        .HasForeignKey("Id");
+                        .HasForeignKey("MenuIngredientId");
 
                     b.Navigation("Ingredient");
 
@@ -358,20 +345,15 @@ namespace MenuPlanner.Server.Migrations
                 {
                     b.HasOne("MenuPlanner.Shared.models.Menu", null)
                         .WithMany()
-                        .HasForeignKey("MenusMenuId")
+                        .HasForeignKey("MenusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MenuPlanner.Shared.models.Tag", null)
                         .WithMany()
-                        .HasForeignKey("TagsTagId")
+                        .HasForeignKey("TagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("MenuPlanner.Shared.models.Ingredient", b =>
-                {
-                    b.Navigation("SimilarIngredients");
                 });
 
             modelBuilder.Entity("MenuPlanner.Shared.models.Menu", b =>

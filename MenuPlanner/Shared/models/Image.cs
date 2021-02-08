@@ -5,15 +5,16 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MenuPlanner.Shared.Models;
 
 namespace MenuPlanner.Shared.models
 {
-    public class Image
+    public class Image : Entity
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid ImageId { get; set; }
+      
         public string AlternativeName { get; set; }
-        public Uri Path { get; set; }
-        public byte[] ImageBytes { get; set; }
+        public string Path { get; set; }
+        [NotMapped]
+        public byte[] ImageBytes { get; set; } = new byte[0];
     }
 }

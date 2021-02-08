@@ -7,10 +7,11 @@ using MenuPlanner.Shared.Models;
 
 namespace MenuPlanner.Shared.models
 {
-    public class Tag : Entity
+    public class Tag : Identifier
     {
-      
-        public ICollection<Menu> Menus { get; set; }
+        [Required]
+        public string Name { get; set; }
+       public ICollection<Menu> Menus { get; set; }
    
     }
 }

@@ -3,14 +3,16 @@ using System;
 using MenuPlanner.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MenuPlanner.Server.Migrations
 {
     [DbContext(typeof(MenuPlannerContext))]
-    partial class MenuPlannerContextModelSnapshot : ModelSnapshot
+    [Migration("20210207103956_V_1.0.1")]
+    partial class V_101
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -195,11 +197,20 @@ namespace MenuPlanner.Server.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("char(255)");
 
+                    b.Property<DateTime>("ChangeDate")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)");
+
                     b.Property<Guid?>("IngredientId")
                         .HasColumnType("char(255)");
 
                     b.Property<Guid?>("MenuIngredientId")
                         .HasColumnType("char(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("QuantityAsJson")
                         .IsRequired()

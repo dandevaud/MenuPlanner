@@ -5,13 +5,12 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MenuPlanner.Shared.Models;
 
 namespace MenuPlanner.Shared.models
 {
-    public class Comment
+    public class Comment : Identifier
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid CommentId { get; set; }
         [Required]
         public Menu Menu { get; set; }
         [Required]

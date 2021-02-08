@@ -12,12 +12,9 @@ using System.Threading.Tasks;
 
 namespace MenuPlanner.Shared.Models
 {
-    public class Entity
+    public abstract class Entity : Identifier
     {
-
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; set; }
-        [Required]
+        [Required, MaxLength(255)]
         public string Name { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]

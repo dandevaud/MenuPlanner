@@ -11,7 +11,7 @@ using MenuPlanner.Shared.Models;
 
 namespace MenuPlanner.Shared.models
 {
-    public class Menu :Entity
+    public class Menu : Entity
     {
         public ICollection<Tag> Tags { get; set; }
         public TimeOfDay TimeOfDay { get; set; } //Flags
@@ -24,13 +24,14 @@ namespace MenuPlanner.Shared.models
         public string Description { get; set; }
         [Required]
         public ICollection<string> Steps { get; set; }
-        [Required]
+        [Required, ForeignKey("MenuIngredientId")]
         public ICollection<MenuIngredient> Ingredients { get; set; } = new List<MenuIngredient>();
-        public ICollection<Comment> Comments { get; set; }
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
         public double AverageRating { get; set; }
         public int Votes { get; set; }
         public MenuCategory MenuCategory { get; set; } //Flags
-        public ICollection<Image> Images { get; set; }
+        public ICollection<Image> Images { get; set; } = new List<Image>();
         public Uri Video { get; set; }
+       
     }
 }
