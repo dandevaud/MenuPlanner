@@ -57,7 +57,7 @@ namespace MenuPlanner.Server
             var identityServer = services.AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 
-            if (Configuration["ASPNETCORE_ENVIRONMENT"].Equals("Development"))
+            if (Configuration["ASPNETCORE_ENVIRONMENT"]?.Equals("Development")??false)
             {
                 identityServer.AddDeveloperSigningCredential();
             }
