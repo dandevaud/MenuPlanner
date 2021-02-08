@@ -2,8 +2,13 @@
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
+using MenuPlanner.Server.Contracts.Blob;
+using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Contracts.Sql;
 using MenuPlanner.Server.Data;
+using MenuPlanner.Server.Logic;
+using MenuPlanner.Server.Logic.Blob;
+using MenuPlanner.Server.Logic.EntityUpdater;
 using MenuPlanner.Server.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -50,6 +55,9 @@ namespace MenuPlanner.Server
             services.AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 
+            IoCSetUp(services);
+
+
             services.AddAuthentication()
                 .AddIdentityServerJwt();
 
@@ -76,7 +84,14 @@ namespace MenuPlanner.Server
 
         }
 
-       
+        private static void IoCSetUp(IServiceCollection services)
+        {
+            services.AddScoped<IMenuEntityUpdater, MenuEntityUpdater>();
+            services.AddScoped<IIngredientEntityUpdater, IngredientEntityUpdater>();
+            services.AddScoped<ISearchLogic, SearchLogic>();
+            services.AddScoped<IPictureHandler, PictureHandler>();
+        }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -6,9 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MenuPlanner.Server.Contracts.Blob;
 using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
+using MenuPlanner.Server.Logic.Blob;
+using MenuPlanner.Shared.Extension;
 using MenuPlanner.Shared.models;
+using MenuPlanner.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace MenuPlanner.Server.Logic.EntityUpdater
@@ -20,13 +24,15 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
         public delegate Task RemoveFromContext<T>(Guid guid);
         public delegate void DetachEntity(Guid guid);
         private readonly MenuPlannerContext _context;
-
-        public MenuEntityUpdater(MenuPlannerContext dbContext) : base(dbContext)
+        private readonly IPictureHandler _pictureHandler;
+        
+        public MenuEntityUpdater(MenuPlannerContext dbContext, IPictureHandler pictureHandler) : base(dbContext)
         {
             _context = dbContext;
+            _pictureHandler = pictureHandler;
         }
 
-        
+
 
         /// <summary>Updates the menu in the Database.</summary>
         /// <param name="menu">The menu provided (new values)</param>
@@ -39,45 +45,72 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
                 await CreateMenuInContext(menu);
                 return;
             }
+
             //load images & MenuIngredients
             await LoadMenuSubEntities(entityInDatabase);
 
             //Get IDs of provided entities
             var providedImages = menu.Images.Select(
-                i => i.ImageId).ToList();
+                i => i.Id).ToList();
             var providedMenuIngredients = menu.Ingredients.Select(i => i.Id).ToList();
 
-            //Remove all deleted Images from DB
-            await DeleteRemovedEntitiesFromMenu<Image>(
-                entityInDatabase.Images,
-                (Image i) => i.ImageId,
-                (Guid guid) => providedImages.Contains(guid),
-                RemoveSubEntities<Image>(_context.Images, providedImages));
+            await RemoveAndDeleteImages(menu, providedImages, entityInDatabase);
 
             //Remove all deleted MenuIngredients from DB
-           await  DeleteRemovedEntitiesFromMenu<MenuIngredient>(
+            await DeleteRemovedEntitiesFromMenu<MenuIngredient>(
                 entityInDatabase.Ingredients,
                 (MenuIngredient i) => i.Id,
                 (Guid guid) => providedMenuIngredients.Contains(guid),
                 RemoveSubEntities<MenuIngredient>(_context.MenuIngredients, providedMenuIngredients));
 
-            menu.Ingredients.Select(i => i.Ingredient).ToList()
-                .ForEach( ing => 
-                    DetachEntityFromContext<Ingredient>(_context.Ingredients).Invoke(ing.Id)
-                );
-            providedMenuIngredients.ForEach(menuIngr =>
-                DetachEntityFromContext<MenuIngredient>(_context.MenuIngredients).Invoke(menuIngr)
-            );
-            providedImages.ForEach(imageProv =>
-                DetachEntityFromContext<Image>(_context.Images).Invoke(imageProv)
-            );
-
             _context.Entry(entityInDatabase).State = EntityState.Detached;
+            providedMenuIngredients.ForEach(m =>
+                DetachEntityFromContext<MenuIngredient>(_context.MenuIngredients).Invoke(m));
+            providedImages.ForEach(m => DetachEntityFromContext<Image>(_context.Images).Invoke(m));
             UnLoadMenuSubEntities(entityInDatabase);
             UnLoadMenuSubEntities(menu);
-            _context.Update(menu).CurrentValues.SetValues(menu);
+
+
+            _context.Update(entityInDatabase).CurrentValues.SetValues(menu);
+            menu.Images.ToList().ForEach(i =>
+                {
+                    if (i.Id.Equals(Guid.Empty)||!entityInDatabase.Images.Any(im => im.Id.Equals(i.Id)))
+                    {
+                        entityInDatabase.Images.Add(i);
+                    }
+                }
+            );
 
             SaveChanges();
+            await HandleImages(entityInDatabase);
+            SaveChanges();
+        }
+
+        private async Task RemoveAndDeleteImages(Menu menu, List<Guid> providedImages, Menu entityInDatabase)
+        {
+            var removeImages = RemoveSubEntities<Image>(_context.Images, providedImages);
+            removeImages += DeleteImages(menu.Id);
+
+            //Remove all deleted Images from DB
+            await DeleteRemovedEntitiesFromMenu<Image>(
+                entityInDatabase.Images,
+                (Image i) => i.Id,
+                (Guid guid) => providedImages.Contains(guid),
+                removeImages
+            );
+        }
+
+        private async Task HandleImages(Menu menu)
+        {
+            foreach (var menuImage in menu.Images)
+            {
+                if (!_pictureHandler.ImageExists(menu.Id, menuImage))
+                {
+                   menuImage.Path = await _pictureHandler.SaveImage(menu.Id, menuImage);
+                }
+            }
+
+            
         }
 
         private async Task CreateMenuInContext(Menu menu)
@@ -87,8 +120,19 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             {
                 _context.Entry(menuIngredient.Ingredient).State = EntityState.Detached;
             }
-
             SaveChanges();
+            var images = menu.Images;
+            await SaveImages(menu, images);
+
+           
+        }
+
+        private async Task SaveImages(Menu menu, ICollection<Image> images)
+        {
+            foreach (var image in images)
+            {
+               image.Path = await _pictureHandler.SaveImage(menu.Id, image);
+            }
         }
 
         /// <summary>
@@ -104,7 +148,9 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             }
             await LoadMenuSubEntities(menu);
             menu.Ingredients.ToList().ForEach(mi => RemoveSubEntities<MenuIngredient>(_context.MenuIngredients,null).Invoke(mi.Id));
-            menu.Images.ToList().ForEach(i => RemoveSubEntities<Image>(_context.Images, null).Invoke(i.ImageId));
+            menu.Images.ToList().ForEach(i => RemoveSubEntities<Image>(_context.Images, null).Invoke(i.Id));
+            menu.Comments.ToList().ForEach(i => RemoveSubEntities<Comment>(_context.Comments, null).Invoke(i.Id));
+            _pictureHandler.DeleteImage(menu.Id, Guid.Empty);
             _context.Menus.Remove(menu);
             SaveChanges();
         }
@@ -119,17 +165,24 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             };
         }
 
-        private DetachEntity DetachEntityFromContext<T>(DbSet<T> dbSet) where T : class
+        private RemoveFromContext<Image> DeleteImages(Guid menuId)
+        {
+            return async (Guid guid) =>
+            {
+                await Task.CompletedTask;
+                _pictureHandler.DeleteImage(menuId, guid);
+            };
+        }
+
+        private DetachEntity DetachEntityFromContext<T>(DbSet<T> dbSet) where T : Identifier
         {
             return (Guid guid) =>
             {
-                var entity = dbSet.Find(guid);
-                if (entity != null)
-                {
+                
                     var entry = _context.ChangeTracker.Entries<T>()
-                        .FirstOrDefault(ent => ent.Entity.Equals(entity));
-                    if (entry != null) entry.State = EntityState.Detached;
-                }
+                        .FirstOrDefault(ent => ent.Entity.Id.Equals(guid));
+                    if (entry != null && entry.State.Equals(EntityState.Unchanged)) entry.State = EntityState.Detached;
+              
             };
         }
         private async Task DeleteRemovedEntitiesFromMenu<T>(ICollection<T> entities, Func<T, Guid> selector, ProvidedContains providedContains, RemoveFromContext<T> removeFromContext)
@@ -166,37 +219,36 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
         {
             foundMenu.Ingredients.ToList().ForEach(mi =>
             {
-                var entity = _context.ChangeTracker.Entries<Ingredient>().FirstOrDefault(i => mi.Ingredient.Id.Equals(i.Entity.Id));
-                if (entity != null)
-                {
-                    if (entity.State == EntityState.Unchanged)
-                    {
-                        entity.State = EntityState.Detached;
-                    }
-                }
+                DetachEntityFromContext(_context.Ingredients).Invoke(mi.Ingredient.Id);
             });
 
-            foundMenu.Ingredients.ToList().ForEach(mi =>
-            {
-                var entity = _context.ChangeTracker.Entries<MenuIngredient>().FirstOrDefault(i => mi.Id.Equals(i.Entity.Id));
-                if (entity != null)
-                {
-                    if (entity.State == EntityState.Unchanged)
-                    {
-                        entity.State = EntityState.Detached;
-                    }
-                }
-            });
+            //foundMenu.Comments.ToList().ForEach(mi =>
+            //{
+            //    DetachEntityFromContext(_context.Comments).Invoke(mi.Id);
+            //});
 
-            foundMenu.Images.ToList().ForEach(mi =>
+            //foundMenu.Images.ToList().ForEach(mi =>
+            //{
+            //    DetachEntityFromContext(_context.Images).Invoke(mi.Id);
+            //});
+        }
+
+        private void DetachAllUnchangedEntities()
+        {
+            DetachUnchanged<Ingredient>();
+            DetachUnchanged<MenuIngredient>();
+            DetachUnchanged<Image>();
+            DetachUnchanged<Comment>();
+           
+        }
+
+        private void DetachUnchanged<T>() where T:Identifier
+        {
+            _context.ChangeTracker.Entries<T>().ToList().ForEach(entry =>
             {
-                var entity = _context.ChangeTracker.Entries<Image>().FirstOrDefault(i => mi.ImageId.Equals(i.Entity.ImageId));
-                if (entity != null)
+                if (entry.State.Equals(EntityState.Unchanged))
                 {
-                    if (entity.State == EntityState.Unchanged)
-                    {
-                        entity.State = EntityState.Detached;
-                    }
+                    entry.State = EntityState.Detached;
                 }
             });
         }

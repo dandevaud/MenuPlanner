@@ -17,13 +17,14 @@ namespace MenuPlanner.Server.Data
         public virtual DbSet<Ingredient> Ingredients { get; set; }
         public virtual DbSet<MenuIngredient> MenuIngredients { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
-        public virtual DbSet<User> Users { get; set; }
+       
+        public virtual DbSet<Tag> Tags { get; set; }
         public virtual DbSet<Image> Images { get; set; }
        
 
         public MenuPlannerContext(DbContextOptions<MenuPlannerContext> dbContextOptions) : base(dbContextOptions)
         {
-            Database.EnsureCreated();
+            Database.Migrate();
         }
 
         public MenuPlannerContext() : base(){}
@@ -31,6 +32,12 @@ namespace MenuPlanner.Server.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Ingredient>(entity => entity.Property(m => m.Id).HasMaxLength(255));
+            modelBuilder.Entity<MenuIngredient>(entity => entity.Property(m => m.Id).HasMaxLength(255));
+            modelBuilder.Entity<Menu>(entity => entity.Property(m => m.Id).HasMaxLength(255));
+            modelBuilder.Entity<Tag>(entity => entity.Property(m => m.Id).HasMaxLength(255));
+            modelBuilder.Entity<Comment>(entity => entity.Property(m => m.Id).HasMaxLength(255));
+            modelBuilder.Entity<Image>(entity => entity.Property(m => m.Id).HasMaxLength(255));
 
             //https://docs.microsoft.com/en-us/ef/core/modeling/
             //https://stackoverflow.com/questions/20711986/entity-framework-code-first-cant-store-liststring
@@ -40,7 +47,9 @@ namespace MenuPlanner.Server.Data
                     v => string.Join("|", v),
                     v => v.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList()
              );
-           modelBuilder
+
+
+            modelBuilder
                 .Entity<Ingredient>()
                 .HasIndex(i => i.Name)
                 .IsUnique();

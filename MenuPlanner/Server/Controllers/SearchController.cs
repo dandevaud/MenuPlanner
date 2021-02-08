@@ -25,10 +25,10 @@ namespace MenuPlanner.Server.Controllers
         private readonly MenuPlannerContext _context;
         private readonly ISearchLogic _searchLogic;
 
-        public SearchController(MenuPlannerContext context)
+        public SearchController(MenuPlannerContext context, ISearchLogic searchLogic)
         {
             _context = context;
-            _searchLogic = new SearchLogic(context);
+            _searchLogic = searchLogic;
         }
 
         /// <summary>Gets the menu for ingredient. GET: api/Search/MenuWithIngredient/5</summary>

@@ -28,11 +28,11 @@ namespace MenuPlanner.Server.Controllers
         private readonly IMenuEntityUpdater _entityUpdater;
         private readonly ISearchLogic _search;
 
-        public MenusController(MenuPlannerContext context)
+        public MenusController(MenuPlannerContext context, IMenuEntityUpdater entityUpdater, ISearchLogic searchLogic)
         {
             _context = context;
-            _entityUpdater = new MenuEntityUpdater(context);
-            _search = new SearchLogic(context);
+            _entityUpdater = entityUpdater;
+            _search = searchLogic;
         }
 
         // GET: api/Menus

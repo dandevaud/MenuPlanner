@@ -13,7 +13,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.2" />
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.1" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.0-alpha.2" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.0.1" />
         <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
         <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
     </ItemGroup>
@@ -21,7 +21,10 @@
         <None Remove="..\..\.editorconfig" />
     </ItemGroup>
     <ItemGroup>
+        <Folder Include="Areas\Images\" />
         <Folder Include="Databases\" />
+        <Folder Include="Migrations\" />
+        <Folder Include="wwwroot\" />
     </ItemGroup>
 
   <ItemGroup>

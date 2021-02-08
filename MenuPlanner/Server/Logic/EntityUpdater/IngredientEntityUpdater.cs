@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Shared.models;
@@ -17,6 +18,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
     public class IngredientEntityUpdater : EntityUpdater, IIngredientEntityUpdater
     {
         private readonly MenuPlannerContext _context;
+        
 
         public IngredientEntityUpdater(MenuPlannerContext dbContext) : base(dbContext)
         {
@@ -51,6 +53,12 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
 
             SaveChanges();
         }
+
+        public async Task<bool> DeleteIngredient(Guid id)
+        {
+            return await DeleteEntity<Ingredient>(id);
+        }
+
 
         private async Task HandleExitstingEntity(Ingredient ingredient, Ingredient existing)
         {

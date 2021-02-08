@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.Extensions;
+using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
 using MenuPlanner.Server.Logic.EntityUpdater;
@@ -27,14 +28,14 @@ namespace MenuPlanner.Server.Controllers
     public class IngredientsController : ControllerBase
     {
         private readonly MenuPlannerContext _context;
-        private readonly IngredientEntityUpdater ingredientEntityUpdater;
-        private readonly SearchLogic searchLogic;
+        private readonly IIngredientEntityUpdater _ingredientEntityUpdater;
+        private readonly ISearchLogic _searchLogic;
 
-        public IngredientsController(MenuPlannerContext context)
+        public IngredientsController(MenuPlannerContext context, IIngredientEntityUpdater ingredientEntityUpdater, ISearchLogic searchLogic)
         {
             _context = context;
-            ingredientEntityUpdater = new IngredientEntityUpdater(context);
-            searchLogic = new SearchLogic(context);
+            _ingredientEntityUpdater = ingredientEntityUpdater;
+            _searchLogic = searchLogic;
 
         }
 
@@ -42,7 +43,7 @@ namespace MenuPlanner.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients()
         {
-            var toReturn = await searchLogic.GetAllIngredients();
+            var toReturn = await _searchLogic.GetAllIngredients();
             return toReturn.Result.OrderBy(i => i.Name).ToList();
         }
 
@@ -50,7 +51,7 @@ namespace MenuPlanner.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Ingredient>> GetIngredient(Guid id)
         {
-            var ingredients = await searchLogic.SearchIngredients(new IngredientSearchRequestModel() {Id = id});
+            var ingredients = await _searchLogic.SearchIngredients(new IngredientSearchRequestModel() {Id = id});
             if (ingredients.Result.IsNullOrEmpty())
             {
                 return NotFound();
@@ -71,7 +72,7 @@ namespace MenuPlanner.Server.Controllers
                 return BadRequest();
             }
 
-            await ingredientEntityUpdater.CheckIfIngredientExistsAndUpdateOrAdd(ingredient);
+            await _ingredientEntityUpdater.CheckIfIngredientExistsAndUpdateOrAdd(ingredient);
 
             return NoContent();
         }
@@ -83,7 +84,7 @@ namespace MenuPlanner.Server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Ingredient>> PostIngredient(Ingredient ingredient)
         {
-            await ingredientEntityUpdater.CheckIfIngredientExistsAndUpdateOrAdd(ingredient);
+            await _ingredientEntityUpdater.CheckIfIngredientExistsAndUpdateOrAdd(ingredient);
 
             return CreatedAtAction("GetIngredient", new { id = ingredient.Id }, ingredient);
         }
@@ -92,7 +93,7 @@ namespace MenuPlanner.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteIngredient(Guid id)
         {
-            if (await ingredientEntityUpdater.DeleteEntity<Ingredient>(id))
+            if (await _ingredientEntityUpdater.DeleteIngredient(id))
             {
                 return NoContent();
             }

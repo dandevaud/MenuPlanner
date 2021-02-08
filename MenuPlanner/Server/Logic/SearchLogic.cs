@@ -33,7 +33,7 @@ namespace MenuPlanner.Server.Logic
 
         public async Task<SearchResponseModel<Menu>> GetAllMenus()
         {
-            var menus = (await _context.Menus.ToListAsync()).OrderByDescending(a => a.AverageRating).ToList();
+            var menus = (await _context.Menus.Include(m =>m.Images).ToListAsync()).OrderByDescending(a => a.AverageRating).ToList();
             return new SearchResponseModel<Menu>() {Result = menus};
         }
         public async Task<SearchResponseModel<Ingredient>> GetAllIngredients()
