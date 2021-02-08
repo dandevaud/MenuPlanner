@@ -1,15 +1,23 @@
 ﻿@using System.IO
 @using MenuPlanner.Shared.models
+@inject NavigationManager NavigationManager;
 
 <div class="form-group">
     @if (Menu.Images != null)
     {
         @foreach (var image in Menu.Images)
         {
-            <span class="picture">
-                <img src="data:image/jpeg;base64, @(Convert.ToBase64String(image.ImageBytes))" alt="@image.AlternativeName" height="200" />
-                <a class="remove-pic" role="button" @onclick="() => RemoveImage(image)">🗙</a>
-            </span>
+    <span class="picture">
+        @if (isNew(image))
+        {
+            <img src="data:image/jpeg;base64, @(Convert.ToBase64String(image.ImageBytes))" alt="@image.AlternativeName" height="200" />
+        }
+        else
+        {
+            <img src="@GetImagePath(image)" alt="@image.AlternativeName" height="200" />
+        }
+        <a class="remove-pic" role="button" @onclick="() => RemoveImage(image)">🗙</a>
+    </span>
             <span>&nbsp;</span>
         }
     }
@@ -40,7 +48,6 @@
         var maxFiles = 10;
         var format = "image/jpeg";
         selectedFiles = e.GetMultipleFiles(maxFiles);
-        int i = 0;
         foreach (var imageFile in selectedFiles)
         {
             try
@@ -52,7 +59,9 @@
                 Image image = new Image
                 {
                     ImageBytes = buffer,
-                    AlternativeName = $"Picture {i++}"
+                    AlternativeName = imageFile.Name,
+                    Name = imageFile.Name
+
                 };
 
                 Menu.Images.Add(image);
@@ -64,6 +73,16 @@
         }
         filesMessage = $"{selectedFiles.Count} file(s) selected";
         this.StateHasChanged();
+    }
+
+    private bool isNew(Image image)
+    {
+        return image.ImageBytes.Length != 0;
+    }
+
+    private string GetImagePath(Image img)
+    {
+        return Path.Combine(NavigationManager.BaseUri,img.Path.ToString());
     }
 
     private void RemoveImage(Image image)

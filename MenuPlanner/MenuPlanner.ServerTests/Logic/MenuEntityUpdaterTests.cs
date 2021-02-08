@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MenuPlanner.Server.Logic;
+using MenuPlanner.Server.Logic.Blob;
 using MenuPlanner.Server.Logic.EntityUpdater;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.models.enums;
@@ -26,7 +27,8 @@ namespace MenuPlanner.ServerTests.Logic
         public void SetUp()
         {
             mockDb = new MockDbSetUp();
-            controller = new MenuEntityUpdater(mockDb.SetUpDBContext().Object);
+
+           // controller = new MenuEntityUpdater(mockDb.SetUpDBContext().Object, new PictureHandler());
         }
 
         /// <summary>

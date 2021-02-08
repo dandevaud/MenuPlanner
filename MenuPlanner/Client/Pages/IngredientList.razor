@@ -13,8 +13,8 @@
 <h5>Add Ingredient</h5>
 <div class="row">
     <EditForm Model="@newIngredient" OnValidSubmit="@AddIngredient" id="edit">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+        <DataAnnotationsValidator/>
+        <ValidationSummary Model="@newIngredient"/>
 
         <div class="form-group">
             Name: <InputText @bind-Value="newIngredient.Name" class="form-control" />

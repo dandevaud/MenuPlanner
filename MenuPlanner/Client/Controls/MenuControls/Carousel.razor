@@ -1,12 +1,13 @@
 ﻿@using System.Timers;
 @using MenuPlanner.Shared.models
+@using System.IO
 @inject PublicClient PublicClient
 
-@if (images == null)
+@if (Menu.Images == null)
 {
     <div style="height: 2500px;" class="text-center pt-5">Loading...</div>
 }
-else if (images.Count == 0)
+else if (Menu.Images.Count == 0)
 {
     <div style="height: 250px;" class="text-center pt-5">No images</div>
 }
@@ -14,10 +15,10 @@ else
 {
     <div class="card-img-top">
         <div class="carousel slide">
-            @if (images.Count > 1)
+            @if (Menu.Images.Count > 1)
             {
                 <ol class="carousel-indicators">
-                    @for (int i = 0; i < images.Count; i++)
+                    @for (int i = 0; i < Menu.Images.Count; i++)
                     {
                         int copiedIndex = i;
                         <li class="@GetActive()" @onclick="() => SetActiveImageIndex(copiedIndex)"></li>
@@ -26,23 +27,25 @@ else
                 </ol>
             }
             <div class="carousel-inner" >
-                @foreach (var image in images)
+                @foreach (var image in Menu.Images)
                 {
                     <div class="text-center carousel-item @GetActive()">
                         <!-- TODO: Read correct content type, or add it in the model and add it on reading file -->
-                        <img class="d-block w-100" src="data:image/jpeg;base64, @(Convert.ToBase64String(image.ImageBytes))" alt="@image.AlternativeName" style="height: 250px;">
+                       
+                            <img class="d-block w-100" src="@GetSource(image)" alt="@image.AlternativeName" style="height: 250px;">
+                       
                     </div>
                 }
                 @ResetRenderCounter()
             </div>
-            @if (activeImageIndex > 0 && images.Count > 1)
+            @if (activeImageIndex > 0 && Menu.Images.Count > 1)
             {
                 <a class="carousel-control-prev" role="button" @onclick="OnPreviousClicked">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="sr-only">Previous</span>
                 </a>
             }
-            @if (activeImageIndex < images.Count - 1 && images.Count > 1)
+            @if (activeImageIndex < Menu.Images.Count - 1 && Menu.Images.Count > 1)
             {
                 <a class="carousel-control-next" role="button" @onclick="OnNextClicked">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
@@ -57,19 +60,27 @@ else
 @code {
 
     [Parameter]
-    public Guid Id { get; set; }
-
-    public List<Image> images = null;
+    public Menu Menu { get; set; }
 
     private int carouselRenderIndex = -1;
     private int activeImageIndex = 0;
     private Timer scrollTimer = null;
 
+    private string GetSource(Image img)
+    {
+        if (string.IsNullOrEmpty(img.Path))
+        {
+           return $"data: image / jpeg; base64,{Convert.ToBase64String(img.ImageBytes)}";
+        }
+        else
+        {
+            return $"{Path.Combine(PublicClient.Client.BaseAddress.AbsolutePath, img.Path)}";
+        }
+    }
+
     protected override Task OnParametersSetAsync()
     {
-        LazyLoadImages();
-
-        int scrollMilliseconds = 5 * 1000;
+        int scrollMilliseconds = 2500;
 
         scrollTimer?.Stop();
 
@@ -81,7 +92,7 @@ else
 
                 activeImageIndex += 1;
 
-                if (activeImageIndex > (images?.Count - 1 ?? 0))
+                if (activeImageIndex > (Menu.Images?.Count - 1 ?? 0))
                 {
                     activeImageIndex = 0;
                 }
@@ -132,12 +143,6 @@ else
     {
         carouselRenderIndex = -1;
         activeImageIndex = newIndex;
-    }
-
-    public async void LazyLoadImages()
-    {
-        images = await PublicClient.Client.GetFromJsonAsync<List<Image>>($"api/Menus/Images/{Id}");
-        StateHasChanged();
     }
 
 }
