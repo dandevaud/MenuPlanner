@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.Json;
 using IdentityServer4.Extensions;
 using MenuPlanner.Server.Contracts.Sql;
 using MenuPlanner.Shared.models.enums;
@@ -63,7 +64,7 @@ namespace MenuPlanner.Server.Data
         private void HandleMariaDb<T>(IServiceCollection services, SqlCredentials credentials) where T : DbContext
         {
             var password = credentials.Password;
-            Console.WriteLine("PW is "+password);
+            Console.WriteLine("credentials "+JsonSerializer.Serialize<SqlCredentials>(credentials));
             if (password.IsNullOrEmpty())
             {
                 password = Configuration[credentials.UserSecretsKey];
@@ -73,7 +74,7 @@ namespace MenuPlanner.Server.Data
             var version = credentials.ServerVersion.Split(".");
             services.AddDbContext<T>(options =>
                 options.UseMySql(
-                    $"server = {credentials.Server}; port={credentials.Port}; database = {credentials.Database}; user = {credentials.User}; password = {password}",
+                    $"server={credentials.Server}; port={credentials.Port}; database={credentials.Database}; user={credentials.User}; password={password}",
                     new MySqlServerVersion(new Version(Convert.ToInt32(version[0]), Convert.ToInt32(version[0]), Convert.ToInt32(version[0])))));
         }
     }
