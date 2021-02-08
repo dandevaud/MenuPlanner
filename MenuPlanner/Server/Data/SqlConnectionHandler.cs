@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
+using IdentityServer4.Extensions;
 using MenuPlanner.Server.Contracts.Sql;
 using MenuPlanner.Shared.models.enums;
 using MenuPlanner.Shared.models.SQLConnection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace MenuPlanner.Server.Data
 {
@@ -17,9 +19,11 @@ namespace MenuPlanner.Server.Data
         public SqlCredentials CredentialsData { get; set; }
         public SqlCredentials CredentialsAuth { get; set; }
 
+      
         public SqlCredentials GetCredentialsFromConfiguration(string fork)
         {
             var sqlCredentials = Configuration.GetSection(fork).Get<SqlCredentials>();
+           
            
             return sqlCredentials;
         }
@@ -59,7 +63,7 @@ namespace MenuPlanner.Server.Data
         private void HandleMariaDb<T>(IServiceCollection services, SqlCredentials credentials) where T : DbContext
         {
             var password = credentials.Password;
-            if (credentials.UseUserSecrets)
+            if (password.IsNullOrEmpty())
             {
                 password = Configuration[credentials.UserSecretsKey];
             }
