@@ -2,6 +2,7 @@
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
+using System.Security.Cryptography.X509Certificates;
 using MenuPlanner.Server.Contracts.Blob;
 using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Contracts.Sql;
@@ -49,12 +50,24 @@ namespace MenuPlanner.Server
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<ApplicationUser>(options =>  options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddIdentityServer()
+
+            var identityServer = services.AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 
+            if (Configuration["ASPNETCORE_ENVIRONMENT"].Equals("Development"))
+            {
+                identityServer.AddDeveloperSigningCredential();
+            }
+            else
+            {
+                var certificate = new X509Certificate2("menuplanner.pfx",Configuration["Certificate:Password"]);
+                identityServer.AddSigningCredential(certificate);
+            }
+
+            
             IoCSetUp(services);
 
 
