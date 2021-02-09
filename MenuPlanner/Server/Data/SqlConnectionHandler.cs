@@ -63,16 +63,11 @@ namespace MenuPlanner.Server.Data
 
         private void HandleMariaDb<T>(IServiceCollection services, SqlCredentials credentials) where T : DbContext
         {
-            var password = credentials.Password;
-            if (password.IsNullOrEmpty())
-            {
-                password = Configuration[credentials.UserSecretsKey];
-            }
-
+           
             var version = credentials.ServerVersion.Split(".");
             services.AddDbContext<T>(options =>
                 options.UseMySql(
-                    $"server={credentials.Server}; port={credentials.Port}; database={credentials.Database}; user={credentials.User}; password={password}",
+                    $"server={credentials.Server}; port={credentials.Port}; database={credentials.Database}; user={credentials.User}; password={credentials.Password}",
                     new MySqlServerVersion(new Version(Convert.ToInt32(version[0]), Convert.ToInt32(version[0]), Convert.ToInt32(version[0])))));
         }
     }
