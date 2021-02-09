@@ -36,7 +36,6 @@ namespace MenuPlanner.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-
             ISqlConnectionHandler sqlConnection = new SqlConnectionHandler() {Configuration = Configuration};
             sqlConnection.CredentialsData = sqlConnection.GetCredentialsFromConfiguration("Data");
             sqlConnection.CredentialsAuth = sqlConnection.GetCredentialsFromConfiguration("Auth");
@@ -76,7 +75,7 @@ namespace MenuPlanner.Server
 
             services.AddControllersWithViews();
             services.AddRazorPages();
-
+            
             // Register the Swagger generator, defining 1 or more Swagger documents
             //services.AddSwaggerGen();
             // Swagger Authorization take from https://stackoverflow.com/a/61899245
@@ -120,6 +119,8 @@ namespace MenuPlanner.Server
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+                app.UseHttpsRedirection();
+                
             }
 
             app.UseHttpsRedirection();

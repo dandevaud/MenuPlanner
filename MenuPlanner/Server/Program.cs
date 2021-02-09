@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System.IO;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
@@ -16,7 +17,12 @@ namespace MenuPlanner.Server
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
-                        .ConfigureAppConfiguration( options => options.AddEnvironmentVariables());
+                        .ConfigureAppConfiguration( options =>
+                        {
+                            options.AddEnvironmentVariables();
+                            options.AddJsonFile("config/settings.json", true);
+                            options.AddJsonFile("app/config/settings.json", true);
+                        });
                 });
     }
 }
