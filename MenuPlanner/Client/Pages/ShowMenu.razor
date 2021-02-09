@@ -46,7 +46,7 @@ else
             {
                 <IngredientDisplay Ing="@ingredient" Fraction="@Fraction"></IngredientDisplay>
             }
-            @resetCounter()
+           
         </ul>
     }
 
@@ -58,7 +58,20 @@ else
             {
                 <CommentDisplay Com="@comment"></CommentDisplay>
             }
-            @resetCounter()
+            
+        </ul>
+        <br />
+    }
+
+    @if (menu.Tags != null)
+    {
+        <h4>Tags</h4>
+        <ul class="list-group">
+            @foreach (var tag in menu.Tags)
+            {
+               <li>@tag.Name</li>
+            }
+            
         </ul>
         <br />
     }
