@@ -1,7 +1,6 @@
-﻿using System;
-using MenuPlanner.Shared.models.enums;
+﻿using MenuPlanner.Shared.models.enums;
 
-namespace MenuPlanner.Shared.models.SQLConnection
+namespace MenuPlanner.Server.Models.SQLConnection
 {
     public class SqlCredentials
     {

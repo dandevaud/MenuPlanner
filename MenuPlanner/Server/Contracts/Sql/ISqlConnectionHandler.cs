@@ -1,4 +1,4 @@
-﻿using MenuPlanner.Shared.models.SQLConnection;
+﻿using MenuPlanner.Server.Models.SQLConnection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
