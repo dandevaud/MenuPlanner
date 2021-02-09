@@ -63,7 +63,7 @@ namespace MenuPlanner.Server
             }
             else
             {
-                var certificate = new X509Certificate2("menuplanner.pfx",Configuration["Certificate:Password"]);
+                var certificate = new X509Certificate2("/app/certs/aspnetapp-root-cert.pfx", "password");
                 identityServer.AddSigningCredential(certificate);
             }
 
