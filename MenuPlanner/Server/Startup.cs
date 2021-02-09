@@ -55,17 +55,8 @@ namespace MenuPlanner.Server
 
             var identityServer = services.AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
-
-            if (Configuration["ASPNETCORE_ENVIRONMENT"]?.Equals("Development")??false)
-            {
-                identityServer.AddDeveloperSigningCredential();
-            }
-            else
-            {
-                var certificate = new X509Certificate2("/app/certs/aspnetapp-root-cert.pfx", "password");
+                var certificate = new X509Certificate2("certs/aspnetapp-root-cert.pfx", "password");
                 identityServer.AddSigningCredential(certificate);
-            }
-
             
             IoCSetUp(services);
 

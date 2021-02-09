@@ -123,8 +123,9 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             SaveChanges();
             var images = menu.Images;
             await SaveImages(menu, images);
+            SaveChanges();
 
-           
+
         }
 
         private async Task SaveImages(Menu menu, ICollection<Image> images)
