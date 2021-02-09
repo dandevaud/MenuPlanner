@@ -362,3 +362,5 @@ MigrationBackup/
 *.db-wal
 /MenuPlanner/Server/.config/dotnet-tools.json
 .vscode
+/MenuPlanner/Server/wwwroot/imageUploads
+/MenuPlanner/Server/tempkey.jwk
