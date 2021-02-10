@@ -1,5 +1,11 @@
 ﻿@using System.IO
 @using MenuPlanner.Shared.models
+@using Org.BouncyCastle.Bcpg
+@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.Formats
+@using SixLabors.ImageSharp.Formats.Jpeg
+@using SixLabors.ImageSharp.Processing
+@using Image = MenuPlanner.Shared.models.Image
 @inject NavigationManager NavigationManager;
 
 <div class="form-group">
@@ -47,14 +53,20 @@
         }
         var maxFiles = 10;
         var format = "image/jpeg";
+       
         selectedFiles = e.GetMultipleFiles(maxFiles);
         foreach (var imageFile in selectedFiles)
         {
             try
             {
-                var resizedImageFile = await imageFile.RequestImageFileAsync(format, 400, 400);
-                var buffer = new byte[resizedImageFile.Size];
-                await resizedImageFile.OpenReadStream().ReadAsync(buffer);
+                using var imageCrop = await SixLabors.ImageSharp.Image.LoadAsync(imageFile.OpenReadStream());
+                await using var memoryStream = new MemoryStream();
+                imageCrop.Mutate(x => x.Crop(400, 400));
+                    
+                await imageCrop.SaveAsync(memoryStream,new JpegEncoder());
+                       
+                var buffer = new byte[memoryStream.Length];
+                await memoryStream.ReadAsync(buffer);
 
                 Image image = new Image
                 {
