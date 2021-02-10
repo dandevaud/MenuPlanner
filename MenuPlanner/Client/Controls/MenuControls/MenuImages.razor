@@ -53,7 +53,7 @@
         }
         var maxFiles = 10;
         var format = "image/jpeg";
-       
+
         selectedFiles = e.GetMultipleFiles(maxFiles);
         foreach (var imageFile in selectedFiles)
         {
@@ -61,10 +61,12 @@
             {
                 using var imageCrop = await SixLabors.ImageSharp.Image.LoadAsync(imageFile.OpenReadStream());
                 await using var memoryStream = new MemoryStream();
-                imageCrop.Mutate(x => x.Crop(400, 400));
-                    
+                var min = imageCrop.Width > imageCrop.Height ? imageCrop.Height : imageCrop.Width;
+                imageCrop.Mutate(x => x.Crop(min, min));
+                imageCrop.Mutate(x => x.Resize(400, 400));
+
                 await imageCrop.SaveAsync(memoryStream,new JpegEncoder());
-                       
+
                 var buffer = new byte[memoryStream.Length];
                 await memoryStream.ReadAsync(buffer);
 
