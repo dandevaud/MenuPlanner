@@ -1,0 +1,50 @@
+﻿@using System.Globalization
+<div class="overlay" style="display: @(GetDisplay());">
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        @if (ShowProgress)
+        {
+            <div role="status">Progress: @(GetPercentage().ToString("P", CultureInfo.InvariantCulture))</div>
+        }
+    </div>
+</div>
+@code {
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public int Done { get; set; }
+
+    [Parameter]
+    public int Total { get; set; }
+
+    [Parameter]
+    public bool ShowProgress { get; set; } = false;
+
+    protected override void OnParametersSet()
+    {
+        if (Total <= 0) ShowProgress = false;
+    }
+
+    private decimal GetPercentage()
+    {
+        if (Done < 0)
+        {
+            ShowProgress = false;
+            return new decimal(0.0d);
+        } 
+
+        return new decimal(Done/Total);
+
+    }
+
+    private string GetDisplay()
+    {
+        if (IsLoading) return "block";
+        else return "none";
+    }
+    
+
+}
