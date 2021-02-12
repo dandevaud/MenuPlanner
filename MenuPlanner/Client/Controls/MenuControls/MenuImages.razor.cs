@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MenuPlanner.Client.Logic;
 using MenuPlanner.Shared.models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -29,14 +30,18 @@ namespace MenuPlanner.Client.Controls.MenuControls
         private int done = 0;
         private int total = 0;
 
-        private static readonly decimal RATIO = new decimal(0.75d);
-
-
+     
 
         private IReadOnlyList<IBrowserFile> selectedFiles;
         private string filesMessage = "No file(s) selected";
+        private readonly ImageResizer _imageResizer = new ImageResizer()
+        {
+            Ratio = new decimal(0.75d),
+            Width = 400,
+            Height = 400
+        };
 
-        private async void OnInputFileChange(InputFileChangeEventArgs e)
+        private async Task OnInputFileChange(InputFileChangeEventArgs e)
         {
             if (Menu.Images == null)
             {
@@ -49,24 +54,13 @@ namespace MenuPlanner.Client.Controls.MenuControls
             try
             {
                 IsLoading = true;
-               
-                foreach (var imageFile in selectedFiles)
+               foreach (var imageFile in selectedFiles)
                 {
-
-                    var buffer = await ImageResize(imageFile);
-
-                    Image image = new Image
-                    {
-                        ImageBytes = buffer,
-                        AlternativeName = imageFile.Name,
-                        Name = imageFile.Name
-                    };
-
-                    Menu.Images.Add(image);
-                    done++;
-                    StateHasChanged();
+                    await HandleImage(imageFile);
+                    
                 }
 
+                
             }
             finally
             {
@@ -79,50 +73,23 @@ namespace MenuPlanner.Client.Controls.MenuControls
             this.StateHasChanged();
         }
 
-        private async Task<byte[]> ImageResize(IBrowserFile imageFile)
+        private async Task HandleImage(IBrowserFile imageFile)
         {
-            using var imageCrop = await SixLabors.ImageSharp.Image.LoadAsync(imageFile.OpenReadStream());
-            await using var memoryStream = new MemoryStream();
+            var buffer = _imageResizer.ImageResize(imageFile);
 
-           
-          
-
-            var ratio = (new decimal(imageCrop.Height) / new decimal(imageCrop.Width)) > RATIO
-                        && (new decimal(imageCrop.Width) / new decimal(imageCrop.Height)) > RATIO;
-
-            if (ratio)
+            Image image = new Image
             {
-              
-                imageCrop.Mutate(x => x
-                    .Resize(400, 400));
-            }
-            else
-            {
-                imageCrop.Mutate( x => x.Resize(new ResizeOptions()
-                {
-                    Size = new Size(400),
-                    Mode = ResizeMode.Min
-                }));
-               var min = imageCrop.Width > imageCrop.Height ? imageCrop.Height : imageCrop.Width;
-               var center = Rectangle.Center(imageCrop.Frames.RootFrame.Bounds());
-               if (min % 2 == 1) min--;
-                center.X -= min/2;
-                center.Y -= min / 2;
+                ImageBytes = await buffer,
+                AlternativeName = imageFile.Name,
+                Name = imageFile.Name
+            };
 
-                imageCrop.Mutate(x => x
-                        .Crop(
-                            new Rectangle(center, 
-                                new Size(min, min))));
-
-            }
-
-            await imageCrop.SaveAsync(memoryStream, new JpegEncoder());
-
-            var buffer = memoryStream.ToArray();
-            return buffer;
+            Menu.Images.Add(image);
+            done++;
+            StateHasChanged();
         }
 
-        private bool isNew(Image image)
+        private bool IsNew(Image image)
         {
             return image.ImageBytes.Length != 0;
         }
