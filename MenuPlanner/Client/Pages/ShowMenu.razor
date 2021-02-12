@@ -24,6 +24,17 @@ else
 
     <StarRating Menu="@menu" IsEditable="false"></StarRating>
     <PortionHandler OriginalPortion="@(menu.Portion)" @bind-Fraction="Fraction" PortionDescription="@(menu.PortionDescription)"></PortionHandler>
+    @if (menu.Ingredients != null)
+    {
+        <h4>Ingredients</h4>
+        <ul class="list-group">
+            @foreach (var ingredient in menu.Ingredients)
+            {
+                <IngredientDisplay Ing="@ingredient" Fraction="@Fraction"></IngredientDisplay>
+            }
+            @resetCounter()
+        </ul>
+    }
     @if (menu.Steps != null)
     {
         <h4>Steps</h4>
@@ -38,17 +49,7 @@ else
         <br />
     }
 
-    @if (menu.Ingredients != null)
-    {
-        <h4>Ingredients</h4>
-        <ul class="list-group">
-            @foreach (var ingredient in menu.Ingredients)
-            {
-                <IngredientDisplay Ing="@ingredient" Fraction="@Fraction"></IngredientDisplay>
-            }
-            @resetCounter()
-        </ul>
-    }
+   
 
     @if (menu.Comments != null)
     {
