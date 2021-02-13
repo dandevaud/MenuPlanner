@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MenuPlanner.Client.Logic;
+using MenuPlanner.Shared.Extension;
 using MenuPlanner.Shared.models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -51,14 +52,16 @@ namespace MenuPlanner.Client.Controls.MenuControls
 
             selectedFiles = e.GetMultipleFiles(maxFiles);
             total = (ushort) selectedFiles.Count;
+            List<Image> images = new List<Image>();
             try
             {
                 IsLoading = true;
                foreach (var imageFile in selectedFiles)
                 {
-                    await HandleImage(imageFile);
+                    images.Add(await HandleImage(imageFile));
                     
                 }
+               Menu.Images.AddRange(images);
 
                 
             }
@@ -68,12 +71,10 @@ namespace MenuPlanner.Client.Controls.MenuControls
                 
               
             }
-
             filesMessage = $"{selectedFiles.Count} file(s) selected";
-            this.StateHasChanged();
         }
 
-        private async Task HandleImage(IBrowserFile imageFile)
+        private async Task<Image> HandleImage(IBrowserFile imageFile)
         {
             var buffer = _imageResizer.ImageResize(imageFile);
 
@@ -83,10 +84,11 @@ namespace MenuPlanner.Client.Controls.MenuControls
                 AlternativeName = imageFile.Name,
                 Name = imageFile.Name
             };
-
-            Menu.Images.Add(image);
             done++;
             StateHasChanged();
+            return image;
+           
+           
         }
 
         private bool IsNew(Image image)

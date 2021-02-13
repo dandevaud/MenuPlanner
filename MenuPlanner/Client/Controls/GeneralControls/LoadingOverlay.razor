@@ -6,7 +6,7 @@
         </div>
         @if (ShowProgress)
         {
-            <div role="status">Progress: @(GetPercentage().ToString("P", CultureInfo.InvariantCulture))</div>
+            <div role="status">Progress: @(GetPercentage().ToString("P0", CultureInfo.InvariantCulture))</div>
         }
     </div>
 </div>
@@ -34,9 +34,9 @@
         {
             ShowProgress = false;
             return new decimal(0.0d);
-        } 
-
-        return new decimal(Done/Total);
+        }
+        var dci = (decimal) Done / Total;
+        return dci;
 
     }
 

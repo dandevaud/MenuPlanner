@@ -17,5 +17,14 @@
 }
 .spinner-border-div {
     position: relative;
-    
+}
+.progress {
+    position: relative;
+}
+
+.progress span {
+    position: absolute;
+    display: block;
+    width: 100%;
+    color: black;
 }
