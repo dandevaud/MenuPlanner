@@ -27,8 +27,8 @@ namespace MenuPlanner.Client.Controls.MenuControls
 
         private bool IsLoading { get; set; }
 
-        private int done = 0;
-        private int total = 0;
+        private UInt16 done = 0;
+        private UInt16 total = 0;
 
      
 
@@ -50,7 +50,7 @@ namespace MenuPlanner.Client.Controls.MenuControls
             var maxFiles = 10;
 
             selectedFiles = e.GetMultipleFiles(maxFiles);
-            total = selectedFiles.Count;
+            total = (ushort) selectedFiles.Count;
             try
             {
                 IsLoading = true;
