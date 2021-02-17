@@ -18,6 +18,13 @@ namespace MenuPlanner.Shared.models
         [NotMapped]
         public Quantity Quantity { get; set; }
         public Menu Menu { get; set; }
+
+        [MaxLength(255)]
+        public string Description { get; set; }
+
+        [MaxLength(32, ErrorMessage = "Please define a value with {1} characters only")]
+        public string Grouping { get; set; }
+
         [Required]
         //https://stackoverflow.com/questions/8973027/ef-code-first-map-dictionary-or-custom-type-as-an-nvarchar
         public string QuantityAsJson
