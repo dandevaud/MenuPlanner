@@ -6,15 +6,22 @@ namespace MenuPlanner.Shared.Extension
     {
         public static bool Equals(this MenuIngredient menuIngredient, MenuIngredient toCompare)
         {
-            return menuIngredient.Description.Equals(toCompare.Description) &&
-                   menuIngredient.Grouping.Equals(toCompare.Grouping) &&
-                   menuIngredient.Ingredient.Equals(toCompare.Ingredient) &&
-                   menuIngredient.Quantity.Equals(toCompare.Quantity);
+            return menuIngredient.Id.Equals(toCompare.Id);
+        }
+
+        public static bool ContentEquals(this MenuIngredient menuIngredient, MenuIngredient toCompare)
+        {
+            var description = menuIngredient.Description?.Equals(toCompare.Description) ?? menuIngredient.Description == toCompare.Description;
+            var grouping = menuIngredient.Grouping?.Equals(toCompare.Grouping) ?? menuIngredient.Grouping == toCompare.Grouping;
+            var quantity = menuIngredient.Quantity?.Equals(toCompare.Quantity) ?? menuIngredient.Quantity == toCompare.Quantity;
+
+            return description && grouping && quantity;
+
         }
 
         public static bool Equals(this Quantity quantity, Quantity toCompare)
         {
-            return quantity.QuantityValue.Equals(toCompare.QuantityValue) ||
+            return quantity.QuantityValue.Equals(toCompare.QuantityValue) &&
                    quantity.Unit.Equals(toCompare.Unit);
         }
 
