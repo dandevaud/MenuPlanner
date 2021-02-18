@@ -3,11 +3,10 @@
 @inject HttpClient Http
 
 <div class="card @Css">
+    <div class="card-header"><h5>@Ingredient.Name</h5></div>
     <div class="card-body">
-        <h5 class="card-title">@Ingredient.Name</h5>
-        <div class="form-group"><p class="card-text">@(MenuIngredient.Description ?? " ")</p></div>*/
-
-
+        <p class="card-title">@(MenuIngredient.Description ?? " ")</p>
+        
 
         @if (ToggleEditMode)
         {
