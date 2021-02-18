@@ -9,13 +9,12 @@
 @inject NavigationManager NavigationManager;
 
 <div class="form-group">
-    <LoadingOverlay IsLoading="@IsLoading" Done="@done" Total="@total" ShowProgress="true"></LoadingOverlay>
     @if (Menu.Images != null)
     {
         @foreach (var image in Menu.Images)
         {
             <span class="picture">
-                @if (isNew(image))
+                @if (IsNew(image))
                 {
                     <img src="data:image/jpeg;base64, @(Convert.ToBase64String(image.ImageBytes))" alt="@image.AlternativeName" height="200" />
                 }
@@ -30,10 +29,12 @@
     }
     <br />
     <br />
-    <div class="custom-file">
-        <InputFile accept="image/*" OnChange="OnInputFileChange" class="custom-file-input" multiple />
-        <label class="custom-file-label">Add Pictures</label>
-    </div>
+    <LoadingDiv IsLoading="@IsLoading" Done="@done" Total="@total" ShowProgress="true">
+        <div class="custom-file">
+            <InputFile accept="image/*" OnChange="OnInputFileChange" class="custom-file-input" multiple disabled="@IsLoading" />
+            <label class="custom-file-label">Add Pictures</label>
+        </div>
+    </LoadingDiv>
     <br />
     <p>@filesMessage</p>
 </div>
