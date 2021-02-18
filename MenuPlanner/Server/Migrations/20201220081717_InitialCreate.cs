@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace MenuPlanner.Server.Data.Migrations
+namespace MenuPlanner.Server.Migrations
 {
     public partial class InitialCreate : Migration
     {

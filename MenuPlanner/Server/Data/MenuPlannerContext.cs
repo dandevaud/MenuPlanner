@@ -27,7 +27,10 @@ namespace MenuPlanner.Server.Data
             Database.Migrate();
         }
 
-        public MenuPlannerContext() : base(){}
+        public MenuPlannerContext() : base()
+        {
+            Database.Migrate();
+        }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
