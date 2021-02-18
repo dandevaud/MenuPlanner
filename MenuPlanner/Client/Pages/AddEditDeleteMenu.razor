@@ -58,15 +58,13 @@ else
 
             @if (ingredient.Name != null)
             {
-                @if (menu.Ingredients != null && menu.Ingredients.Any(i => i.Ingredient.Id.Equals(ingredient.Id)))
+                if (menu.Ingredients.Any(i => i.Ingredient.Id.Equals(ingredient.Id)))
                 {
-                    <IngredientCard MenuIngredient="@menu.Ingredients.FirstOrDefault(i => i.Ingredient.Id.Equals(ingredient.Id))" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
+                    ingredient = menu.Ingredients.Select(mi => mi.Ingredient).FirstOrDefault(i => i.Id.Equals(ingredient.Id));
                 }
-                else
-                {
+               
                     <IngredientCard Ingredient="@ingredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
-                }
-            }
+ }
 
             <div class="card-columns">
 
@@ -189,10 +187,7 @@ else
         {
             menu.Ingredients = new List<MenuIngredient>();
         }
-        if (menu.Ingredients.Any(mi => mi.Ingredient.Id.Equals(menuIngredient.Ingredient.Id)))
-        {
-            menu.Ingredients.Remove(menu.Ingredients.FirstOrDefault(i => i.Ingredient.Id.Equals(menuIngredient.Ingredient.Id)));
-        }
+       
         menu.Ingredients.Add(menuIngredient);
 
         UpdateIngredientToMenu(menuIngredient);
