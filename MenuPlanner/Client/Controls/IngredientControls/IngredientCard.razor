@@ -5,14 +5,17 @@
 <div class="card @Css">
     <div class="card-body">
         <h5 class="card-title">@Ingredient.Name</h5>
-        <p class="card-text">Category: @Ingredient.Category.ToString()</p>
+        <div class="form-group"><p class="card-text">@(MenuIngredient.Description ?? " ")</p></div>*/
+
+
+
         @if (ToggleEditMode)
         {
-            <IngredientCardEdit @bind-Quantity="quantity"></IngredientCardEdit>
+            <IngredientCardEdit @bind-MenuIngredient="MenuIngredient"></IngredientCardEdit>
         }
         else
         {
-            <IngredientCardView Quantity="quantity"></IngredientCardView>
+            <IngredientCardView MenuIngredient="MenuIngredient"></IngredientCardView>
         }
     </div>
     <div class="card-footer">
@@ -29,69 +32,3 @@
     </div>
 </div>
 
-@code {
-
-    [Parameter]
-    public Ingredient Ingredient { get; set; } = new Ingredient();
-
-    [Parameter]
-    public EventCallback<MenuIngredient> MenuIngredientChanged { get; set; }
-
-    [Parameter]
-    public EventCallback<MenuIngredient> RemoveMenuIngredient { get; set; }
-
-    [Parameter]
-    public EventCallback<MenuIngredient> UpdateMenuIngredient { get; set; }
-
-    [Parameter]
-    public string Css { get; set; } = "";
-
-    private Quantity quantity = new Quantity();
-
-    [Parameter]
-    public MenuIngredient MenuIngredient { get; set; } = new MenuIngredient();
-
-    [Parameter]
-    public bool ToggleEditMode { get; set; } = false;
-
-    private AddOrUpdate addOrUpdate = AddOrUpdate.Add;
-
-    private enum AddOrUpdate
-    {
-        Add, Update
-    }
-
-
-    private void EditMenuIngredient()
-    {
-        ToggleEditMode = true;
-        addOrUpdate = AddOrUpdate.Update;
-        StateHasChanged();
-    }
-
-    protected override void OnParametersSet()
-    {
-        if (MenuIngredient.Ingredient != null) Ingredient = MenuIngredient.Ingredient;
-        if (MenuIngredient.Quantity != null) quantity = MenuIngredient.Quantity;
-
-    }
-
-    private async Task AddIngredient()
-    {
-        MenuIngredient.Ingredient = Ingredient;
-        MenuIngredient.Quantity = quantity;
-
-        if (addOrUpdate.Equals(AddOrUpdate.Add))
-        {
-            await MenuIngredientChanged.InvokeAsync(MenuIngredient);
-        }
-        else
-        {
-            await UpdateMenuIngredient.InvokeAsync(MenuIngredient);
-
-        }
-
-
-    }
-
-}
