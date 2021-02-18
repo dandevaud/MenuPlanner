@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MenuPlanner.Client.Logic;
 using MenuPlanner.Shared.Extension;
@@ -37,7 +38,6 @@ namespace MenuPlanner.Client.Controls.MenuControls
         private string filesMessage = "No file(s) selected";
         private readonly ImageResizer _imageResizer = new ImageResizer()
         {
-            Ratio = new decimal(0.75d),
             Width = 400,
             Height = 400
         };
@@ -68,8 +68,6 @@ namespace MenuPlanner.Client.Controls.MenuControls
             finally
             {
                 IsLoading = false;
-                
-              
             }
             filesMessage = $"{selectedFiles.Count} file(s) selected";
         }

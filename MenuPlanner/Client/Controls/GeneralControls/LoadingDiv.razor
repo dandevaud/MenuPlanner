@@ -1,4 +1,5 @@
 ﻿@using System.Globalization
+@using System.Threading
 <div class="wrapper-div " style="@GetZIndex()"> 
   
     <div class="overlay-div rounded-top" style="display: @(GetDisplay());">
@@ -55,6 +56,7 @@
         if (Total <= 0) ShowProgress = false;
     }
 
+  
     private string GetPercentage()
     {
         var dci = GetDecimal();

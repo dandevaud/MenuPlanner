@@ -12,7 +12,6 @@ namespace MenuPlanner.Client.Logic
     public class ImageResizer
     {
 
-        public decimal Ratio { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public async Task<byte[]> ImageResize(IBrowserFile imageFile)
@@ -22,34 +21,13 @@ namespace MenuPlanner.Client.Logic
             
 
             var imageCrop = await imageCropTask;
-            var ratio = (new decimal(imageCrop.Height) / new decimal(imageCrop.Width)) > Ratio
-                        && (new decimal(imageCrop.Width) / new decimal(imageCrop.Height)) > Ratio;
-
-            if (ratio)
-            {
-              
+           
                 imageCrop.Mutate(x => x
-                    .Resize(Width, Height));
-            }
-            else
-            {
-                imageCrop.Mutate( x => x.Resize(new ResizeOptions()
-                {
-                    Size = new Size(Math.Min(Width,Height)),
-                    Mode = ResizeMode.Min
-                }));
-                var min = imageCrop.Width > imageCrop.Height ? imageCrop.Height : imageCrop.Width;
-                var center = Rectangle.Center(imageCrop.Frames.RootFrame.Bounds());
-                if (min % 2 == 1) min--;
-                center.X -= min/2;
-                center.Y -= min / 2;
-
-                imageCrop.Mutate(x => x
-                    .Crop(
-                        new Rectangle(center, 
-                            new Size(min, min))));
-
-            }
+                    .Resize(new ResizeOptions(){
+                        Size = new Size(Width,Height),
+                        Mode = ResizeMode.Pad
+                        }));
+           
 
             await imageCrop.SaveAsync(memoryStream, new JpegEncoder());
 
