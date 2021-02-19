@@ -21,7 +21,7 @@ namespace MenuPlanner.Server
                         {
                             options.AddEnvironmentVariables();
                             options.AddJsonFile("config/settings.json", true);
-                            options.AddJsonFile("app/config/settings.json", true);
+                            options.AddJsonFile($"config/settings.{webBuilder.GetSetting("ENVIRONMENT")}.json", true);
                         });
                 });
     }
