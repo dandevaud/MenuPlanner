@@ -24,86 +24,65 @@ else
 
     <StarRating Menu="@menu" IsEditable="false"></StarRating>
     <PortionHandler OriginalPortion="@(menu.Portion)" @bind-Fraction="Fraction" PortionDescription="@(menu.PortionDescription)"></PortionHandler>
-    @if (menu.Steps != null)
-    {
-        <h4>Steps</h4>
-        <ul class="list-group">
-            @foreach (var step in menu.Steps)
-            {
-                counter++;
-                <Step Counter="@counter" StepString="@step"></Step>
-            }
-            @resetCounter()
-        </ul>
-        <br />
-    }
-
     @if (menu.Ingredients != null)
     {
         <h4>Ingredients</h4>
-        <ul class="list-group">
-            @foreach (var ingredient in menu.Ingredients)
+        <div class="form-group">
+            @foreach (var grouping in menu.Ingredients.GroupBy(mi => mi.Grouping))
             {
-                <IngredientDisplay Ing="@ingredient" Fraction="@Fraction"></IngredientDisplay>
+                if (grouping.Key != null)
+                {
+                    <h5>@grouping.Key</h5>
+                }
+                <ul class="list-group">
+                    @foreach (var ingredient in grouping.ToList())
+                    {
+                        <IngredientDisplay Ing="@ingredient" Fraction="@Fraction"></IngredientDisplay>
+                    }
+                </ul>
             }
-            @resetCounter()
-        </ul>
-    }
-
-    @if (menu.Comments != null)
-    {
-        <h4>Comments</h4>
-        <ul class="list-group">
-            @foreach (var comment in menu.Comments)
-            {
-                <CommentDisplay Com="@comment"></CommentDisplay>
-            }
-            @resetCounter()
-        </ul>
-        <br />
-    }
-
-    <br />
-    <br />
-    <div class="btn-group">
-        <AuthorizeView>
-            <Authorized>
-                <a class="btn btn-success" href="/AddEditDeleteMenu/@(Id)">Edit</a>
-            </Authorized>
-        </AuthorizeView>
-        <a class="btn btn-danger" href="/">Back to List</a>
-    </div>
-}
-
-
-@code {
-
-    [Parameter]
-    public Guid? Id { get; set; }
-
-    private Menu menu;
-    private int counter = 0;
-    private decimal Fraction { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-
-        if (Id == null)
-        {
-            menu = new Menu();
-            return;
+        </div>
+        @resetCounter()
+           
         }
-        Fraction = 1;
+        @if (menu.Steps != null)
+        {
+            <h4>Steps</h4>
+            <ul class="list-group">
+                @foreach (var step in menu.Steps)
+                {
+                    counter++;
+                    <Step Counter="@counter" StepString="@step"></Step>
+                }
+                @resetCounter()
+            </ul>
+            <br />
+        }
 
-        menu = await PublicClient.Client.GetFromJsonAsync<Menu>($"api/Menus/{Id}");
+
+
+        @if (menu.Comments != null)
+        {
+            <h4>Comments</h4>
+            <ul class="list-group">
+                @foreach (var comment in menu.Comments)
+                {
+                    <CommentDisplay Com="@comment"></CommentDisplay>
+                }
+                @resetCounter()
+            </ul>
+            <br />
+        }
+
+        <br />
+        <br />
+        <div class="btn-group">
+            <AuthorizeView>
+                <Authorized>
+                    <a class="btn btn-success" href="/AddEditDeleteMenu/@(Id)">Edit</a>
+                </Authorized>
+            </AuthorizeView>
+            <a class="btn btn-danger" href="/">Back to List</a>
+        </div>
     }
 
-    private string resetCounter()
-    {
-        counter = 0;
-        return null;
-    }
-
-
-
-}

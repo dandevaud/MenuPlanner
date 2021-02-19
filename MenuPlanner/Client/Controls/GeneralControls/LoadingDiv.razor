@@ -1,0 +1,95 @@
+﻿@using System.Globalization
+<div class="wrapper-div " style="@GetZIndex()"> 
+  
+    <div class="overlay-div rounded-top" style="display: @(GetDisplay());">
+
+        @if (ShowProgress)
+        {
+            <div class="progress" style="z-index: 1001;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="@(GetIntString())" aria-valuemin="0" aria-valuemax="100" style="width: @(GetPercentageNoDecimal());">
+                    <span>Progress: @(GetPercentage())</span>
+                </div>
+                </div>
+
+        }
+        else
+        {
+
+            <div class="d-flex justify-content-center" hidden="@(!IsLoading)">
+                <div class="spinner-border spinner-border-div" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            
+            }
+            </div>
+            <div>
+                @ChildContent
+            </div>
+
+        </div>
+@code {
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public UInt16 Done { get; set; }
+
+    [Parameter]
+    public UInt16 Total { get; set; }
+
+    [Parameter]
+    public bool ShowProgress { get; set; } = false;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    private string GetZIndex()
+    {
+        if (IsLoading) return "z-index: 1000;";
+        else return "z-index: -100;";
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (Total <= 0) ShowProgress = false;
+    }
+
+    private string GetPercentage()
+    {
+        var dci = GetDecimal();
+        var stringPercent = dci.ToString("P2", CultureInfo.InvariantCulture);
+        return stringPercent;
+    }
+
+    private string GetPercentageNoDecimal()
+    {
+        var stringResult = GetDecimal().ToString("P0", CultureInfo.InvariantCulture).Replace(" ","");
+        return stringResult;
+    }
+
+    private string GetIntString()
+    {
+        var stringToRet =  ((decimal) GetDecimal() * 100).ToString("F0",CultureInfo.InvariantCulture);
+        return stringToRet;
+    }
+
+    private decimal GetDecimal()
+    {
+        if (Done < 0)
+        {
+            ShowProgress = false;
+            return new decimal(0.0d);
+        }
+        var divide = (decimal) Done / Total;
+        return divide;
+    }
+
+    private string GetDisplay()
+    {
+        if (IsLoading) return "block";
+        else return "none";
+    }
+
+
+}

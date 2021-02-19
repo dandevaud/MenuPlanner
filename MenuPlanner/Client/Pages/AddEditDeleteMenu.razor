@@ -18,66 +18,76 @@
 }
 else
 {
-    <div class="row">
-        <EditForm Model="@menu" OnValidSubmit="@UpdateMenu">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+<div class="row">
+    <EditForm Model="@menu" OnValidSubmit="@UpdateMenu">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-            <div class="form-group">
-                Name: <InputText @bind-Value="menu.Name" class="form-control"></InputText>
-            </div>
+        <div class="form-group">
+            Name: <InputText @bind-Value="menu.Name" class="form-control"></InputText>
+        </div>
 
-            <div class="form-group">
-                Description: <InputTextArea @bind-Value="menu.Description" class="form-control" rows="3"></InputTextArea>
-            </div>
+        <div class="form-group">
+            Description: <InputTextArea @bind-Value="menu.Description" class="form-control" rows="3"></InputTextArea>
+        </div>
 
-            <MenuImages Menu="@menu"></MenuImages>
+        <MenuImages Menu="@menu"></MenuImages>
 
-            <StarRating Menu="@menu" IsEditable="true" Rating="@Rating" StoreRating="@StoreRating"></StarRating>
+        <StarRating Menu="@menu" IsEditable="true" Rating="@Rating" StoreRating="@StoreRating"></StarRating>
 
-            <EnumControls ProvidedEnum="@menu.TimeOfDay" TEnum="TimeOfDay"
-                          UpdateEnum="@((TimeOfDay enu) => { menu.TimeOfDay |= enu; })"
-                          RemoveEnum="@((TimeOfDay enu) => { menu.TimeOfDay &= ~enu; })"></EnumControls>
-            <EnumControls ProvidedEnum="@menu.MenuCategory" TEnum="MenuCategory"
-                          UpdateEnum="@((MenuCategory enu) => { menu.MenuCategory = enu; })"
-                          RemoveEnum="@((MenuCategory enu) => { menu.MenuCategory = MenuCategory.Unknown;})"
-                          isFlag="false"></EnumControls>
-            <EnumControls ProvidedEnum="@menu.Season" TEnum="Season"
-                          UpdateEnum="@((Season enu) => { menu.Season |= enu; })"
-                          RemoveEnum="@((Season enu) => { menu.Season &= ~enu; })"></EnumControls>
-            <MenuSteps Menu="@menu"></MenuSteps>
-            
-            <div class="form-group">
-                <label>Portions: <InputNumber @bind-Value="menu.Portion" class="form-control" placeholder="4"></InputNumber> </label>
-                <label>Portion description: <InputText @bind-Value="menu.PortionDescription" class="form-control" placeholder="persons" data-toggle="tooltip" title="Description of Portion"></InputText></label>
-            </div>
+        <EnumControls ProvidedEnum="@menu.TimeOfDay" TEnum="TimeOfDay"
+                      UpdateEnum="@((TimeOfDay enu) => { menu.TimeOfDay |= enu; })"
+                      RemoveEnum="@((TimeOfDay enu) => { menu.TimeOfDay &= ~enu; })"></EnumControls>
+        <EnumControls ProvidedEnum="@menu.MenuCategory" TEnum="MenuCategory"
+                      UpdateEnum="@((MenuCategory enu) => { menu.MenuCategory = enu; })"
+                      RemoveEnum="@((MenuCategory enu) => { menu.MenuCategory = MenuCategory.Unknown;})"
+                      isFlag="false"></EnumControls>
+        <EnumControls ProvidedEnum="@menu.Season" TEnum="Season"
+                      UpdateEnum="@((Season enu) => { menu.Season |= enu; })"
+                      RemoveEnum="@((Season enu) => { menu.Season &= ~enu; })"></EnumControls>
+        <MenuSteps Menu="@menu"></MenuSteps>
 
-            <h5>Ingredients:</h5>
-            <IngredientSearch DivClass="form-group" @bind-Ingredient="ingredient"></IngredientSearch>
+        <div class="form-group">
+            <label>Portions: <InputNumber @bind-Value="menu.Portion" class="form-control" placeholder="4"></InputNumber> </label>
+            <label>Portion description: <InputText @bind-Value="menu.PortionDescription" class="form-control" placeholder="persons" data-toggle="tooltip" title="Description of Portion"></InputText></label>
+        </div>
+
+        <h5>Ingredients:</h5>
+        <IngredientSearch DivClass="form-group" @bind-Ingredient="ingredient"></IngredientSearch>
 
 
-            @if (ingredient.Name != null)
+        @if (ingredient.Name != null)
+        {
+            if (menu.Ingredients.Any(i => i.Ingredient.Id.Equals(ingredient.Id)))
             {
-                @if (menu.Ingredients != null && menu.Ingredients.Any(i => i.Ingredient.Id.Equals(ingredient.Id)))
-                {
-                    <IngredientCard MenuIngredient="@menu.Ingredients.FirstOrDefault(i => i.Ingredient.Id.Equals(ingredient.Id))" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
-                }
-                else
-                {
-                    <IngredientCard Ingredient="@ingredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
-                }
+                ingredient = menu.Ingredients.Select(mi => mi.Ingredient).FirstOrDefault(i => i.Id.Equals(ingredient.Id));
             }
 
-            <div class="card-columns">
+            <IngredientCard Ingredient="@ingredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
+        }
 
-                @if (menu.Ingredients != null)
+
+
+        @if (menu.Ingredients != null)
+        {
+
+            @foreach (var grouping in GroupMenuIngredient())
+            {
+                <div class="form-group">
+                @if (grouping.Key != null)
                 {
-                    @foreach (var menuIngredient in menu.Ingredients)
+                    <h5>@grouping.Key</h5>
+                }
+                <div class="card-columns">
+                    @foreach (var menuIngredient in grouping.ToList())
                     {
                         <IngredientCard Css="m-2" MenuIngredient="@menuIngredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="false" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
                     }
+                </div>
+                </div>
                 }
-            </div>
+            }
+
 
             <br />
             <div class="btn-group">
@@ -109,128 +119,4 @@ else
 }
 
 
-@code {
-
-    [Parameter]
-    public Guid? Id { get; set; }
-
-    private Menu menu;
-
-    private Ingredient ingredient = new Ingredient();
-
-    private Double Rating;
-
-    private bool isLoading = false;
-
-    private Modal modal { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-
-        if (Id == null)
-        {
-            menu = new Menu();
-            return;
-        }
-
-        try
-        {
-            menu = await Http.GetFromJsonAsync<Menu>($"api/Menus/{Id}");
-        }
-        catch (AccessTokenNotAvailableException exception)
-        {
-            exception.Redirect();
-        }
-    }
-
-
-    private async Task UpdateMenu()
-    {
-        try
-        {
-            isLoading = true;
-            SetRating();
-            HttpResponseMessage response;
-            if (Id == null)
-            {
-                response = await Http.PostAsJsonAsync<Menu>("api/Menus", menu);
-                menu = await response.Content.ReadFromJsonAsync<Menu>();
-            }
-            else
-            {
-                response = await Http.PutAsJsonAsync<Menu>($"api/Menus/{Id}", menu);
-
-            }
-            if (response.IsSuccessStatusCode)
-            {
-                NavigationManager.NavigateTo("/");
-            }
-            else
-            {
-                string errorMessage = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(errorMessage);
-                //Implement ErrorComponent
-            }
-        }
-        finally
-        {
-            isLoading = false;
-        }
-    }
-
-    private void RemoveMenuIngredient(MenuIngredient menuIngredient)
-    {
-        menu.Ingredients.Remove(menuIngredient);
-    }
-
-    private void AddIngredientToMenu(MenuIngredient menuIngredient)
-    {
-        if (menu.Ingredients == null)
-        {
-            menu.Ingredients = new List<MenuIngredient>();
-        }
-        if (menu.Ingredients.Any(mi => mi.Ingredient.Id.Equals(menuIngredient.Ingredient.Id)))
-        {
-            menu.Ingredients.Remove(menu.Ingredients.FirstOrDefault(i => i.Ingredient.Id.Equals(menuIngredient.Ingredient.Id)));
-        }
-        menu.Ingredients.Add(menuIngredient);
-
-        UpdateIngredientToMenu(menuIngredient);
-    }
-
-    private void UpdateIngredientToMenu(MenuIngredient menuIngredient)
-    {
-        ingredient = new Ingredient();
-        StateHasChanged();
-    }
-
-    private void SetRating()
-    {
-        if (Rating > 0)
-        {
-            menu.AverageRating = ((menu.AverageRating * menu.Votes) + Rating) / (menu.Votes + 1);
-            menu.Votes++;
-        }
-    }
-
-    private void StoreRating(int rating)
-    {
-        Rating = rating;
-    }
-
-    public async Task DeleteMenu()
-    {
-        bool confirm = true;
-        if (confirm)
-        {
-            var response = await Http.DeleteAsync($"api/Menus/{Id}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                NavigationManager.NavigateTo("/");
-            }
-        }
-    }
-
-}
 

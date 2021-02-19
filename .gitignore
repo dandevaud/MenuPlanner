@@ -364,3 +364,4 @@ MigrationBackup/
 .vscode
 /MenuPlanner/Server/wwwroot/imageUploads
 /MenuPlanner/Server/tempkey.jwk
+/MenuPlanner/Server/config
