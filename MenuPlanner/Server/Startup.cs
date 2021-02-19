@@ -52,7 +52,6 @@ namespace MenuPlanner.Server
             services.AddDefaultIdentity<ApplicationUser>(options =>  options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-
             var identityServer = services.AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
                 var certificate = new X509Certificate2("certs/aspnetapp-root-cert.pfx", "password");
@@ -104,6 +103,7 @@ namespace MenuPlanner.Server
                 app.UseDeveloperExceptionPage();
                 app.UseMigrationsEndPoint();
                 app.UseWebAssemblyDebugging();
+                
             }
             else
             {

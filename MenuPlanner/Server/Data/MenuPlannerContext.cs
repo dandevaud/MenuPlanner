@@ -29,7 +29,7 @@ namespace MenuPlanner.Server.Data
 
         public MenuPlannerContext() : base()
         {
-            Database.Migrate();
+           
         }
 
 

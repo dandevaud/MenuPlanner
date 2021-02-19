@@ -17,6 +17,7 @@ using MenuPlanner.Shared.Extension;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.Models;
 using Microsoft.EntityFrameworkCore;
+using SQLitePCL;
 
 namespace MenuPlanner.Server.Logic.EntityUpdater
 {
@@ -104,18 +105,22 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
                 (MenuIngredient i) => i.Id,
                 (Guid guid) => providedMenuIngredients.Contains(guid),
                 RemoveSubEntities<MenuIngredient>(_context.MenuIngredients, providedMenuIngredients));
+
+            
         }
 
         private void HandleNewAndChangedMenuIngredients(Menu menu, Menu entityInDatabase)
         {
-            HandleChangedMenuIngredient(menu, entityInDatabase);
 
             HandleNewMenuIngredient(menu, entityInDatabase);
+            
 
-            SaveChanges();
+            HandleChangedMenuIngredient(menu, entityInDatabase);
+           
+
         }
 
-        private static void HandleNewMenuIngredient(Menu menu, Menu entityInDatabase)
+        private void HandleNewMenuIngredient(Menu menu, Menu entityInDatabase)
         {
             var newIngredients =
                 menu.Ingredients.Where(i => !entityInDatabase.Ingredients.Any(mi => mi.Id.Equals(i.Id))).ToList();
@@ -123,12 +128,17 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             
             newIngredients.ForEach(mi =>
             {
-                if (duplicates.Contains(mi.Ingredient))
+                if (_context.ChangeTracker.Entries<Ingredient>().Any(i => i.Entity.Id.Equals(mi.Ingredient.Id)))
+                {
+                    mi.Ingredient = _context.ChangeTracker.Entries<Ingredient>()
+                        .FirstOrDefault(i => i.Entity.Id.Equals(mi.Ingredient.Id)).Entity;
+                } else if (duplicates.Contains(mi.Ingredient))
                 {
                     mi.Ingredient = duplicates.First(i => i.Id.Equals(mi.Ingredient.Id));
                 }
                 entityInDatabase.Ingredients.Add(mi);
             });
+
             
         }
 
@@ -278,21 +288,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
 
         }
 
-        private void DetachAllUnchangedEntities()
-        {
-            DetachUnchanged<Ingredient>();
-            DetachUnchanged<MenuIngredient>();
-            DetachUnchanged<Image>();
-            DetachUnchanged<Comment>();
-           
-        }
+        
 
-        private void DetachUnchanged<T>() where T:Identifier
-        {
-            _context.ChangeTracker.Entries<T>().ToList().ForEach(entry =>
-            {
-               entry?.DetachUnchanged();
-            });
-        }
     }
 }

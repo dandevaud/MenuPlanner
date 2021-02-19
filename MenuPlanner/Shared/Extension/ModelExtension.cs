@@ -13,19 +13,19 @@ namespace MenuPlanner.Shared.Extension
         {
             var description = menuIngredient.Description?.Equals(toCompare.Description) ?? menuIngredient.Description == toCompare.Description;
             var grouping = menuIngredient.Grouping?.Equals(toCompare.Grouping) ?? menuIngredient.Grouping == toCompare.Grouping;
-            var quantity = menuIngredient.Quantity?.Equals(toCompare.Quantity) ?? menuIngredient.Quantity == toCompare.Quantity;
+            var quantity = menuIngredient.Quantity?.ContentEquals(toCompare.Quantity) ?? menuIngredient.Quantity == toCompare.Quantity;
 
             return description && grouping && quantity;
 
         }
 
-        public static bool Equals(this Quantity quantity, Quantity toCompare)
+        public static bool ContentEquals(this Quantity quantity, Quantity toCompare)
         {
             return quantity.QuantityValue.Equals(toCompare.QuantityValue) &&
                    quantity.Unit.Equals(toCompare.Unit);
         }
 
-        public static bool Equals(this Ingredient ingredient, Ingredient toCompare)
+        public static bool ContentEquals(this Ingredient ingredient, Ingredient toCompare)
         {
             return ingredient.Id.Equals(toCompare.Id) ||
                    ingredient.Name.Equals(toCompare.Name);
