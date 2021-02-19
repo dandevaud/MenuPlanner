@@ -77,6 +77,9 @@ else
                 @if (grouping.Key != null)
                 {
                     <h5>@grouping.Key</h5>
+                } else if (GroupMenuIngredient().Count() > 1)
+                {
+                    <h5>Ungrouped</h5>
                 }
                 <div class="card-columns">
                     @foreach (var menuIngredient in grouping.ToList())

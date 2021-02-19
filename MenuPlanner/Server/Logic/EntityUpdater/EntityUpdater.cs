@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using IdentityServer4.Extensions;
 using MenuPlanner.Server.Data;
+using MenuPlanner.Server.Extension.EntityFramework;
+using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.Models;
 
 namespace MenuPlanner.Server.Logic.EntityUpdater
@@ -18,9 +22,32 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
         {
             lock (_context)
             {
-                _context.SaveChanges();
+               
+                    DetachAllUnchangedEntities();
+                    if (!_context.ChangeTracker.Entries().IsNullOrEmpty())
+                    {
+                    _context.SaveChanges();
+                }
             }
 
+        }
+
+        protected void DetachAllUnchangedEntities()
+        {
+            DetachUnchanged<Ingredient>();
+            DetachUnchanged<MenuIngredient>();
+            DetachUnchanged<Image>();
+            DetachUnchanged<Comment>();
+
+        }
+
+
+        protected void DetachUnchanged<T>() where T : Identifier
+        {
+            _context.ChangeTracker.Entries<T>().ToList().ForEach(entry =>
+            {
+                entry?.DetachUnchanged();
+            });
         }
 
         public async Task<bool> DeleteEntity<T>(Guid id) where T : Entity
