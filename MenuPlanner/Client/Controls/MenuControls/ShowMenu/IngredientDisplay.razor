@@ -1,4 +1,4 @@
 ﻿@using MenuPlanner.Shared.models
 
-<li class="list-group-item"> @(Ing.Ingredient.Name) (@(GetCorrectQuantity()) @(Ing.Quantity.Unit))</li>
+<li class="list-group-item"> @(Ing.Ingredient.Name) (@(GetCorrectQuantity()) @(Ing.Quantity.Unit)) @(Ing.Description ?? "")</li>
 

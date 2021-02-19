@@ -2,7 +2,6 @@
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
-using System;
 using System.Security.Cryptography.X509Certificates;
 using MenuPlanner.Server.Contracts.Blob;
 using MenuPlanner.Server.Contracts.Logic;
@@ -15,7 +14,6 @@ using MenuPlanner.Server.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,7 +52,6 @@ namespace MenuPlanner.Server
             services.AddDefaultIdentity<ApplicationUser>(options =>  options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-
             var identityServer = services.AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
                 var certificate = new X509Certificate2("certs/aspnetapp-root-cert.pfx", "password");
@@ -68,18 +65,7 @@ namespace MenuPlanner.Server
 
             services.AddControllersWithViews();
             services.AddRazorPages();
-            services.AddHttpsRedirection(options =>
-            {
-                options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
-                options.HttpsPort = 4433;
-            });
-            services.AddHsts(options =>
-            {
-                options.Preload = true;
-                options.IncludeSubDomains = true;
-                options.MaxAge = TimeSpan.FromDays(60);
-            });
-
+            
             // Register the Swagger generator, defining 1 or more Swagger documents
             //services.AddSwaggerGen();
             // Swagger Authorization take from https://stackoverflow.com/a/61899245
@@ -117,6 +103,7 @@ namespace MenuPlanner.Server
                 app.UseDeveloperExceptionPage();
                 app.UseMigrationsEndPoint();
                 app.UseWebAssemblyDebugging();
+                
             }
             else
             {

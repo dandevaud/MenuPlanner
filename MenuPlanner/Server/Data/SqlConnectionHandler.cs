@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using IdentityServer4.Extensions;
 using MenuPlanner.Server.Contracts.Sql;
+using MenuPlanner.Server.Extension.EntityFramework;
 using MenuPlanner.Server.Models.SQLConnection;
 using MenuPlanner.Shared.models.enums;
 using Microsoft.EntityFrameworkCore;
@@ -58,17 +59,25 @@ namespace MenuPlanner.Server.Data
         private void HandleSqLite<T>(IServiceCollection services, string dataSource) where T:DbContext
         {
             services.AddDbContext<T>(options =>
-                options.UseSqlite($"Data Source={dataSource}"));
+                options.UseSqlite($"Data Source={dataSource}").
+                    EnableSensitiveDataLogging(Configuration));
         }
 
         private void HandleMariaDb<T>(IServiceCollection services, SqlCredentials credentials) where T : DbContext
         {
            
             var version = credentials.ServerVersion.Split(".");
-            services.AddDbContext<T>(options =>
-                options.UseMySql(
-                    $"server={credentials.Server}; port={credentials.Port}; database={credentials.Database}; user={credentials.User}; password={credentials.Password}",
-                    new MySqlServerVersion(new Version(Convert.ToInt32(version[0]), Convert.ToInt32(version[0]), Convert.ToInt32(version[0])))));
+             services.AddDbContext<T>(options =>
+                
+                    options.UseMySql(
+                        $"server={credentials.Server}; port={credentials.Port}; database={credentials.Database}; user={credentials.User}; password={credentials.Password}",
+                        new MySqlServerVersion(new Version(Convert.ToInt32(version[0]), Convert.ToInt32(version[0]),
+                            Convert.ToInt32(version[0])))).
+                        EnableSensitiveDataLogging(Configuration)
+
+            );
         }
+
+       
     }
 }

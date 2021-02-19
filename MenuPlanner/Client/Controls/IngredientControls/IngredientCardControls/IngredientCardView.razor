@@ -1,13 +1,13 @@
 ﻿@using MenuPlanner.Shared.models
 
 <div class="form-group">
-   @Quantity.QuantityValue @Quantity.Unit
+    @MenuIngredient.Quantity.QuantityValue @MenuIngredient.Quantity.Unit
 </div>
 
 
 @code {
 
     [Parameter]
-    public Quantity Quantity { get; set; }
+    public MenuIngredient MenuIngredient { get; set; }
 
 }

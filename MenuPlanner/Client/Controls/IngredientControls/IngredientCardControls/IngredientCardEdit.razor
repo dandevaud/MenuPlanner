@@ -1,14 +1,27 @@
 ﻿@using MenuPlanner.Shared.models.enums
 @using MenuPlanner.Shared.models
 @using MenuPlanner.Shared.Extension
+@using System.Reflection
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.VisualBasic.CompilerServices
+
+
+<div class="form-group">
+    <label>Grouping</label>
+    <input type="text" maxlength="@(GetMaxLength(MenuIngredient, nameof(MenuIngredient.Grouping)))" class="form-control" @bind-value="MenuIngredient.Grouping">
+</div>
+<div class="form-group">
+    <label>Description</label>
+    <input type="text" maxlength="@(GetMaxLength(MenuIngredient, nameof(MenuIngredient.Description)))" class="form-control" @bind-value="MenuIngredient.Description">
+</div>
 
 <div class="form-group">
     <label>Quantity</label>
-    <input type="number" min="0.0" step="any" class="form-control" @bind-value="Quantity.QuantityValue">
+    <input type="number" min="0.0" step="any" class="form-control" @bind-value="MenuIngredient.Quantity.QuantityValue">
 </div>
 <div class="form-group">
     <label>Unit</label>
-    <select class="form-control" @bind="Quantity.Unit">
+    <select class="form-control" @bind="MenuIngredient.Quantity.Unit">
         @foreach (var unit in Enum.GetValues<UnitEnum>())
         {
             <option value="@unit">@unit.GetDescription()</option>
@@ -19,10 +32,17 @@
 @code {
 
     [Parameter]
-    public Quantity Quantity { get; set; }
+    public MenuIngredient MenuIngredient { get; set; }
 
     [Parameter]
-    public EventCallback<Quantity> QuantityChanged { get; set; }
-    
+    public EventCallback<MenuIngredient> MenuIngredientChanged { get; set; }
+
+    private int GetMaxLength(MenuIngredient mi, String nameOfProperty)
+    {
+        var toRetObj = (MaxLengthAttribute) typeof(MenuIngredient).GetProperty(nameOfProperty)?.GetCustomAttributes(typeof(MaxLengthAttribute), false).GetValue(0);
+        return toRetObj?.Length ?? 255;
+      
+    }
+
 
 }
