@@ -15,7 +15,9 @@ namespace MenuPlanner.Server.Extension.EntityFramework
     {
         public static DbContextOptionsBuilder EnableSensitiveDataLogging(this DbContextOptionsBuilder options, IConfiguration configuration)
         {
-            if (configuration["ENVIRONMENT"].Equals("Development"))
+            bool isDev = configuration["ENVIRONMENT"]?.Equals("Development") ?? false;
+            isDev |= configuration["ASPNETCORE_ENVIRONMENT"]?.Equals("Development") ?? false;
+            if (isDev)
             {
                 options.EnableSensitiveDataLogging(true);
             }
