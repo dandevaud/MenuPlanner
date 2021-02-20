@@ -5,64 +5,13 @@
     <h5>Steps:</h5>
     @foreach (var element in Steps.Select((e, i) => new {Step = e, Index = i}))
     {
-        <div class="form-group">
+        <div class="input-group form-group">
             <label class="steplabel" for="@($"Steps{element.Index}")">Step @(element.Index + 1):</label>
-            <textarea class="form-control" rows="3" id="@($"Steps{element.Index}")" value="@(element.Step ?? String.Empty)" @onchange="@(e => OnChange(e,element.Index) )" ></textarea>
-            <a class="btn btn-danger steplabel" @onclick="@(() => RemoveStep(element.Step))">Remove</a>
+            <textarea class="form-control" rows="3" id="@($"Steps{element.Index}")" value="@(element.Step ?? String.Empty)" @onchange="@(e => OnChange(e,element.Index) )">  </textarea><a class="btn btn-danger delete" @onclick="@(() => RemoveStep(element.Step))">X</a>
+           
         
             </div>
     }
     <a class="btn btn-success" @onclick="@AddStep">Add step</a>
 </div>
 
-@code {
-    // used https://stackoverflow.com/questions/60416018/how-to-bind-to-element-from-collection-list-in-blazor
-
-    [Parameter]
-    public Menu Menu { get; set; }
-
-    [Parameter]
-    public List<String> Steps { get; set; }
-
-    private string initialStepDescription = "Add your step description here";
-
-
-
-    protected override void OnInitialized()
-    {
-
-        Steps = Menu?.Steps?.ToList()?? new List<string>()
-        {
-            initialStepDescription
-        };
-
-    }
-
-    private void OnChange(ChangeEventArgs e, int index)
-    {
-        Steps[index] = e.Value.ToString();
-       UpdateSteps();
-    }
-
-    private void UpdateSteps()
-    {
-        Menu.Steps = Steps;
-    }
-
-
-    private void AddStep()
-    {
-        Steps.Add(initialStepDescription);
-        StateHasChanged();
-    }
-
-    private void RemoveStep(string text)
-    {
-        Steps.Remove(text);
-        UpdateSteps();
-        StateHasChanged();
-    }
-
-
-
-}

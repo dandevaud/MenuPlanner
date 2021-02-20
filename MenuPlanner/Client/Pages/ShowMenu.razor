@@ -20,6 +20,7 @@ else
     <p>@menu.Description</p>
     <br />
 
+    
 
 
     <StarRating Menu="@menu" IsEditable="false"></StarRating>
@@ -73,7 +74,12 @@ else
             </ul>
             <br />
         }
-
+    @if (menu.Tags != null)
+    {
+        <h4>Tags</h4>
+        <MenuTags Tags="@menu.Tags.ToList()"></MenuTags>
+        <br />
+    }
         <br />
         <br />
         <div class="btn-group">
