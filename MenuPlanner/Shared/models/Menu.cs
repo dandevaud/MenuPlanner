@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using MenuPlanner.Shared.models.enums;
 using MenuPlanner.Shared.Models;
+using MenuPlanner.Shared.Models.enums;
 
 namespace MenuPlanner.Shared.models
 {
@@ -15,6 +16,8 @@ namespace MenuPlanner.Shared.models
     {
         public ICollection<Tag> Tags { get; set; } = new List<Tag>();
         public TimeOfDay TimeOfDay { get; set; } //Flags
+
+        public Diet Diet { get; set; }
         public Season Season { get; set; } //Flags
         [Range(1,int.MaxValue, ErrorMessage= "Please enter a value bigger than {1}")]
         public int Portion { get; set; } = 4;
@@ -32,6 +35,10 @@ namespace MenuPlanner.Shared.models
         public MenuCategory MenuCategory { get; set; } //Flags
         public ICollection<Image> Images { get; set; } = new List<Image>();
         public Uri Video { get; set; }
-       
+
+        public int PrepTime { get; set; }
+        public int CookTime { get; set; }
+
+
     }
 }

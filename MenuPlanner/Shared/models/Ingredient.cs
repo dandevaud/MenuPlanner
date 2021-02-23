@@ -9,12 +9,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 using MenuPlanner.Shared.Models;
 using MenuPlanner.Shared.models.enums;
 using Microsoft.EntityFrameworkCore.Query;
+using MenuPlanner.Shared.Models.enums;
 
 namespace MenuPlanner.Shared.models
 {
     public class Ingredient : Entity
     {
 
+        public Diet Diet { get; set; }
         public virtual ICollection<Ingredient> ParentIngredients { get; set; }
         public virtual ICollection<Ingredient> ChildIngredients { get; set; }
         public IngredientCategory Category { get; set; }
