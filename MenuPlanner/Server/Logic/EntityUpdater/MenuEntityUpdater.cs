@@ -46,6 +46,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             var entityInDatabase =  await _context.Menus.
                 Where(ei => ei.Id.Equals(menu.Id)).
                 Include(m => m.Images).
+                Include(m => m.Tags).
                 Include(m => m.Ingredients).
                 ThenInclude(mi => mi.Ingredient).
                 FirstOrDefaultAsync();
@@ -84,6 +85,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
         {
             //load images & MenuIngredients
             await LoadMenuSubEntities(entityInDatabase);
+            HandleNewTags(menu, entityInDatabase);
 
             HandleNewAndChangedMenuIngredients(menu, entityInDatabase);
 
@@ -91,11 +93,19 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             await HandleDeletedSubEntities(menu, entityInDatabase);
         }
 
+        private static void HandleNewTags(Menu menu, Menu entityInDatabase)
+        {
+            var newTags = menu.Tags.Where(i => !entityInDatabase.Tags.Any(t => t.Id.Equals(i.Id))).ToList();
+            newTags.ForEach(tag => entityInDatabase.Tags.Add(tag));
+        }
+
         private async Task HandleDeletedSubEntities(Menu menu, Menu entityInDatabase)
         {
             var providedImages = menu.Images.Select(
                 i => i.Id).ToList();
             var providedMenuIngredients = menu.Ingredients.Select(i => i.Id).ToList();
+
+            var providedTags = menu.Tags.Select(t => t.Id).ToList();
 
             await RemoveAndDeleteImages(menu, providedImages, entityInDatabase);
 
@@ -106,7 +116,14 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
                 (Guid guid) => providedMenuIngredients.Contains(guid),
                 RemoveSubEntities<MenuIngredient>(_context.MenuIngredients, providedMenuIngredients));
 
-            
+            //Remove all deleted MenuIngredients from DB
+            await DeleteRemovedEntitiesFromMenu<Tag>(
+                entityInDatabase.Tags,
+                (Tag i) => i.Id,
+                (Guid guid) => providedTags.Contains(guid),
+                RemoveSubEntities<Tag>(_context.Tags, providedTags));
+
+
         }
 
         private void HandleNewAndChangedMenuIngredients(Menu menu, Menu entityInDatabase)
@@ -131,7 +148,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
                 if (_context.ChangeTracker.Entries<Ingredient>().Any(i => i.Entity.Id.Equals(mi.Ingredient.Id)))
                 {
                     mi.Ingredient = _context.ChangeTracker.Entries<Ingredient>()
-                        .FirstOrDefault(i => i.Entity.Id.Equals(mi.Ingredient.Id)).Entity;
+                        .FirstOrDefault(i => i.Entity.Id.Equals(mi.Ingredient.Id))?.Entity;
                 } else if (duplicates.Contains(mi.Ingredient))
                 {
                     mi.Ingredient = duplicates.First(i => i.Id.Equals(mi.Ingredient.Id));

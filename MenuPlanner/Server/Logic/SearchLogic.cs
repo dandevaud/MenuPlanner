@@ -85,9 +85,12 @@ namespace MenuPlanner.Server.Logic
             bool NamePredicate(Menu m) => m.Name.Contains(searchRequest.Name, StringComparison.InvariantCultureIgnoreCase);
 
             bool FilterPredicate(Menu m) =>
-                m.Name.Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || m.MenuCategory.ToString()
-                    .Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || m.Season.ToString().Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || m.TimeOfDay.ToString()
-                    .Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || m.Ingredients.Any(i => i.Ingredient.Name.Contains(searchRequest.Filter));
+                m.Name.Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || 
+                m.MenuCategory.ToString().Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || 
+                m.Season.ToString().Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || 
+                m.TimeOfDay.ToString().Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase) || 
+                m.Ingredients.Any(i => i.Ingredient.Name.Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase)) ||
+                m.Tags.Any(t => t.Name.Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase));
 
             menuList = GeneralSearchRequestModelHandling(searchRequest, menuList, NamePredicate, FilterPredicate);
 
@@ -247,12 +250,12 @@ namespace MenuPlanner.Server.Logic
 
         private async Task LoadMenuSubEntities(Menu menu)
         {
-            
                 var menuEntity = _context.Entry(menu);
                 menuEntity.State = EntityState.Unchanged;
-                 await menuEntity.Collection(sm => sm.Ingredients).LoadAsync();
-               await menuEntity.Collection(sm => sm.Comments).LoadAsync();
+                await menuEntity.Collection(sm => sm.Ingredients).LoadAsync();
+                await menuEntity.Collection(sm => sm.Comments).LoadAsync();
                 await  menuEntity.Collection(m => m.Images).LoadAsync();
+                await menuEntity.Collection(m => m.Tags).LoadAsync();
               
             foreach (var menuIngredient in menu.Ingredients)
                 {

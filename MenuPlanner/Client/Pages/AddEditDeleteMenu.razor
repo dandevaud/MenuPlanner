@@ -34,7 +34,7 @@ else
         <MenuImages Menu="@menu"></MenuImages>
 
         <StarRating Menu="@menu" IsEditable="true" Rating="@Rating" StoreRating="@StoreRating"></StarRating>
-        <MenuTags EditMode="true" @bind-Tags="@(menu.Tags.ToList())"></MenuTags>
+        <MenuTags EditMode="true" @bind-Tags="@(menu.Tags)"></MenuTags>
 
         <EnumControls ProvidedEnum="@menu.TimeOfDay" TEnum="TimeOfDay"
                       UpdateEnum="@((TimeOfDay enu) => { menu.TimeOfDay |= enu; })"
