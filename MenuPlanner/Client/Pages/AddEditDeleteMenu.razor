@@ -34,6 +34,7 @@ else
         <MenuImages Menu="@menu"></MenuImages>
 
         <StarRating Menu="@menu" IsEditable="true" Rating="@Rating" StoreRating="@StoreRating"></StarRating>
+        <MenuTags EditMode="true" @bind-Tags="@(menu.Tags)"></MenuTags>
 
         <EnumControls ProvidedEnum="@menu.TimeOfDay" TEnum="TimeOfDay"
                       UpdateEnum="@((TimeOfDay enu) => { menu.TimeOfDay |= enu; })"
@@ -74,34 +75,35 @@ else
             @foreach (var grouping in GroupMenuIngredient())
             {
                 <div class="form-group">
-                @if (grouping.Key != null)
-                {
-                    <h5>@grouping.Key</h5>
-                } else if (GroupMenuIngredient().Count() > 1)
-                {
-                    <h5>Ungrouped</h5>
-                }
-                <div class="card-columns">
-                    @foreach (var menuIngredient in grouping.ToList())
+                    @if (grouping.Key != null)
                     {
-                        <IngredientCard Css="m-2" MenuIngredient="@menuIngredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="false" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
+                        <h5>@grouping.Key</h5>
                     }
+                    else if (GroupMenuIngredient().Count() > 1)
+                    {
+                        <h5>Ungrouped</h5>
+                    }
+                    <div class="card-columns">
+                        @foreach (var menuIngredient in grouping.ToList())
+                        {
+                            <IngredientCard Css="m-2" MenuIngredient="@menuIngredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="false" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
+                        }
+                    </div>
                 </div>
-                </div>
-                }
             }
+        }
 
 
-            <br />
-            <div class="btn-group">
-                <SaveButton IsLoading="@isLoading"></SaveButton>
-                @if (Id != null)
-                {
-                    <a @onclick="() => modal.Open()" class="btn btn-danger">Delete</a>
-                }
-                <a class="btn btn-secondary" href="/">Back to List</a>
-            </div>
-        </EditForm>
+        <br />
+        <div class="btn-group">
+            <SaveButton IsLoading="@isLoading"></SaveButton>
+            @if (Id != null)
+            {
+                <a @onclick="() => modal.Open()" class="btn btn-danger">Delete</a>
+            }
+            <a class="btn btn-secondary" href="/">Back to List</a>
+        </div>
+    </EditForm>
     </div>
     <br />
     <br />

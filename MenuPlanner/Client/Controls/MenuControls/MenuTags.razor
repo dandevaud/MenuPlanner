@@ -1,0 +1,22 @@
+﻿<div class="form-group">
+    @if (EditMode)
+    {
+        <div class="input-group">
+            <InputText @bind-Value="tag.Name" class="form-control" aria-label="TagName" aria-describedby="btn-addTag"></InputText><button class="btn btn-success" type="button" id="btn-addTag" @onclick="AddTag">Add</button>
+        </div>
+    }
+<ul class="list-inline">
+    @foreach (var tag1 in Tags)
+    {
+        <li class="list-inline-item">
+    <span class="badge bg-secondary text-white">
+        @tag1.Name @if (EditMode)
+                   {<a class="ml-1 text-danger justify-content-center align-middle" @onclick="() => RemoveTag(tag1)"><span>X</span></a>}
+    </span>
+        </li>
+        
+    }
+</ul>
+</div>
+
+
