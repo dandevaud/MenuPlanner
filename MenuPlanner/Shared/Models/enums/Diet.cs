@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 
 namespace MenuPlanner.Shared.Models.enums
 {
-     [Flags]
-    public enum Diet
+    [Flags]
+    public enum Diet : short
     {
 
         [Description("None")]
