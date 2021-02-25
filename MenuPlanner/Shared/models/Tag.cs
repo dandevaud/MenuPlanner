@@ -11,7 +11,6 @@ namespace MenuPlanner.Shared.models
     {
         [Required]
         public string Name { get; set; }
-       public ICollection<Menu> Menus { get; set; }
-   
+          
     }
 }
