@@ -44,12 +44,11 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
         public async Task UpdateMenuInContext(Menu menu)
         {
             var entityInDatabase =  await _context.Menus.
-                Where(ei => ei.Id.Equals(menu.Id)).
                 Include(m => m.Images).
                 Include(m => m.Tags).
                 Include(m => m.Ingredients).
                 ThenInclude(mi => mi.Ingredient).
-                FirstOrDefaultAsync();
+                FirstOrDefaultAsync(ei => ei.Id.Equals(menu.Id));
             if (entityInDatabase == null)
             {
                 await CreateMenuInContext(menu);
@@ -75,7 +74,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
                     }
                 }
             );
-
+          
             SaveChanges();
             await HandleImages(entityInDatabase);
             SaveChanges();
@@ -93,7 +92,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             await HandleDeletedSubEntities(menu, entityInDatabase);
         }
 
-        private static void HandleNewTags(Menu menu, Menu entityInDatabase)
+        private void HandleNewTags(Menu menu, Menu entityInDatabase)
         {
             var newTags = menu.Tags.Where(i => !entityInDatabase.Tags.Any(t => t.Id.Equals(i.Id))).ToList();
             newTags.ForEach(tag => entityInDatabase.Tags.Add(tag));
