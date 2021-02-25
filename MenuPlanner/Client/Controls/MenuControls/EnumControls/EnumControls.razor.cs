@@ -15,10 +15,7 @@ namespace MenuPlanner.Client.Controls.MenuControls.EnumControls
         [Parameter] public EventCallback<TEnum> RemoveEnum { get; set; }
 
 
-        public bool IsHidden(TEnum timeOfDay)
-        {
-            return typeof(TEnum).IsDefaultValue(timeOfDay);
-        }
+        public bool IsHidden(TEnum timeOfDay) => typeof(TEnum).IsDefaultValue(timeOfDay);
 
         public bool IsChecked(TEnum timeOfDay)
         {
