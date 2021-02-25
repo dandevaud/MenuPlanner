@@ -71,6 +71,7 @@ namespace MenuPlanner.Server.Logic
             menuList = FilterByEnumsFlags(searchRequest.TimeOfDay, menuList, ((TimeOfDay t, Menu m) => m.TimeOfDay.HasFlag(t)));
             menuList = FilterByEnumsFlags(searchRequest.Season, menuList, ((Season t, Menu m) => m.Season.HasFlag(t)));
             menuList = FilterByEnums(searchRequest.MenuCategory, menuList, ((MenuCategory t, Menu m) => m.MenuCategory.Equals(t)));
+            menuList = FilterByEnums(searchRequest.Diet, menuList, ((Diet d, Menu m) => m.Diet.HasFlag(d)));
 
             if (searchRequest.Votes > 0)
             {
