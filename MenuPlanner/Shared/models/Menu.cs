@@ -8,7 +8,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using MenuPlanner.Shared.models.enums;
 using MenuPlanner.Shared.Models;
-using MenuPlanner.Shared.Models.enums;
 
 namespace MenuPlanner.Shared.models
 {

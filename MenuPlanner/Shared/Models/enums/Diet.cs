@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MenuPlanner.Shared.Models.enums
+namespace MenuPlanner.Shared.models.enums
 {
     [Flags]
     public enum Diet : short
