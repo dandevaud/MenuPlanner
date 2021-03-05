@@ -16,5 +16,9 @@ namespace MenuPlanner.Shared.models.Search
         public MenuCategory MenuCategory { get; set; }
         public Diet Diet { get; set; }
         public ICollection<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
+        public int PrepTime { get; set; }
+        public int CookTime { get; set; }
+        public int TotalTime { get; set; }
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿@using MenuPlanner.Shared.models
 @using MenuPlanner.Shared.models.enums
 @using MenuPlanner.Shared.models.Search
+@using MenuPlanner.Client.Controls.SearchControls
 @inject PublicClient PublicClient
 
 <EditForm Model="searchModel" OnValidSubmit="@GetMenus">
@@ -50,9 +51,24 @@
             <EnumSearchControl Id="Season" Text="Season" TEnum="Season" StandardValue="Season.Unknown" GetActiveAttribute="@((Season e) => GetActiveAttribute(e))" UpdateEnumValues="@((Season e) => selectedEnums.UpdateValues(e))"></EnumSearchControl>
 
             <EnumSearchControl Id="MenuCategory" Text="Menu Category" TEnum="MenuCategory" StandardValue="MenuCategory.Unknown" GetActiveAttribute="@((MenuCategory e) => GetActiveAttribute(e))" UpdateEnumValues="@((MenuCategory e) => selectedEnums.UpdateValues(e))"></EnumSearchControl>
-            
+
             <EnumSearchControl Id="Diet" Text="Diet" TEnum="Diet" StandardValue="Diet.None" GetActiveAttribute="@((Diet e) => GetActiveAttribute(e))" UpdateEnumValues="@((Diet e) => selectedEnums.UpdateValues(e))"></EnumSearchControl>
 
+        </div>
+
+        <div class="row m-4 form-group" hidden=@(!isAdvanced)>
+            <div class="col-md-4">
+                <label for="prepTime">Preparation Time in minute</label>
+                <input type="range" class="form-range d-inline" min="0" max="@maxValues.GetValueOrDefault("prepTime")" id="prepTime" @bind="searchModel.PrepTime" /><InputNumber @bind-Value="@searchModel.PrepTime" min="0" max="@maxValues.GetValueOrDefault("prepTime")" class="d-inline"></InputNumber>
+            </div>
+            <div class="col-md-4">
+                <label for="cookTime">Cook Time in minute</label>
+                <label>@searchModel.CookTime min</label>
+                <input type="range" class="form-range" min="0" max="@maxValues.GetValueOrDefault("cookTime")" id="cookTime" @bind="searchModel.CookTime" /><InputNumber @bind-Value="@searchModel.CookTime" min="0" max="@maxValues.GetValueOrDefault("cookTime")" class="d-inline"></InputNumber>
+            </div>
+            <div class="col-md-4">
+                <TimeSlider Text="Total time in minutes" FieldId="totalTime" MaxValues="maxValues" @bind-Value="searchModel.TotalTime"></TimeSlider>
+            </div>
         </div>
 
         <div class="row" hidden=@(!isAdvanced)>

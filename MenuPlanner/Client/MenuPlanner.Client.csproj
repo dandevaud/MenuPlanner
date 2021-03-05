@@ -4,7 +4,7 @@
         <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
-    <ItemGroup>
+     <ItemGroup>
         <PackageReference Include="GitVersion.MsBuild" Version="5.6.6">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -27,7 +27,7 @@
         <None Remove="..\..\.editorconfig" />
     </ItemGroup>
     <ItemGroup>
-      <None Include="wwwroot\css\font-awesome\webfonts\fa-brands-400.svg" />
+          <None Include="wwwroot\css\font-awesome\webfonts\fa-brands-400.svg" />
       <None Include="wwwroot\css\font-awesome\webfonts\fa-brands-400.woff2" />
       <None Include="wwwroot\css\font-awesome\webfonts\fa-regular-400.svg" />
       <None Include="wwwroot\css\font-awesome\webfonts\fa-regular-400.woff2" />
@@ -39,4 +39,5 @@
         <ProjectReference Include="..\Shared\MenuPlanner.Shared.csproj" />
     </ItemGroup>
 
+   
 </Project>

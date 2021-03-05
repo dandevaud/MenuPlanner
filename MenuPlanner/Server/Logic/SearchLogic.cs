@@ -46,7 +46,19 @@ namespace MenuPlanner.Server.Logic
             return new SearchResponseModel<Ingredient>() { Result = toReturn };
         }
 
-
+        public async Task<Dictionary<string, int>> GetMaxTimes()
+        {
+            var prepTime = await _context.Menus.MaxAsync(m => m.PrepTime);
+            var cookTime = await _context.Menus.MaxAsync(m => m.CookTime);
+            var totalTime = await _context.Menus.MaxAsync(m => m.PrepTime + m.CookTime);
+            var dict = new Dictionary<string, int>()
+            {
+                { "prepTime",prepTime } ,
+                { "cookTime", cookTime } ,
+                { "totalTime", totalTime }
+            };
+            return dict;
+        }
 
         public async Task<SearchResponseModel<Menu>> SearchMenus(MenuSearchRequestModel searchRequest)
         {

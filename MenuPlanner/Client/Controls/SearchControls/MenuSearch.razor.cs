@@ -33,6 +33,8 @@ namespace MenuPlanner.Client.Controls.SearchControls
 
         private Boolean isAdvanced = false;
 
+        private Dictionary<string, int> maxValues = new Dictionary<string, int>();
+
         private bool isAnyMatch = true;
 
         private class SelectedEnums
@@ -108,10 +110,13 @@ namespace MenuPlanner.Client.Controls.SearchControls
             StateHasChanged();
         }
 
-        protected override void OnInitialized()
+
+        protected override async Task OnInitializedAsync()
         {
             searchModel = new MenuSearchRequestModel();
+            maxValues = await PublicClient.Client.GetFromJsonAsync<Dictionary<string, int>>("api/Menus/MaxTimes");
         }
+       
 
         private string GetActiveAttribute<T>(T option) where T : struct, Enum
         {
