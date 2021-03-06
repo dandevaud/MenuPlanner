@@ -17,7 +17,7 @@ namespace MenuPlanner.Client.Controls.SearchControls
     public partial class TimeSlider
     {
         [Parameter]
-        public Int32 Value { get; set; }
+        public int Value { get; set; }
 
         [Parameter]
         public EventCallback<int> ValueChanged { get; set; }
@@ -31,11 +31,11 @@ namespace MenuPlanner.Client.Controls.SearchControls
         [Parameter]
         public string Text { get; set; }
 
-        private async Task OnChange(ChangeEventArgs e)
+        private int ValueInternal
         {
-            var intValue = Int32.Parse(e.ToString());
-            await ValueChanged.InvokeAsync(intValue);
+            get => Value;
+            set => ValueChanged.InvokeAsync(value);
         }
-
+                
     }
 }

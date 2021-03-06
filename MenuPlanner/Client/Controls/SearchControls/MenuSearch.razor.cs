@@ -133,15 +133,15 @@ namespace MenuPlanner.Client.Controls.SearchControls
         {
             isAdvanced = false;
             var list = await PublicClient.Client.GetFromJsonAsync<List<Menu>>("api/Menus");
+            var maxValuesChanged = PublicClient.Client.GetFromJsonAsync<Dictionary<string, int>>("api/Menus/MaxTimes");
             Results = list.ToArray();
-            var resultChange = ResultsChanged.InvokeAsync(Results);
+            var resultChange = ResultsChanged.InvokeAsync(Results);            
             selectedEnums.MenuCategories = new List<MenuCategory>();
             selectedEnums.Seasons = new List<Season>();
             selectedEnums.TimeOfDays = new List<TimeOfDay>();
-            searchModel.Ingredients = new List<Ingredient>();
-            searchModel.Name = string.Empty;
-            searchModel.Filter = string.Empty;
-            searchString = string.Empty;
+            searchModel = new MenuSearchRequestModel();
+            maxValues = await maxValuesChanged;
+            
             await resultChange;
         }
 

@@ -85,6 +85,12 @@ namespace MenuPlanner.Server.Logic
             menuList = FilterByEnums(searchRequest.MenuCategory, menuList, ((MenuCategory t, Menu m) => m.MenuCategory.Equals(t)));
             menuList = FilterByEnums(searchRequest.Diet, menuList, ((Diet d, Menu m) => m.Diet.HasFlag(d)));
 
+            menuList = HandleTime(menuList, searchRequest.CookTime, (Menu m) => m.CookTime.CompareTo(searchRequest.CookTime) <= 0);
+            menuList = HandleTime(menuList, searchRequest.PrepTime, (Menu m) => m.PrepTime.CompareTo(searchRequest.PrepTime) <= 0);
+            menuList = HandleTime(menuList, searchRequest.TotalTime, (Menu m) => (m.CookTime+m.PrepTime).CompareTo(searchRequest.TotalTime) <= 0);
+
+
+
             if (searchRequest.Votes > 0)
             {
                 menuList = menuList.Where(m => m.Votes >= searchRequest.Votes).ToList();
@@ -304,6 +310,14 @@ namespace MenuPlanner.Server.Logic
                     await LoadSubIngredients(i);
                 }
             }
+        }
+
+        private List<Menu> HandleTime(List<Menu> menulist, int value, Func<Menu,bool> where)
+        {
+            if (value > 0) {
+                return menulist.Where(where).ToList();
+            }
+            return menulist;
         }
 
     }

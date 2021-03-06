@@ -1,7 +1,11 @@
 ﻿
-    <label for="@FieldId">@Text</label>
-    <input type="range" class="form-range" min="0" max="@MaxValues.GetValueOrDefault(FieldId)" id="@FieldId"@onchange="e => OnChange(e)"/>
-    <InputNumber @bind-Value="@Value" @onchange="e => OnChange(e)" min="0" max="@MaxValues.GetValueOrDefault(FieldId)"></InputNumber>
+<div class="m-1">
+    <label for="@FieldId" class="form-label">@Text</label>
+    <div class="input-group">
+        <input type="range" class="form-control-range col-md-9" min="0" max="@MaxValues.GetValueOrDefault(FieldId)" id="@FieldId" @bind="ValueInternal" />
+        <InputNumber @bind-Value="@ValueInternal" min="0" max="@MaxValues.GetValueOrDefault(FieldId)" class="form-control col-md-3"></InputNumber>
+    </div>
+</div>
 
 
 

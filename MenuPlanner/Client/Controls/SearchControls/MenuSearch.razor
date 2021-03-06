@@ -56,17 +56,14 @@
 
         </div>
 
-        <div class="row m-4 form-group" hidden=@(!isAdvanced)>
-            <div class="col-md-4">
-                <label for="prepTime">Preparation Time in minute</label>
-                <input type="range" class="form-range d-inline" min="0" max="@maxValues.GetValueOrDefault("prepTime")" id="prepTime" @bind="searchModel.PrepTime" /><InputNumber @bind-Value="@searchModel.PrepTime" min="0" max="@maxValues.GetValueOrDefault("prepTime")" class="d-inline"></InputNumber>
+        <div class="row m-4 form-group " hidden=@(!isAdvanced)>
+            <div class="col m-1 border rounded">
+                <TimeSlider Text="Prep time in minutes" FieldId="prepTime" MaxValues="maxValues" @bind-Value="searchModel.PrepTime"></TimeSlider>
+             </div>
+            <div class="col m-1  border rounded">
+                <TimeSlider Text="Cook time in minutes" FieldId="cookTime" MaxValues="maxValues" @bind-Value="searchModel.CookTime"></TimeSlider>
             </div>
-            <div class="col-md-4">
-                <label for="cookTime">Cook Time in minute</label>
-                <label>@searchModel.CookTime min</label>
-                <input type="range" class="form-range" min="0" max="@maxValues.GetValueOrDefault("cookTime")" id="cookTime" @bind="searchModel.CookTime" /><InputNumber @bind-Value="@searchModel.CookTime" min="0" max="@maxValues.GetValueOrDefault("cookTime")" class="d-inline"></InputNumber>
-            </div>
-            <div class="col-md-4">
+            <div class="col m-1 border rounded">
                 <TimeSlider Text="Total time in minutes" FieldId="totalTime" MaxValues="maxValues" @bind-Value="searchModel.TotalTime"></TimeSlider>
             </div>
         </div>
