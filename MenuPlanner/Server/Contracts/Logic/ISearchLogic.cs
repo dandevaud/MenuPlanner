@@ -12,5 +12,6 @@ namespace MenuPlanner.Server.Contracts.Logic
        Task<SearchResponseModel<Ingredient>> SearchIngredients(IngredientSearchRequestModel searchRequest);
        Task<List<Ingredient>> GetSubIngredients(Ingredient ing);
         Task<SearchResponseModel<Ingredient>> GetAllIngredients();
+        Task<Dictionary<string, int>> GetMaxTimes();
     }
 }

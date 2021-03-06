@@ -43,6 +43,15 @@ namespace MenuPlanner.Server.Controllers
             return (await _search.GetAllMenus()).Result;
         }
 
+        [HttpGet("MaxTimes")]
+        [AllowAnonymous]
+        public async Task<ActionResult<Dictionary<String, int>>> GetMaxTimes()
+        {
+            var toReturn = await _search.GetMaxTimes();
+            return toReturn;
+        }
+            
+
         // GET: api/Menus/5
         [HttpGet("{id}")]
         [AllowAnonymous]

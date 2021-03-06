@@ -46,7 +46,19 @@ namespace MenuPlanner.Server.Logic
             return new SearchResponseModel<Ingredient>() { Result = toReturn };
         }
 
-
+        public async Task<Dictionary<string, int>> GetMaxTimes()
+        {
+            var prepTime = await _context.Menus.MaxAsync(m => m.PrepTime);
+            var cookTime = await _context.Menus.MaxAsync(m => m.CookTime);
+            var totalTime = await _context.Menus.MaxAsync(m => m.PrepTime + m.CookTime);
+            var dict = new Dictionary<string, int>()
+            {
+                { "prepTime",prepTime } ,
+                { "cookTime", cookTime } ,
+                { "totalTime", totalTime }
+            };
+            return dict;
+        }
 
         public async Task<SearchResponseModel<Menu>> SearchMenus(MenuSearchRequestModel searchRequest)
         {
@@ -71,6 +83,13 @@ namespace MenuPlanner.Server.Logic
             menuList = FilterByEnumsFlags(searchRequest.TimeOfDay, menuList, ((TimeOfDay t, Menu m) => m.TimeOfDay.HasFlag(t)));
             menuList = FilterByEnumsFlags(searchRequest.Season, menuList, ((Season t, Menu m) => m.Season.HasFlag(t)));
             menuList = FilterByEnums(searchRequest.MenuCategory, menuList, ((MenuCategory t, Menu m) => m.MenuCategory.Equals(t)));
+            menuList = FilterByEnums(searchRequest.Diet, menuList, ((Diet d, Menu m) => m.Diet.HasFlag(d)));
+
+            menuList = HandleTime(menuList, searchRequest.CookTime, (Menu m) => m.CookTime.CompareTo(searchRequest.CookTime) <= 0);
+            menuList = HandleTime(menuList, searchRequest.PrepTime, (Menu m) => m.PrepTime.CompareTo(searchRequest.PrepTime) <= 0);
+            menuList = HandleTime(menuList, searchRequest.TotalTime, (Menu m) => (m.CookTime+m.PrepTime).CompareTo(searchRequest.TotalTime) <= 0);
+
+
 
             if (searchRequest.Votes > 0)
             {
@@ -291,6 +310,14 @@ namespace MenuPlanner.Server.Logic
                     await LoadSubIngredients(i);
                 }
             }
+        }
+
+        private List<Menu> HandleTime(List<Menu> menulist, int value, Func<Menu,bool> where)
+        {
+            if (value > 0) {
+                return menulist.Where(where).ToList();
+            }
+            return menulist;
         }
 
     }

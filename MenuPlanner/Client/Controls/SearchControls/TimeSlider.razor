@@ -1,0 +1,12 @@
+﻿
+<div class="m-1">
+    <label for="@FieldId" class="form-label">@Text</label>
+    <div class="input-group">
+        <input type="range" class="form-control-range col-md-9" min="0" max="@MaxValues.GetValueOrDefault(FieldId)" id="@FieldId" @bind="ValueInternal" />
+        <InputNumber @bind-Value="@ValueInternal" min="0" max="@MaxValues.GetValueOrDefault(FieldId)" class="form-control col-md-3"></InputNumber>
+    </div>
+</div>
+
+
+
+

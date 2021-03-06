@@ -15,6 +15,7 @@ namespace MenuPlanner.Shared.models
     public class Ingredient : Entity
     {
 
+        public Diet Diet { get; set; }
         public virtual ICollection<Ingredient> ParentIngredients { get; set; }
         public virtual ICollection<Ingredient> ChildIngredients { get; set; }
         public IngredientCategory Category { get; set; }

@@ -3,14 +3,16 @@ using System;
 using MenuPlanner.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace MenuPlanner.Server.Migrations
+namespace MenuPlanner.Server.Migrations.MenuPlanner
 {
     [DbContext(typeof(MenuPlannerContext))]
-    partial class MenuPlannerContextModelSnapshot : ModelSnapshot
+    [Migration("20210224180006_V_1.2.0")]
+    partial class V_120
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -234,6 +236,17 @@ namespace MenuPlanner.Server.Migrations
                     b.ToTable("MenuIngredients");
                 });
 
+            modelBuilder.Entity("MenuPlanner.Shared.models.Quantity", b =>
+                {
+                    b.Property<double>("QuantityValue")
+                        .HasColumnType("double");
+
+                    b.Property<int>("Unit")
+                        .HasColumnType("int");
+
+                    b.ToTable("Quantity");
+                });
+
             modelBuilder.Entity("MenuPlanner.Shared.models.Tag", b =>
                 {
                     b.Property<Guid>("Id")
@@ -241,16 +254,11 @@ namespace MenuPlanner.Server.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("char(255)");
 
-                    b.Property<Guid?>("MenuId")
-                        .HasColumnType("char(255)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MenuId");
 
                     b.ToTable("Tags");
                 });
@@ -275,6 +283,21 @@ namespace MenuPlanner.Server.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("MenuTag", b =>
+                {
+                    b.Property<Guid>("MenusId")
+                        .HasColumnType("char(255)");
+
+                    b.Property<Guid>("TagsId")
+                        .HasColumnType("char(255)");
+
+                    b.HasKey("MenusId", "TagsId");
+
+                    b.HasIndex("TagsId");
+
+                    b.ToTable("MenuTag");
                 });
 
             modelBuilder.Entity("IngredientIngredient", b =>
@@ -338,11 +361,19 @@ namespace MenuPlanner.Server.Migrations
                     b.Navigation("Menu");
                 });
 
-            modelBuilder.Entity("MenuPlanner.Shared.models.Tag", b =>
+            modelBuilder.Entity("MenuTag", b =>
                 {
                     b.HasOne("MenuPlanner.Shared.models.Menu", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("MenuId");
+                        .WithMany()
+                        .HasForeignKey("MenusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MenuPlanner.Shared.models.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MenuPlanner.Shared.models.Menu", b =>
@@ -352,8 +383,6 @@ namespace MenuPlanner.Server.Migrations
                     b.Navigation("Images");
 
                     b.Navigation("Ingredients");
-
-                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("MenuPlanner.Shared.models.User", b =>
