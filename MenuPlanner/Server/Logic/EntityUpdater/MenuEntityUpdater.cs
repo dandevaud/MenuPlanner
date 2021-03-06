@@ -140,22 +140,27 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
         {
             var newIngredients =
                 menu.Ingredients.Where(i => !entityInDatabase.Ingredients.Any(mi => mi.Id.Equals(i.Id))).ToList();
-            var duplicates = newIngredients.Select(mi => mi.Ingredient).GroupBy(i => i.Name).Where(g => g.Count() >1).SelectMany(g=>g).ToList();
+            HandleDuplicateIngredient(newIngredients).ForEach(mi => entityInDatabase.Ingredients.Add(mi));
             
-            newIngredients.ForEach(mi =>
+        }
+
+        private List<MenuIngredient> HandleDuplicateIngredient(List<MenuIngredient> menuIngredients)
+        {
+            var duplicates = menuIngredients.Select(mi => mi.Ingredient).GroupBy(i => i.Name).Where(g => g.Count() > 1).SelectMany(g => g).ToList();
+            menuIngredients.ForAll(mi =>
             {
                 if (_context.ChangeTracker.Entries<Ingredient>().Any(i => i.Entity.Id.Equals(mi.Ingredient.Id)))
                 {
                     mi.Ingredient = _context.ChangeTracker.Entries<Ingredient>()
                         .FirstOrDefault(i => i.Entity.Id.Equals(mi.Ingredient.Id))?.Entity;
-                } else if (duplicates.Contains(mi.Ingredient))
+                }
+                else if (duplicates.Contains(mi.Ingredient))
                 {
                     mi.Ingredient = duplicates.First(i => i.Id.Equals(mi.Ingredient.Id));
                 }
-                entityInDatabase.Ingredients.Add(mi);
             });
+            return menuIngredients;
 
-            
         }
 
         private void HandleChangedMenuIngredient(Menu menu, Menu entityInDatabase)
@@ -203,11 +208,10 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
 
         private async Task CreateMenuInContext(Menu menu)
         {
+            await _context.Ingredients.LoadAsync();
+            menu.Ingredients = HandleDuplicateIngredient(menu.Ingredients.ToList());
             await _context.Menus.AddAsync(menu);
-            foreach (var menuIngredient in menu.Ingredients)
-            {
-                _context.Entry(menuIngredient.Ingredient).State = EntityState.Detached;
-            }
+          
             SaveChanges();
             var images = menu.Images;
             await SaveImages(menu, images);
