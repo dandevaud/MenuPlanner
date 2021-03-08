@@ -10,5 +10,9 @@ namespace MenuPlanner.Shared.models.Search
     {
         public List<TResult> Result {get; set;}
         public string OrderBy {get; set;}
+
+        public int TotalResults { get; set; }
+        public int Skip { get; set; }
+        public int Count { get; set; }
     }
 }

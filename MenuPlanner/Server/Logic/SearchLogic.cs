@@ -70,7 +70,7 @@ namespace MenuPlanner.Server.Logic
                 foreach(var i in entities){
                      await LoadMenuSubEntities(i);
                 }
-                return new SearchResponseModel<Menu>() { Result = entities };
+                return CreateSearchResponseModel(searchRequest, entities);
 
             }
            var menuList = _context.Menus.ToList();
@@ -112,8 +112,16 @@ namespace MenuPlanner.Server.Logic
                 m.Tags.Any(t => t.Name.Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase));
 
             menuList = GeneralSearchRequestModelHandling(searchRequest, menuList, NamePredicate, FilterPredicate);
+            return CreateSearchResponseModel(searchRequest, menuList);
+        }
 
-            return new SearchResponseModel<Menu>() { Result = menuList };
+        private List<T> LimitSearch<T>(List<T> list, SearchRequestModel searchRequest)
+        {
+            if (searchRequest.Count > 0)
+            {
+                list = list.Skip(searchRequest.Skip).Take(searchRequest.Count).ToList();
+            }
+            return list;
         }
 
         public async Task<SearchResponseModel<Ingredient>> SearchIngredients(IngredientSearchRequestModel searchRequest)
@@ -125,8 +133,9 @@ namespace MenuPlanner.Server.Logic
                 {
                     await LoadSubIngredients(i);
                 }
+               
+                return CreateSearchResponseModel(searchRequest, entities);
                 
-                return new SearchResponseModel<Ingredient>() { Result = entities  };
 
             }
             var ingredientList = _context.Ingredients.ToList();
@@ -150,8 +159,15 @@ namespace MenuPlanner.Server.Logic
                 i.Category.ToString().Contains(searchRequest.Filter, StringComparison.InvariantCultureIgnoreCase);
 
             ingredientList = GeneralSearchRequestModelHandling(searchRequest, ingredientList, NamePredicate, FilterPredicate);
+            return CreateSearchResponseModel(searchRequest, ingredientList);
+        }
 
-            return new SearchResponseModel<Ingredient>() { Result = ingredientList };
+        private SearchResponseModel<T> CreateSearchResponseModel<T>(SearchRequestModel searchRequest, List<T> list)
+        {
+            int totalResults = list.Count();
+            list = LimitSearch(list, searchRequest);
+            return new SearchResponseModel<T>()
+                {Result = list, TotalResults = totalResults, Count = searchRequest.Count, Skip = searchRequest.Skip};
         }
 
         private List<M> FilterByEnumsFlags<T, M>(T enumFilter, List<M> list, ContainsAnyOf<T, M> anyPredicate) where T : struct, Enum
