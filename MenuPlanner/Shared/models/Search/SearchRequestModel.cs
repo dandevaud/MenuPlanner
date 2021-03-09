@@ -13,5 +13,7 @@ namespace MenuPlanner.Shared.models.Search
         public string Filter {get; set;}
         public string Name { get; set; }
         public bool OrderBy {get; set;}
+        public int Skip { get; set; }
+        public int Count { get; set; }
     }
 }
