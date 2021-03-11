@@ -17,10 +17,10 @@ namespace MenuPlanner.Client.Controls.SearchControls
     public partial class MenuSearch
     {
         [Parameter]
-        public Menu[] Results { get; set; }
+        public List<Menu> Results { get; set; }
 
         [Parameter]
-        public EventCallback<Menu[]> ResultsChanged { get; set; }
+        public EventCallback<List<Menu>> ResultsChanged { get; set; }
 
         public delegate R HandleList<T, R>(T value);
 
@@ -132,9 +132,9 @@ namespace MenuPlanner.Client.Controls.SearchControls
         private async Task Reset()
         {
             isAdvanced = false;
-            var list = await PublicClient.Client.GetFromJsonAsync<List<Menu>>("api/Menus");
+            var list = PublicClient.Client.GetFromJsonAsync<SearchResponseModel<Menu>>("api/Menus");
             var maxValuesChanged = PublicClient.Client.GetFromJsonAsync<Dictionary<string, int>>("api/Menus/MaxTimes");
-            Results = list.ToArray();
+            Results = (await list).Result;
             var resultChange = ResultsChanged.InvokeAsync(Results);            
             selectedEnums.MenuCategories = new List<MenuCategory>();
             selectedEnums.Seasons = new List<Season>();
@@ -176,8 +176,8 @@ namespace MenuPlanner.Client.Controls.SearchControls
             }
 
             var response = await PublicClient.Client.PostAsJsonAsync<MenuSearchRequestModel>("api/Search/MenuBy", searchModel);
-            var list = await response.Content.ReadFromJsonAsync<List<Menu>>();
-            Results = list.ToArray();
+            var list = await response.Content.ReadFromJsonAsync<SearchResponseModel<Menu>>();
+            Results = list.Result;
             await ResultsChanged.InvokeAsync(Results);
         }
     }

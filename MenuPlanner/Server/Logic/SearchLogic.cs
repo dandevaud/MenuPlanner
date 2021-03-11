@@ -74,7 +74,7 @@ namespace MenuPlanner.Server.Logic
 
             }
            var menuList = _context.Menus;
-           foreach (var m in menuList)
+           foreach (var m in menuList.ToList())
            {
                await LoadMenuSubEntities(m);
             }
@@ -140,7 +140,7 @@ namespace MenuPlanner.Server.Logic
                 
 
             }
-            IEnumerable<Ingredient> ingredientList = _context.Ingredients;
+            IEnumerable<Ingredient> ingredientList = _context.Ingredients.ToList();
 
             if (searchRequest.Calories > 0)
             {
