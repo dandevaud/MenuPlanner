@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using MenuPlanner.Shared.models
+@using MenuPlanner.Shared.models.Search
 @inject NavigationManager NavigationManager
 @inject PublicClient PublicClient
 
@@ -18,7 +19,7 @@
 {
     <p><em>Loading...</em></p>
 }
-else if (menus.Length == 0)
+else if (menus.Count == 0)
 {
     <p><em>No menus found with current search</em></p>
 }
@@ -34,24 +35,5 @@ else
     </div>
 }
 
-@code {
 
-    private Menu[] menus;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await GetMenus();
-    }
-
-    public async Task GetMenus()
-    {
-        menus = await PublicClient.Client.GetFromJsonAsync<Menu[]>("api/Menus");
-    }
-
-    private void MenusChanged(Menu[] menusChanged)
-    {
-        menus = menusChanged;
-    }
-
-}
 
