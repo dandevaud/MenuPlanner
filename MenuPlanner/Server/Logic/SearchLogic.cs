@@ -31,10 +31,11 @@ namespace MenuPlanner.Server.Logic
             _context = context;
         }
 
-        public async Task<SearchResponseModel<Menu>> GetAllMenus()
+        public async Task<SearchResponseModel<Menu>> GetAllMenus(SearchRequestModel searchRequest)
         {
             var menus = (await _context.Menus.Include(m =>m.Images).ToListAsync()).OrderByDescending(a => a.AverageRating);
-            return new SearchResponseModel<Menu>() {Result = menus.ToList()};
+            return CreateSearchResponseModel(searchRequest, menus);
+          
         }
         public async Task<SearchResponseModel<Ingredient>> GetAllIngredients()
         {
@@ -74,7 +75,7 @@ namespace MenuPlanner.Server.Logic
 
             }
            var menuList = _context.Menus;
-           foreach (var m in menuList)
+           foreach (var m in menuList.ToList())
            {
                await LoadMenuSubEntities(m);
             }
@@ -140,7 +141,7 @@ namespace MenuPlanner.Server.Logic
                 
 
             }
-            IEnumerable<Ingredient> ingredientList = _context.Ingredients;
+            IEnumerable<Ingredient> ingredientList = _context.Ingredients.ToList();
 
             if (searchRequest.Calories > 0)
             {

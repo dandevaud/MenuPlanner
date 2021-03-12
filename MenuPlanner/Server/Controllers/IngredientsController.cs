@@ -41,10 +41,10 @@ namespace MenuPlanner.Server.Controllers
 
         // GET: api/Ingredients
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients()
+        public async Task<ActionResult<SearchResponseModel<Ingredient>>> GetIngredients()
         {
             var toReturn = await _searchLogic.GetAllIngredients();
-            return toReturn.Result.OrderBy(i => i.Name).ToList();
+            return toReturn;
         }
 
         // GET: api/Ingredients/5

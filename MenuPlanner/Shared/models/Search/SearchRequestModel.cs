@@ -6,7 +6,7 @@ using System;
 
 namespace MenuPlanner.Shared.models.Search
 {
-    public abstract class SearchRequestModel
+    public class SearchRequestModel
     {
 
         public Guid Id { get; set; }

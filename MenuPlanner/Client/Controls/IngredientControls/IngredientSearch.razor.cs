@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using MenuPlanner.Shared.models;
+using MenuPlanner.Shared.models.Search;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -40,8 +41,8 @@ namespace MenuPlanner.Client.Controls.IngredientControls
             if (filter.Length > 0)
             {
                 FoundIngredients =
-                    ((await PublicClient.Client.GetFromJsonAsync<Ingredient[]>(
-                        $"api/Search/IngredientBy?filter={filter}&count=10")) ?? Array.Empty<Ingredient>()).ToList();
+                    ((await PublicClient.Client.GetFromJsonAsync<SearchResponseModel<Ingredient>>(
+                        $"api/Search/IngredientBy?filter={filter}&count=10")) ?? new SearchResponseModel<Ingredient>()).Result;
             }
             else
             {

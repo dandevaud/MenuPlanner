@@ -8,7 +8,7 @@ namespace MenuPlanner.Shared.models.Search
 {
     public class SearchResponseModel<TResult>
     {
-        public List<TResult> Result {get; set;}
+        public List<TResult> Result { get; set; } = new List<TResult>();
         public string OrderBy {get; set;}
 
         public int TotalResults { get; set; }
