@@ -28,12 +28,12 @@
         {
             <li class="page-item disabled"><a class="page-link">...</a></li>
         }
-        else
+        else if (last>3)
         {
             <li class="page-item @IsActive(last-1)"><a class="page-link" @onclick="() => OnNumberClick(last-1)">@(last-1)</a></li>
         }
         <li class="page-item @IsActive(last)"><a class="page-link" @onclick="() => OnNumberClick(last)">@last</a></li>
-        <li class="page-item">
+        <li class="page-item @GetDisabled(internalCount==last)">
             <a class="page-link"  @onclick="() => OnArrowClick(1)">Next</a>
         </li>
     </ul>
