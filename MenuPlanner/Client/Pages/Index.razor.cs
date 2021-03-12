@@ -9,13 +9,17 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.models.Search;
+using MySqlX.XDevAPI.Common;
 
 namespace MenuPlanner.Client.Pages
 {
     public partial class Index
     {
 
-        private List<Menu> menus;
+     
+        private readonly int count = 15;
+        private int skip = 0;
+        private SearchResponseModel<Menu> Response { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -24,17 +28,22 @@ namespace MenuPlanner.Client.Pages
 
         public async Task GetMenus()
         {
-            menus = (await PublicClient.Client.GetFromJsonAsync<SearchResponseModel<Menu>>("api/Menus")).Result;
+            Response =
+                await PublicClient.Client.GetFromJsonAsync<SearchResponseModel<Menu>>(
+                    $"api/Menus?count={count}&skip={skip}");
+
+
         }
 
-        private void MenusChanged(List<Menu> menusChanged)
+        private void MenusChanged(SearchResponseModel<Menu> menusChanged)
         {
-            menus = menusChanged;
+            Response = menusChanged;
         }
 
-        private void OnSkipChanged(int skip)
+        private async Task OnSkipChanged(int skip)
         {
-            Console.WriteLine(skip);
+            this.skip = skip;
+            await GetMenus();
         }
     }
 }

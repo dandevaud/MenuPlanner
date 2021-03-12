@@ -17,10 +17,10 @@ namespace MenuPlanner.Client.Controls.SearchControls
     public partial class MenuSearch
     {
         [Parameter]
-        public List<Menu> Results { get; set; }
+        public SearchResponseModel<Menu> Results { get; set; }
 
         [Parameter]
-        public EventCallback<List<Menu>> ResultsChanged { get; set; }
+        public EventCallback<SearchResponseModel<Menu>> ResultsChanged { get; set; }
 
         public delegate R HandleList<T, R>(T value);
 
@@ -134,7 +134,7 @@ namespace MenuPlanner.Client.Controls.SearchControls
             isAdvanced = false;
             var list = PublicClient.Client.GetFromJsonAsync<SearchResponseModel<Menu>>("api/Menus");
             var maxValuesChanged = PublicClient.Client.GetFromJsonAsync<Dictionary<string, int>>("api/Menus/MaxTimes");
-            Results = (await list).Result;
+            Results = await list;
             var resultChange = ResultsChanged.InvokeAsync(Results);            
             selectedEnums.MenuCategories = new List<MenuCategory>();
             selectedEnums.Seasons = new List<Season>();
@@ -176,8 +176,7 @@ namespace MenuPlanner.Client.Controls.SearchControls
             }
 
             var response = await PublicClient.Client.PostAsJsonAsync<MenuSearchRequestModel>("api/Search/MenuBy", searchModel);
-            var list = await response.Content.ReadFromJsonAsync<SearchResponseModel<Menu>>();
-            Results = list.Result;
+            Results = await response.Content.ReadFromJsonAsync<SearchResponseModel<Menu>>();
             await ResultsChanged.InvokeAsync(Results);
         }
     }

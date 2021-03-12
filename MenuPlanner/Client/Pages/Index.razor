@@ -4,7 +4,7 @@
 @inject NavigationManager NavigationManager
 @inject PublicClient PublicClient
 
-<MenuSearch Results="@menus" ResultsChanged="@MenusChanged"></MenuSearch>
+<MenuSearch Results="@Response" ResultsChanged="@MenusChanged"></MenuSearch>
 <AuthorizeView>
     <Authorized>
         <a href="/AddEditDeleteMenu/" class="btn btn-info" role="button">Add Menu</a>
@@ -15,11 +15,11 @@
 
 <h3>Menus</h3>
 
-@if (menus == null)
+@if (Response == null)
 {
     <p><em>Loading...</em></p>
 }
-else if (menus.Count == 0)
+else if (Response.Result.Count == 0)
 {
     <p><em>No menus found with current search</em></p>
 }
@@ -27,12 +27,16 @@ else
 {
     <div class="row">
 
-        @foreach (var menu in menus)
+        @foreach (var menu in Response.Result)
         {
             <MenuCard Menu="@menu"></MenuCard>
         }
 
     </div>
+    @if (Response.TotalResults > count)
+            {
+            <Pagination Count="@count" Total="@Response.TotalResults" Skip="@skip" SkipChanged="OnSkipChanged"></Pagination>
+            }
 }
 
 
