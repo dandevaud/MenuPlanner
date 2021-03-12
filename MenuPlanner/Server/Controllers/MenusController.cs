@@ -38,9 +38,9 @@ namespace MenuPlanner.Server.Controllers
         // GET: api/Menus
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<SearchResponseModel<Menu>>> GetMenus()
+        public async Task<ActionResult<SearchResponseModel<Menu>>> GetMenus([FromQuery] SearchRequestModel searchRequest)
         {
-            return await _search.GetAllMenus();
+            return await _search.GetAllMenus(searchRequest);
         }
 
         [HttpGet("MaxTimes")]
