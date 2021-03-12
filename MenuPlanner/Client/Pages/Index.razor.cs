@@ -37,6 +37,7 @@ namespace MenuPlanner.Client.Pages
 
         private void MenusChanged(SearchResponseModel<Menu> menusChanged)
         {
+            skip = menusChanged.Skip;
             Response = menusChanged;
         }
 

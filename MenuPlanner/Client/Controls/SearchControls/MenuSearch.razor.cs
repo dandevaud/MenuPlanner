@@ -175,6 +175,8 @@ namespace MenuPlanner.Client.Controls.SearchControls
                 searchModel.Name = searchString;
             }
 
+            searchModel.Skip = 0;
+            searchModel.Count = Results.Count;
             var response = await PublicClient.Client.PostAsJsonAsync<MenuSearchRequestModel>("api/Search/MenuBy", searchModel);
             Results = await response.Content.ReadFromJsonAsync<SearchResponseModel<Menu>>();
             await ResultsChanged.InvokeAsync(Results);
