@@ -9,174 +9,45 @@
 
 <h3>Ingredients</h3>
 
-<hr />
-<h5>Add Ingredient</h5>
-<div class="row">
-    <EditForm Model="@newIngredient" OnValidSubmit="@AddIngredient" id="edit">
-        <DataAnnotationsValidator/>
-        <ValidationSummary Model="@newIngredient"/>
-
-        <div class="form-group">
-            Name: <InputText @bind-Value="newIngredient.Name" class="form-control" />
-        </div>
-
-        <div class="form-group">
-            Calories (100 g): <InputNumber @bind-Value="newIngredient.Calories" class="form-control" />
-        </div>
-
-        <div class="form-group">
-            Price (100 g): <InputNumber @bind-Value="newIngredient.Price" class="form-control" />
-        </div>
-
-        <div class="form-group">
-            Category:
-            <InputSelect @bind-Value="newIngredient.Category" class="form-control" disabled="@isCategoryDisabled">
-                @foreach (var value in Enum.GetValues(typeof(IngredientCategory)))
-                {
-                    <option>@value</option>
-                }
-            </InputSelect>
-        </div>
-
-        <div class="form-group">
-            <label>Parent Ingredients</label>
-            <div class="form-control" style="height: auto; min-height: 40px">
-                @foreach (var ingredient in newIngredient.ParentIngredients)
-                {
-                    <div class="alert alert-secondary alert-dismissible d-inline number m-1 p-1">
-                        @ingredient.Name<i class="fa fa-window-close ml-1" @onclick="() => RemoveParentIngredient(ingredient)"></i>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <div class="form-group">
-            Parent Ingredient:
-            <IngredientSearch IngredientChanged="StoreParentIngredient"></IngredientSearch>
-        </div>
-        <SaveButton IsLoading="@isLoading"></SaveButton>
-    </EditForm>
-</div>
-
-<br />
-<br />
-
 @if (ingredients == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <h5>Ingredient List</h5>
-
+    <div class="form-row">
+        <IngredientSearch DivClass="col-md-10" Ingredient="ingredients" IngredientChanged="@OnIngredientsChange"></IngredientSearch>
+        <a class="btn btn-primary col-md-2 h-25" href="@($"{NavigationManager.BaseUri}addingredient")">Create</a>
+    </div>
     <table class="table">
         <thead>
-            <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Child Ingredients</th>
-                <th>Parent Ingredients</th>
-                <th>Calories</th>
-                <th>Price</th>
-                <th></th>
-                <th></th>
-            </tr>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Child Ingredients</th>
+            <th>Parent Ingredients</th>
+            <th>Calories</th>
+            <th>Price</th>
+            <th></th>
+            <th></th>
+        </tr>
         </thead>
         <tbody>
-            @foreach (var ingredient in ingredients)
-            {
-                <tr>
-                    <td>@ingredient.Name</td>
-                    <td>@ingredient.Category</td>
-                    <td>@string.Join(",", ingredient.ChildIngredients.Select(i => i.Name).ToList())</td>
-                    <td>@string.Join(",", ingredient.ParentIngredients.Select(i => i.Name).ToList())</td>
-                    <td>@ingredient.Calories</td>
-                    <td>@ingredient.Price</td>
-                    <td><a @onclick="(() => newIngredient = ingredient)" class="btn btn-primary" href="@(NavigationManager.Uri)#edit">Edit</a></td>
-                    <td><a @onclick="(() => DeleteIngredient(ingredient.Id))" class="btn btn-danger">Delete</a></td>
-                </tr>
-            }
+        @foreach (var ingredient in ingredients.Result)
+        {
+            <tr>
+                <td>@ingredient.Name</td>
+                <td>@ingredient.Category</td>
+                <td>@string.Join(",", ingredient.ChildIngredients.Select(i => i.Name).ToList())</td>
+                <td>@string.Join(",", ingredient.ParentIngredients.Select(i => i.Name).ToList())</td>
+                <td>@ingredient.Calories</td>
+                <td>@ingredient.Price</td>
+                <td><a class="btn btn-primary" href="@($"{NavigationManager.BaseUri}addingredient/{ingredient.Id}")">Edit</a></td>
+                <td><a @onclick="(() => DeleteIngredient(ingredient.Id))" class="btn btn-danger">Delete</a></td>
+            </tr>
+        }
         </tbody>
     </table>
-}
-
-@code {
-
-    private List<Ingredient> ingredients;
-
-    private Ingredient newIngredient = new Ingredient();
-
-    private bool isCategoryDisabled;
-
-    private bool isLoading = false;
-
-    protected override async Task OnInitializedAsync()
-    {
-        newIngredient.ParentIngredients = new List<Ingredient>();
-        await LoadIngredients();
-    }
-
-    private async Task AddIngredient()
-    {
-        try
-        {
-            isLoading = true;
-
-            await Http.PostAsJsonAsync<Ingredient>("api/Ingredients", newIngredient);
-            newIngredient = new Ingredient();
-            newIngredient.ParentIngredients = new List<Ingredient>();
-            isCategoryDisabled = false;
-            await LoadIngredients();
-        }
-        finally
-        {
-            isLoading = false;
-        }
-    }
-
-    private async Task DeleteIngredient(Guid id)
-    {
-        var response = await Http.DeleteAsync($"api/Ingredients/{id}");
-
-        if (response.IsSuccessStatusCode)
-        {
-            var responseText = await response.Content.ReadAsStringAsync();
-
-            await LoadIngredients();
-
-        }
-        else
-        {
-            //todo
-        }
-    }
-
-    private async Task LoadIngredients()
-    {
-        try
-        {
-            ingredients = await Http.GetFromJsonAsync<List<Ingredient>>("api/Ingredients");
-        }
-        catch (AccessTokenNotAvailableException exception)
-        {
-            exception.Redirect();
-        }
-    }
-
-    private void StoreParentIngredient(Ingredient ingredient)
-    {
-        if (!newIngredient.ParentIngredients.Any(i => i.Id == ingredient.Id))
-        {
-            newIngredient.ParentIngredients.Add(ingredient);
-        }
-        newIngredient.Category = ingredient.Category;
-        isCategoryDisabled = true;
-    }
-
-    private void RemoveParentIngredient(Ingredient ingredient)
-    {
-        newIngredient.ParentIngredients.Remove(ingredient);
-    }
-
+    <Pagination SurroundingFields="2" Count="@count" Total="ingredients.TotalResults" Skip="@skip" SkipChanged="@OnSkipChanged"></Pagination>
 }
 
