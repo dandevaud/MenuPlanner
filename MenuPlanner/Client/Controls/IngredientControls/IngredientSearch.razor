@@ -1,23 +1,31 @@
 ﻿@using MenuPlanner.Shared.models
 @inject PublicClient PublicClient
 
-<div class="@DivClass">
-    <div class="hs-searchbox">
-        <input class="search @InputClass" name="searchText"
-               type="text" placeholder="Search..." autocomplete="off" spellcheck="false"
-               autocorrect="off" @oninput="@GetFilteredIngredients" value="@filter" @onkeydown="@Enter" />
-    </div>
-    @if (FoundIngredients != null)
-    {
-        <div class="hs-menu-inner border">
+    <div class="@DivClass hierarchy-select" @onkeypress:preventDefault="true" @onkeypress:stopPropagation="true">
+        <div class="hs-searchbox">
+            <input class="search @InputClass" name="searchText"
+                   type="text" placeholder="Search..." autocomplete="off" spellcheck="false"
+                   autocorrect="off" value="@filter" @oninput="@OnInputChanged" @onkeypress:preventDefault="true" @onkeypress:stopPropagation="true" @onkeydown="@KeyUp"/>
 
-            @foreach (var ingredient in FoundIngredients)
+        </div>
+        @if (FoundIngredients != null)
+        {
+            <div class="hs-menu-inner border">
+                @for (int i = 0; i < FoundIngredients.Count; i++)
+                {
+                    var ingredient = FoundIngredients[i];
+                    <a class="dropdown-item @IsActive(i)" data-value="@ingredient.Name" @onclick="@(() => SetIngredient(new List<Ingredient>(){ingredient}))">@ingredient.Name</a>
+                }
+            </div>              
+            @if (FoundIngredients.Count > 0)
             {
-                <a class="dropdown-item" data-value="@ingredient.Name" @onclick="@(() => SetIngredient(ingredient))">@ingredient.Name</a>
+                <button type="submit" style="display: none;"></button>
             }
-        </div>}
+        }
 
-</div>
+
+    </div>
+
 
 
 

@@ -27,7 +27,7 @@ namespace MenuPlanner.Client.Controls.SearchControls
         private MenuSearchRequestModel searchModel;
         private SelectedEnums selectedEnums = new SelectedEnums();
 
-        private Ingredient ing;
+        private SearchResponseModel<Ingredient> ing = new SearchResponseModel<Ingredient>();
 
         private string searchString = String.Empty;
 
@@ -104,9 +104,13 @@ namespace MenuPlanner.Client.Controls.SearchControls
             StateHasChanged();
         }
 
-        private void AddToIngredientList(Ingredient ingr)
+        private void AddToIngredientList(SearchResponseModel<Ingredient> ingr)
         {
-            if (!searchModel.Ingredients.Contains(ingr)) searchModel.Ingredients.Add(ingr);
+            ingr.Result.ForEach(i => { 
+                    if (!searchModel.Ingredients.Contains(i)) searchModel.Ingredients.Add(i);
+            }
+                );
+        
             StateHasChanged();
         }
 
