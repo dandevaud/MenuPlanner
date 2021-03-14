@@ -10,6 +10,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using MenuPlanner.Client.Controls.GeneralControls;
 using MenuPlanner.Shared.models;
+using MenuPlanner.Shared.models.Search;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
@@ -23,7 +24,8 @@ namespace MenuPlanner.Client.Pages
 
         private Menu menu;
 
-        private Ingredient ingredient = new Ingredient();
+        private SearchResponseModel<Ingredient> ingredients = new SearchResponseModel<Ingredient>();
+        private Ingredient ingredient { get => ingredients.Result[0]; set => ingredient = value; }
 
         private Double Rating;
 
