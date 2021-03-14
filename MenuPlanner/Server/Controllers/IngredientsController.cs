@@ -41,9 +41,9 @@ namespace MenuPlanner.Server.Controllers
 
         // GET: api/Ingredients
         [HttpGet]
-        public async Task<ActionResult<SearchResponseModel<Ingredient>>> GetIngredients()
+        public async Task<ActionResult<SearchResponseModel<Ingredient>>> GetIngredients([FromQuery] SearchRequestModel searchRequest)
         {
-            var toReturn = await _searchLogic.GetAllIngredients();
+            var toReturn = await _searchLogic.GetAllIngredients(searchRequest);
             return toReturn;
         }
 

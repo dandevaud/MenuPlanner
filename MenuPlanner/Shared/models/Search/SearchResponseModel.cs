@@ -11,6 +11,8 @@ namespace MenuPlanner.Shared.models.Search
         public List<TResult> Result { get; set; } = new List<TResult>();
         public string OrderBy {get; set;}
 
+        public SearchRequestModel Request { get; set; }
+
         public int TotalResults { get; set; }
         public int Skip { get; set; }
         public int Count { get; set; }

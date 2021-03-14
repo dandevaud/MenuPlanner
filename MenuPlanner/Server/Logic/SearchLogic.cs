@@ -37,14 +37,14 @@ namespace MenuPlanner.Server.Logic
             return CreateSearchResponseModel(searchRequest, menus);
           
         }
-        public async Task<SearchResponseModel<Ingredient>> GetAllIngredients()
+        public async Task<SearchResponseModel<Ingredient>> GetAllIngredients(SearchRequestModel searchRequest)
         {
             var toReturn = await _context.Ingredients
                 .Include(i => i.ParentIngredients)
                 .Include(i => i.ChildIngredients)
                 .ToListAsync();
             
-            return new SearchResponseModel<Ingredient>() { Result = toReturn };
+            return CreateSearchResponseModel(searchRequest, toReturn);
         }
 
         public async Task<Dictionary<string, int>> GetMaxTimes()
@@ -170,7 +170,7 @@ namespace MenuPlanner.Server.Logic
             int totalResults = list.Count();
             list = LimitSearch(list, searchRequest);
             return new SearchResponseModel<T>()
-                {Result = list.ToList(), TotalResults = totalResults, Count = searchRequest.Count, Skip = searchRequest.Skip};
+                {Result = list.ToList(), TotalResults = totalResults, Count = searchRequest.Count, Skip = searchRequest.Skip, Request = searchRequest};
         }
 
         private IEnumerable<M> FilterByEnumsFlags<T, M>(T enumFilter, IEnumerable<M> list, ContainsAnyOf<T, M> anyPredicate) where T : struct, Enum
