@@ -30,7 +30,11 @@ namespace MenuPlanner.Client.Controls.GeneralControls
 
         protected override void OnParametersSet()
         {
-            last = Convert.ToInt32(Math.Ceiling(new Decimal(Total / Count)));
+            var tot = new decimal(Total);
+            var count = new decimal(Count);
+            var deci = tot / count;
+            var rounded = Math.Ceiling(deci);
+            last = Convert.ToInt32(rounded);
         }
 
         private async Task OnNumberClick(int number)
