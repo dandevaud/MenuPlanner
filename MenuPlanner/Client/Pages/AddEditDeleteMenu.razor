@@ -67,7 +67,7 @@ else
                 </div>
 
                 <h5>Ingredients:</h5>
-                <IngredientSearch DivClass="form-group" @bind-Ingredient="ingredient"></IngredientSearch>
+                <IngredientSearch DivClass="form-group" @bind-Ingredient="ingredients" Submit="@UpdateMenu"></IngredientSearch>
 
 
                 @if (ingredient.Name != null)

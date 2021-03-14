@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.models.Search;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace MenuPlanner.Client.Controls.IngredientControls
@@ -18,12 +19,17 @@ namespace MenuPlanner.Client.Controls.IngredientControls
     {
 
         private List<Ingredient> FoundIngredients { get; set; }
+        
+        private int selection = -1;
 
         [Parameter]
-        public Ingredient Ingredient { get; set; }
+        public SearchResponseModel<Ingredient> Ingredient { get; set; } = new SearchResponseModel<Ingredient>();
 
         [Parameter]
-        public EventCallback<Ingredient> IngredientChanged { get; set; }
+        public EventCallback<SearchResponseModel<Ingredient>> IngredientChanged { get; set; }
+
+        [Parameter]
+        public EventCallback Submit { get; set; }
 
         private string filter = "";
 
@@ -35,10 +41,9 @@ namespace MenuPlanner.Client.Controls.IngredientControls
 
 
 
-        private async Task GetFilteredIngredients(ChangeEventArgs e)
+        private async Task GetFilteredIngredients()
         {
-            filter = e.Value.ToString();
-            if (filter.Length > 0)
+           if (filter.Length > 0)
             {
                 FoundIngredients =
                     ((await PublicClient.Client.GetFromJsonAsync<SearchResponseModel<Ingredient>>(
@@ -49,31 +54,85 @@ namespace MenuPlanner.Client.Controls.IngredientControls
                 FoundIngredients = Array.Empty<Ingredient>().ToList();
             }
 
+           if (selection > FoundIngredients.Count) selection = -1;
+
             StateHasChanged();
 
         }
 
+        private async Task OnInputChanged(ChangeEventArgs e)
+        {
+            filter = e.Value.ToString();
+            GetFilteredIngredients();
+        }
 
-
-        private async Task Enter(KeyboardEventArgs e)
+        
+        private async Task KeyUp(KeyboardEventArgs e)
         {
             //https://stackoverflow.com/questions/63861068/blazor-how-can-i-trigger-the-enter-key-event-to-action-a-button-function
             //Enter will submit
-            if (e.Code == "Tab")
+            if (e.Code.Equals("ArrowUp"))
             {
-                if (FoundIngredients.Count == 1)
+                if (selection > 0)
                 {
-                    await SetIngredient(FoundIngredients[0]);
-
+                    selection--;
                 }
+
+                if (selection == 0)
+                {
+                    selection = -1;
+                }
+            } else if (e.Code.Equals("ArrowDown"))
+            {
+                if (selection < 0 && selection<FoundIngredients.Count)
+                {
+                    selection = 0;
+                }
+                else if (selection + 1 < FoundIngredients.Count)
+                {
+                    selection++;
+                }
+                
+            }
+            else if (e.Code.Equals("Enter"))
+            {
+                if (FoundIngredients.Count > 0)
+                {
+                    if (selection < 0)
+                    {
+                        FoundIngredients =
+                            ((await PublicClient.Client.GetFromJsonAsync<SearchResponseModel<Ingredient>>(
+                                $"api/Search/IngredientBy?filter={filter}")) ?? new SearchResponseModel<Ingredient>())
+                            .Result;
+                        await SetIngredient(FoundIngredients);
+                    }
+                    else
+                    {
+                        await SetIngredient(new List<Ingredient>() {FoundIngredients[selection]});
+                    }
+                }
+                else
+                {
+                    await Submit.InvokeAsync();
+                }
+
+
             }
         }
 
-        private async Task SetIngredient(Ingredient ing)
+        private String IsActive(int i)
         {
-            Ingredient = ing;
+            return i == selection ? "active" : "";
+        }
+
+        private async Task SetIngredient(List<Ingredient> ing)
+        {
+            
+            Ingredient.Result =  ing;
+            Ingredient.TotalResults = ing.Count;
             FoundIngredients = new List<Ingredient>();
             filter = "";
+            selection = -1;
             await IngredientChanged.InvokeAsync(Ingredient);
             StateHasChanged();
         }

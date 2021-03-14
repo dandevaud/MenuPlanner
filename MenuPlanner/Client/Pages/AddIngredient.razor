@@ -1,0 +1,56 @@
+﻿@page "/addingredient/{Id:guid}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using MenuPlanner.Shared.models.enums
+@using MenuPlanner.Shared.models
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+
+<h5>Add Ingredient</h5>
+<div class="row">
+    <EditForm Model="@newIngredient" OnValidSubmit="@AddIngredientTask" id="edit">
+        <DataAnnotationsValidator />
+        <ValidationSummary Model="@newIngredient" />
+
+        <div class="form-group">
+            Name: <InputText @bind-Value="newIngredient.Name" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            Calories (100 g): <InputNumber @bind-Value="newIngredient.Calories" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            Price (100 g): <InputNumber @bind-Value="newIngredient.Price" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            Category:
+            <InputSelect @bind-Value="newIngredient.Category" class="form-control" disabled="@isCategoryDisabled">
+                @foreach (var value in Enum.GetValues(typeof(IngredientCategory)))
+                {
+                    <option>@value</option>
+                }
+            </InputSelect>
+        </div>
+
+        <div class="form-group">
+            <label>Parent Ingredients</label>
+            <div class="form-control" style="height: auto; min-height: 40px">
+                @foreach (var ingredient in newIngredient.ParentIngredients)
+                {
+                    <div class="alert alert-secondary alert-dismissible d-inline number m-1 p-1">
+                        @ingredient.Name<i class="fa fa-window-close ml-1" @onclick="() => RemoveParentIngredient(ingredient)"></i>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="form-group">
+            Parent Ingredient:
+            <IngredientSearch IngredientChanged="StoreParentIngredient"></IngredientSearch>
+        </div>
+        <SaveButton IsLoading="@isLoading"></SaveButton>
+    </EditForm>
+</div>

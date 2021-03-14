@@ -43,7 +43,7 @@
                     </div>
                 }
             </div>
-            <IngredientSearch InputClass="form-control" DivClass="px-0" Ingredient="ing" IngredientChanged="AddToIngredientList"></IngredientSearch>
+            <IngredientSearch InputClass="form-control" DivClass="px-0 col-md-12" Ingredient="ing" IngredientChanged="AddToIngredientList" Submit="@GetMenus"></IngredientSearch>
         </div>
         <div class="row m-4 form-group" hidden=@(!isAdvanced)>
             <EnumSearchControl Id="TimeOfDay" Text="Time of Day" TEnum="TimeOfDay" StandardValue="TimeOfDay.Unknown" GetActiveAttribute="@((TimeOfDay e) => GetActiveAttribute(e))" UpdateEnumValues="@((TimeOfDay e) => selectedEnums.UpdateValues(e))"></EnumSearchControl>
