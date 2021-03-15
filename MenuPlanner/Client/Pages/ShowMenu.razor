@@ -17,12 +17,20 @@ else
     <br />
     <div style="width: 400px"><Carousel Menu="@menu"></Carousel></div>
     <br />
+    <StarRating Menu="@menu" IsEditable="false"></StarRating>
+    <br />
     <p>@menu.Description</p>
+    <br />
+    <h5>Time</h5>
+    <ul class="list-group">
+        <li class="list-group-item">Preparation Time: @menu.PrepTime min</li>
+        <li class="list-group-item">Cook Time: @menu.CookTime min</li>
+        <li class="list-group-item">Total Time: @(menu.PrepTime + menu.CookTime) min</li>
+    </ul>
     <br />
 
 
 
-    <StarRating Menu="@menu" IsEditable="false"></StarRating>
     <PortionHandler OriginalPortion="@(menu.Portion)" @bind-Fraction="Fraction" PortionDescription="@(menu.PortionDescription)"></PortionHandler>
     @if (menu.Ingredients != null)
     {
@@ -43,46 +51,50 @@ else
             }
         </div>
         @resetCounter()
-           
-        }
-        @if (menu.Steps != null)
-        {
-            <h4>Steps</h4>
-            <ul class="list-group">
-                @foreach (var step in menu.Steps)
-                {
-                    counter++;
-                    <Step Counter="@counter" StepString="@step"></Step>
-                }
-                @resetCounter()
-            </ul>
-            <br />
-        }
 
-
-
-        @if (menu.Comments != null)
-        {
-            <h4>Comments</h4>
-            <ul class="list-group">
-                @foreach (var comment in menu.Comments)
-                {
-                    <CommentDisplay Com="@comment"></CommentDisplay>
-                }
-                @resetCounter()
-            </ul>
-            <br />
-        }
-
-        <br />
-        <br />
-        <div class="btn-group">
-            <AuthorizeView>
-                <Authorized>
-                    <a class="btn btn-success" href="/AddEditDeleteMenu/@(Id)">Edit</a>
-                </Authorized>
-            </AuthorizeView>
-            <a class="btn btn-danger" href="/">Back to List</a>
-        </div>
     }
+    @if (menu.Steps != null)
+    {
+        <h4>Steps</h4>
+        <ul class="list-group">
+            @foreach (var step in menu.Steps)
+            {
+                counter++;
+                <Step Counter="@counter" StepString="@step"></Step>
+            }
+            @resetCounter()
+        </ul>
+        <br />
+    }
+
+
+
+    @if (menu.Comments != null)
+    {
+        <h4>Comments</h4>
+        <ul class="list-group">
+            @foreach (var comment in menu.Comments)
+            {
+                <CommentDisplay Com="@comment"></CommentDisplay>
+            }
+            @resetCounter()
+        </ul>
+        <br />
+    }
+    @if (menu.Tags != null)
+    {
+        <MenuTags Tags="@menu.Tags.ToList()"></MenuTags>
+        <br />
+    }
+    <br />
+    <br />
+    <div class="btn-group">
+        <AuthorizeView>
+            <Authorized>
+                <a class="btn btn-success" href="/AddEditDeleteMenu/@(Id)">Edit</a>
+            </Authorized>
+        </AuthorizeView>
+        <a class="btn btn-danger" href="/">Back to List</a>
+    </div>
+}
 

@@ -39,7 +39,7 @@ namespace MenuPlanner.Client.Controls.MenuControls
         private readonly ImageResizer _imageResizer = new ImageResizer()
         {
             Width = 400,
-            Height = 400
+            Height = 250
         };
 
         private async Task OnInputFileChange(InputFileChangeEventArgs e)

@@ -18,90 +18,105 @@
 }
 else
 {
-<div class="row">
-    <EditForm Model="@menu" OnValidSubmit="@UpdateMenu">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+    <div class="row">
+        <EditForm Model="@menu" OnValidSubmit="@UpdateMenu">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-        <div class="form-group">
-            Name: <InputText @bind-Value="menu.Name" class="form-control"></InputText>
-        </div>
-
-        <div class="form-group">
-            Description: <InputTextArea @bind-Value="menu.Description" class="form-control" rows="3"></InputTextArea>
-        </div>
-
-        <MenuImages Menu="@menu"></MenuImages>
-
-        <StarRating Menu="@menu" IsEditable="true" Rating="@Rating" StoreRating="@StoreRating"></StarRating>
-
-        <EnumControls ProvidedEnum="@menu.TimeOfDay" TEnum="TimeOfDay"
-                      UpdateEnum="@((TimeOfDay enu) => { menu.TimeOfDay |= enu; })"
-                      RemoveEnum="@((TimeOfDay enu) => { menu.TimeOfDay &= ~enu; })"></EnumControls>
-        <EnumControls ProvidedEnum="@menu.MenuCategory" TEnum="MenuCategory"
-                      UpdateEnum="@((MenuCategory enu) => { menu.MenuCategory = enu; })"
-                      RemoveEnum="@((MenuCategory enu) => { menu.MenuCategory = MenuCategory.Unknown;})"
-                      isFlag="false"></EnumControls>
-        <EnumControls ProvidedEnum="@menu.Season" TEnum="Season"
-                      UpdateEnum="@((Season enu) => { menu.Season |= enu; })"
-                      RemoveEnum="@((Season enu) => { menu.Season &= ~enu; })"></EnumControls>
-        <MenuSteps Menu="@menu"></MenuSteps>
-
-        <div class="form-group">
-            <label>Portions: <InputNumber @bind-Value="menu.Portion" class="form-control" placeholder="4"></InputNumber> </label>
-            <label>Portion description: <InputText @bind-Value="menu.PortionDescription" class="form-control" placeholder="persons" data-toggle="tooltip" title="Description of Portion"></InputText></label>
-        </div>
-
-        <h5>Ingredients:</h5>
-        <IngredientSearch DivClass="form-group" @bind-Ingredient="ingredient"></IngredientSearch>
-
-
-        @if (ingredient.Name != null)
-        {
-            if (menu.Ingredients.Any(i => i.Ingredient.Id.Equals(ingredient.Id)))
-            {
-                ingredient = menu.Ingredients.Select(mi => mi.Ingredient).FirstOrDefault(i => i.Id.Equals(ingredient.Id));
-            }
-
-            <IngredientCard Ingredient="@ingredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
-        }
-
-
-
-        @if (menu.Ingredients != null)
-        {
-
-            @foreach (var grouping in GroupMenuIngredient())
-            {
-                <div class="form-group">
-                @if (grouping.Key != null)
-                {
-                    <h5>@grouping.Key</h5>
-                } else if (GroupMenuIngredient().Count() > 1)
-                {
-                    <h5>Ungrouped</h5>
-                }
-                <div class="card-columns">
-                    @foreach (var menuIngredient in grouping.ToList())
-                    {
-                        <IngredientCard Css="m-2" MenuIngredient="@menuIngredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="false" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
-                    }
-                </div>
-                </div>
-                }
-            }
-
-
-            <br />
-            <div class="btn-group">
-                <SaveButton IsLoading="@isLoading"></SaveButton>
-                @if (Id != null)
-                {
-                    <a @onclick="() => modal.Open()" class="btn btn-danger">Delete</a>
-                }
-                <a class="btn btn-secondary" href="/">Back to List</a>
+            <div class="form-group">
+                Name: <InputText @bind-Value="menu.Name" class="form-control"></InputText>
             </div>
-        </EditForm>
+
+            <div class="form-group">
+                Description: <InputTextArea @bind-Value="menu.Description" class="form-control" rows="3"></InputTextArea>
+            </div>
+
+            <MenuImages Menu="@menu"></MenuImages>
+
+            <StarRating Menu="@menu" IsEditable="true" Rating="@Rating" StoreRating="@StoreRating"></StarRating>
+            <MenuTags EditMode="true" @bind-Tags="@(menu.Tags)"></MenuTags>
+
+            <EnumControls ProvidedEnum="@menu.TimeOfDay" TEnum="TimeOfDay"
+                          UpdateEnum="@((TimeOfDay enu) => { menu.TimeOfDay |= enu; })"
+                          RemoveEnum="@((TimeOfDay enu) => { menu.TimeOfDay &= ~enu; })"></EnumControls>
+            <EnumControls ProvidedEnum="@menu.MenuCategory" TEnum="MenuCategory"
+                          UpdateEnum="@((MenuCategory enu) => { menu.MenuCategory = enu; })"
+                          RemoveEnum="@((MenuCategory enu) => { menu.MenuCategory = MenuCategory.Unknown;})"
+                          isFlag="false"></EnumControls>
+            <EnumControls ProvidedEnum="@menu.Season" TEnum="Season"
+                          UpdateEnum="@((Season enu) => { menu.Season |= enu; })"
+                          RemoveEnum="@((Season enu) => { menu.Season &= ~enu; })"></EnumControls>
+            <EnumControls ProvidedEnum="@menu.Diet" TEnum="Diet"
+                          UpdateEnum="@((Diet enu) => { menu.Diet |= enu; })"
+                          RemoveEnum="@((Diet enu) => { menu.Diet &= ~enu; })"></EnumControls>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="prepTime">Preparation Time in Minutes</label>
+                    <InputNumber DisplayName="Preparation Time in Minutes" @bind-Value="menu.PrepTime" id="prepTime" min="0" class="form-control"></InputNumber>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="cookTime">Cook Time in Minutes</label>
+                    <InputNumber DisplayName="Cook Time in Minutes" @bind-Value="menu.CookTime" id="cookTime" min="0" class="form-control"></InputNumber>
+                </div>
+                </div>
+                <MenuSteps Menu="@menu"></MenuSteps>
+
+                <div class="form-group">
+                    <label>Portions: <InputNumber @bind-Value="menu.Portion" class="form-control" placeholder="4"></InputNumber> </label>
+                    <label>Portion description: <InputText @bind-Value="menu.PortionDescription" class="form-control" placeholder="persons" data-toggle="tooltip" title="Description of Portion"></InputText></label>
+                </div>
+
+                <h5>Ingredients:</h5>
+                <IngredientSearch DivClass="form-group" @bind-Ingredient="ingredients" Submit="@UpdateMenu"></IngredientSearch>
+
+
+                @if (ingredient.Name != null)
+                {
+                    if (menu.Ingredients.Any(i => i.Ingredient.Id.Equals(ingredient.Id)))
+                    {
+                        ingredient = menu.Ingredients.Select(mi => mi.Ingredient).FirstOrDefault(i => i.Id.Equals(ingredient.Id));
+                    }
+
+                    <IngredientCard Ingredient="@ingredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
+                }
+
+
+
+                @if (menu.Ingredients != null)
+                {
+
+                    @foreach (var grouping in GroupMenuIngredient())
+                    {
+                        <div class="form-group">
+                            @if (grouping.Key != null)
+                            {
+                                <h5>@grouping.Key</h5>
+                            }
+                            else if (GroupMenuIngredient().Count() > 1)
+                            {
+                                <h5>Ungrouped</h5>
+                            }
+                            <div class="card-columns">
+                                @foreach (var menuIngredient in grouping.ToList())
+                                {
+                                    <IngredientCard Css="m-2" MenuIngredient="@menuIngredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="false" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+
+
+                <br />
+                <div class="btn-group">
+                    <SaveButton IsLoading="@isLoading"></SaveButton>
+                    @if (Id != null)
+                    {
+                        <a @onclick="() => modal.Open()" class="btn btn-danger">Delete</a>
+                    }
+                    <a class="btn btn-secondary" href="/">Back to List</a>
+                </div>
+</EditForm>
     </div>
     <br />
     <br />

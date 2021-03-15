@@ -17,7 +17,6 @@ namespace MenuPlanner.Server.Data
         public virtual DbSet<Ingredient> Ingredients { get; set; }
         public virtual DbSet<MenuIngredient> MenuIngredients { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
-       
         public virtual DbSet<Tag> Tags { get; set; }
         public virtual DbSet<Image> Images { get; set; }
        
@@ -62,12 +61,7 @@ namespace MenuPlanner.Server.Data
                 .Entity<Menu>()
                 .HasIndex(i => i.Name)
                 .IsUnique();
-            modelBuilder
-                .Entity<Quantity>()
-                .HasNoKey();
-
-
-
+            
         }
     }
 }

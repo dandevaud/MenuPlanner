@@ -13,8 +13,10 @@ namespace MenuPlanner.Shared.models
 {
     public class Menu : Entity
     {
-        public ICollection<Tag> Tags { get; set; }
+        public ICollection<Tag> Tags { get; set; } = new List<Tag>();
         public TimeOfDay TimeOfDay { get; set; } //Flags
+
+        public Diet Diet { get; set; }
         public Season Season { get; set; } //Flags
         [Range(1,int.MaxValue, ErrorMessage= "Please enter a value bigger than {1}")]
         public int Portion { get; set; } = 4;
@@ -32,6 +34,10 @@ namespace MenuPlanner.Shared.models
         public MenuCategory MenuCategory { get; set; } //Flags
         public ICollection<Image> Images { get; set; } = new List<Image>();
         public Uri Video { get; set; }
-       
+
+        public int PrepTime { get; set; }
+        public int CookTime { get; set; }
+
+
     }
 }

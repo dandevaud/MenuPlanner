@@ -15,8 +15,9 @@ namespace MenuPlanner.Shared.models
     public class Ingredient : Entity
     {
 
-        public virtual ICollection<Ingredient> ParentIngredients { get; set; }
-        public virtual ICollection<Ingredient> ChildIngredients { get; set; }
+        public Diet Diet { get; set; }
+        public virtual ICollection<Ingredient> ParentIngredients { get; set; } = new List<Ingredient>();
+        public virtual ICollection<Ingredient> ChildIngredients { get; set; } = new List<Ingredient>();
         public IngredientCategory Category { get; set; }
         [Range(0, int.MaxValue, ErrorMessage = "Only positive number allowed.")]
         public int Calories { get; set; }

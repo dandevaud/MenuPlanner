@@ -38,6 +38,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             DetachUnchanged<MenuIngredient>();
             DetachUnchanged<Image>();
             DetachUnchanged<Comment>();
+            DetachUnchanged<Tag>();
 
         }
 

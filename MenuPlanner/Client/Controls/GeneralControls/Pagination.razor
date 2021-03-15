@@ -1,0 +1,44 @@
+﻿<nav aria-label="pagination">
+    <ul class="pagination">
+        <li class="page-item @GetDisabled(internalCount==1)">
+            <a class="page-link" tabindex="-1" @onclick="() => OnArrowClick(-1)">Previous</a>
+        </li>
+
+        <li class="page-item @IsActive(1)"><a class="page-link" @onclick="() => OnNumberClick(1)">1</a></li>
+        @if (internalCount - (SurroundingFields+2) > 0)
+        {
+            <li class="page-item disabled"><a class="page-link">...</a></li>
+        }
+        else
+        {
+            <li class="page-item @IsActive(2)"><a class="page-link" @onclick="() => OnNumberClick(2)">2</a></li>
+        }
+        
+        @for (int i = 3; i < last-1; i++)
+        {
+            var j = i;
+           
+            @if (GetPublished(j))
+            {
+                <li class="page-item @IsActive(j)"><a class="page-link" @onclick="@(() =>OnNumberClick(j))">@j</a></li>
+            } 
+        }
+
+        @if (last - internalCount > (SurroundingFields + 2)&&!GetPublished(last))
+        {
+            <li class="page-item disabled"><a class="page-link">...</a></li>
+        }
+        else if (last>3)
+        {
+            <li class="page-item @IsActive(last-1)"><a class="page-link" @onclick="() => OnNumberClick(last-1)">@(last-1)</a></li>
+        }
+        @if(last>2){
+            <li class="page-item @IsActive(last)"><a class="page-link" @onclick="() => OnNumberClick(last)">@last</a></li>
+        }
+        <li class="page-item @GetDisabled(internalCount==last)">
+            <a class="page-link"  @onclick="() => OnArrowClick(1)">Next</a>
+        </li>
+    </ul>
+</nav>
+
+

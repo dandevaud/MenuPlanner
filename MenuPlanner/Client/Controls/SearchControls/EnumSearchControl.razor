@@ -1,0 +1,17 @@
+﻿@typeparam TEnum
+
+<div class="@Class">
+    <label for="@Id" class="form-label">@Text</label>
+    <ul id="@Id" class="list-group">
+        @foreach (var e in Enum.GetValues<TEnum>())
+        {
+            @if (!e.Equals(StandardValue))
+            {
+                <li class="list-group-item @(GetActiveAttribute(e))" @onclick="@(args => UpdateEnumValues(e))">@e.ToString()</li>
+            }
+        }
+    </ul>
+
+
+</div>
+

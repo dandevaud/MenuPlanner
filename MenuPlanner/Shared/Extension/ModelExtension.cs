@@ -1,4 +1,8 @@
-﻿using MenuPlanner.Shared.models;
+﻿using System;
+using System.Linq;
+using System.Text;
+using MenuPlanner.Shared.models;
+using MenuPlanner.Shared.models.Search;
 
 namespace MenuPlanner.Shared.Extension
 {
@@ -29,6 +33,20 @@ namespace MenuPlanner.Shared.Extension
         {
             return ingredient.Id.Equals(toCompare.Id) ||
                    ingredient.Name.Equals(toCompare.Name);
+        }
+
+        public static string ToQueryString(this SearchRequestModel obj)
+        {
+
+            var qs = new StringBuilder("?");
+
+            var objType = obj.GetType();
+
+            objType.GetProperties()
+                .Where(p => p.GetValue(obj, null) != null).ToList()
+                .ForEach(p => qs.Append($"{Uri.EscapeDataString(p.Name)}={Uri.EscapeDataString(p.GetValue(obj).ToString())}&"));
+
+            return qs.ToString();
         }
     }
 }

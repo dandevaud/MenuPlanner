@@ -38,10 +38,19 @@ namespace MenuPlanner.Server.Controllers
         // GET: api/Menus
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<Menu>>> GetMenus()
+        public async Task<ActionResult<SearchResponseModel<Menu>>> GetMenus([FromQuery] SearchRequestModel searchRequest)
         {
-            return (await _search.GetAllMenus()).Result;
+            return await _search.GetAllMenus(searchRequest);
         }
+
+        [HttpGet("MaxTimes")]
+        [AllowAnonymous]
+        public async Task<ActionResult<Dictionary<String, int>>> GetMaxTimes()
+        {
+            var toReturn = await _search.GetMaxTimes();
+            return toReturn;
+        }
+            
 
         // GET: api/Menus/5
         [HttpGet("{id}")]

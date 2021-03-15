@@ -11,6 +11,6 @@
         <None Remove="..\..\.editorconfig" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.22" />
+        <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.22" />
     </ItemGroup>
 </Project>

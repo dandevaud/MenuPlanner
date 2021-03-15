@@ -1,78 +1,31 @@
 ﻿@using MenuPlanner.Shared.models
 @inject PublicClient PublicClient
 
-<div class="@DivClass">
-    <div class="hs-searchbox">
-        <input class="search @InputClass" name="searchText"
-               type="text" placeholder="Search..." autocomplete="off" spellcheck="false"
-               autocorrect="off" @oninput="@GetFilteredIngredients" value="@filter" @onkeydown="@Enter" />
-    </div>
-    @if (FoundIngredients != null)
-    {
-        <div class="hs-menu-inner border">
+    <div class="@DivClass hierarchy-select" @onkeypress:preventDefault="true" @onkeypress:stopPropagation="true">
+        <div class="hs-searchbox">
+            <input class="search @InputClass" name="searchText"
+                   type="text" placeholder="Search..." autocomplete="off" spellcheck="false"
+                   autocorrect="off" value="@filter" @oninput="@OnInputChanged" @onkeypress:preventDefault="true" @onkeypress:stopPropagation="true" @onkeydown="@KeyUp"/>
 
-            @foreach (var ingredient in FoundIngredients)
-            {
-                <a class="dropdown-item" data-value="@ingredient.Name" @onclick="@(() => SetIngredient(ingredient))">@ingredient.Name</a>
-            }
-        </div>}
-
-</div>
-
-@code {
-
-    private List<Ingredient> FoundIngredients { get; set; }
-
-    [Parameter]
-    public Ingredient Ingredient { get; set; }
-
-    [Parameter]
-    public EventCallback<Ingredient> IngredientChanged { get; set; }
-
-    private string filter = "";
-
-    [Parameter]
-    public string DivClass { get; set; } = "form-group";
-
-    [Parameter]
-    public string InputClass { get; set; } = "form-control";
-
-
-
-    private async Task GetFilteredIngredients(ChangeEventArgs e)
-    {
-        filter = e.Value.ToString();
-
-        FoundIngredients = ((await PublicClient.Client.GetFromJsonAsync<Ingredient[]>($"api/Search/IngredientBy?filter={filter}")) ?? Array.Empty<Ingredient>()).ToList();
-        StateHasChanged();
-
-    }
-
-   
-
-    private async Task Enter(KeyboardEventArgs e)
-    {
-        //https://stackoverflow.com/questions/63861068/blazor-how-can-i-trigger-the-enter-key-event-to-action-a-button-function
-        //Enter will submit
-        if (e.Code == "Tab")
+        </div>
+        @if (FoundIngredients != null)
         {
-            if (FoundIngredients.Count == 1)
+            <div class="hs-menu-inner border">
+                @for (int i = 0; i < FoundIngredients.Count; i++)
+                {
+                    var ingredient = FoundIngredients[i];
+                    <a class="dropdown-item @IsActive(i)" data-value="@ingredient.Name" @onclick="@(() => SetIngredient(new List<Ingredient>(){ingredient}))">@ingredient.Name</a>
+                }
+            </div>              
+            @if (FoundIngredients.Count > 0)
             {
-               await SetIngredient(FoundIngredients[0]);
-                
+                <button type="submit" style="display: none;"></button>
             }
         }
-    }
-
-    private async Task SetIngredient(Ingredient ing)
-    {
-        Ingredient = ing;
-        FoundIngredients = new List<Ingredient>();
-        filter = "";
-        await IngredientChanged.InvokeAsync(Ingredient);
-        StateHasChanged();
-    }
 
 
-}
+    </div>
+
+
+
 
