@@ -2,14 +2,10 @@
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace MenuPlanner.Server.Extension.EntityFramework
+namespace SqlHandler.Models
 {
     public static class DbContextOptionBuilderExtension
     {

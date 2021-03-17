@@ -1,41 +1,31 @@
 ﻿using System;
-using System.Linq;
-using System.Text.Json;
-using IdentityServer4.Extensions;
-using MenuPlanner.Server.Contracts.Sql;
-using MenuPlanner.Server.Extension.EntityFramework;
-using MenuPlanner.Server.Models.SQLConnection;
-using MenuPlanner.Shared.models.enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using SqlHandler.Contracts;
+using SqlHandler.Models;
 
-namespace MenuPlanner.Server.Data
+namespace SqlHandler
 {
     public class SqlConnectionHandler : ISqlConnectionHandler
     {
 
         public IConfiguration Configuration { get; set;}
 
-        public SqlCredentials CredentialsData { get; set; }
-        public SqlCredentials CredentialsAuth { get; set; }
-
+       
       
         public SqlCredentials GetCredentialsFromConfiguration(string fork)
         {
             var sqlCredentials = Configuration.GetSection(fork).Get<SqlCredentials>();
-           
-           
+
             return sqlCredentials;
         }
 
 
-        public IServiceCollection HandleSQLServers(IServiceCollection services)
+        public IServiceCollection HandleSQLServers<T>(IServiceCollection services, SqlCredentials credentials) where T:DbContext
         {
-            SetDbConnection<ApplicationDbContext>(services,CredentialsAuth);
-            SetDbConnection<MenuPlannerContext>(services, CredentialsData);
-
+           SetDbConnection<T>(services,credentials);
+          
            
             return services;
         }

@@ -1,4 +1,4 @@
-﻿namespace MenuPlanner.Shared.models.enums
+﻿namespace SqlHandler.Models
 {
     public enum SqlServerType
     {

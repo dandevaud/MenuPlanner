@@ -1,6 +1,6 @@
-﻿using MenuPlanner.Shared.models.enums;
+﻿using SqlHandler.Models;
 
-namespace MenuPlanner.Server.Models.SQLConnection
+namespace SqlHandler
 {
     public class SqlCredentials
     {
