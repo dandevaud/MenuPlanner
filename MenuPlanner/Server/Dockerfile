@@ -10,6 +10,7 @@ WORKDIR /src
 COPY ["MenuPlanner/Server/MenuPlanner.Server.csproj", "MenuPlanner/Server/"]
 COPY ["MenuPlanner/Client/MenuPlanner.Client.csproj", "MenuPlanner/Client/"]
 COPY ["MenuPlanner/Shared/MenuPlanner.Shared.csproj", "MenuPlanner/Shared/"]
+COPY MenuPlanner/Server/nuget.config ./MenuPlanner/Server/nuget.config
 RUN dotnet restore "MenuPlanner/Server/MenuPlanner.Server.csproj"
 COPY . .
 WORKDIR "/src/MenuPlanner/Server"
