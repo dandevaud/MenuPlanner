@@ -29,7 +29,7 @@ namespace MenuPlanner.Client.Pages
         {
             get
             {
-                if (ingredients == null || ingredients.Count.Equals(0))
+                if (ingredients == null || ingredients.TotalResults.Equals(0))
                 {
                     return null;
                 }
