@@ -5,7 +5,6 @@
 using System.Security.Cryptography.X509Certificates;
 using MenuPlanner.Server.Contracts.Blob;
 using MenuPlanner.Server.Contracts.Logic;
-using MenuPlanner.Server.Contracts.Sql;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
 using MenuPlanner.Server.Logic.Blob;
@@ -18,8 +17,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SqlHandler;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+
 
 namespace MenuPlanner.Server
 {
@@ -37,10 +38,9 @@ namespace MenuPlanner.Server
         public void ConfigureServices(IServiceCollection services)
         {
             ISqlConnectionHandler sqlConnection = new SqlConnectionHandler() {Configuration = Configuration};
-            sqlConnection.CredentialsData = sqlConnection.GetCredentialsFromConfiguration("Data");
-            sqlConnection.CredentialsAuth = sqlConnection.GetCredentialsFromConfiguration("Auth");
-            services = sqlConnection.HandleSQLServers(services);
-           
+            services = sqlConnection.HandleSQLServers<MenuPlannerContext>(services, sqlConnection.GetCredentialsFromConfiguration("Data"));
+            services = sqlConnection.HandleSQLServers<ApplicationDbContext>(services, sqlConnection.GetCredentialsFromConfiguration("Auth"));
+
             //Added to handle the EF Reference Loop in Ingredient Model taken from https://stackoverflow.com/a/58155532
             services.AddControllers().AddNewtonsoftJson(o =>
             {
