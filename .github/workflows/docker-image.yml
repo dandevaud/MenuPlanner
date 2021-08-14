@@ -28,6 +28,6 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          context: MenuPlanner/Server/
+          context: .
           push: true
           tags: dandevaud/menuplanner:latest
