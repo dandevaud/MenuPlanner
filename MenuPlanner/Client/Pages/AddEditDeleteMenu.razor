@@ -70,14 +70,14 @@ else
                 <IngredientSearch DivClass="form-group" @bind-Ingredient="ingredients" Submit="@UpdateMenu"></IngredientSearch>
 
 
-                @if (ingredient?.Name != null)
+                @if (Ingredient?.Name != null)
                 {
-                    if (menu.Ingredients.Any(i => i.Ingredient.Id.Equals(ingredient.Id)))
+                    if (menu.Ingredients.Any(i => i.Ingredient.Id.Equals(Ingredient.Id)))
                     {
-                        ingredient = menu.Ingredients.Select(mi => mi.Ingredient).FirstOrDefault(i => i.Id.Equals(ingredient.Id));
+                        Ingredient = menu.Ingredients.Select(mi => mi.Ingredient).FirstOrDefault(i => i.Id.Equals(Ingredient.Id));
                     }
 
-                    <IngredientCard Ingredient="@ingredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
+                    <IngredientCard Ingredient="Ingredient" MenuIngredientChanged="AddIngredientToMenu" UpdateMenuIngredient="UpdateIngredientToMenu" ToggleEditMode="true" RemoveMenuIngredient="RemoveMenuIngredient"></IngredientCard>
                 }
 
 

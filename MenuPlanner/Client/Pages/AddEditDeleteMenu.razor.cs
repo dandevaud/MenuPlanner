@@ -25,7 +25,8 @@ namespace MenuPlanner.Client.Pages
         private Menu menu;
 
         private SearchResponseModel<Ingredient> ingredients = new SearchResponseModel<Ingredient>();
-        private Ingredient ingredient
+        private Ingredient ingredient;
+ private Ingredient Ingredient
         {
             get
             {
@@ -36,7 +37,8 @@ namespace MenuPlanner.Client.Pages
                 return ingredients.Result[0];
             }
             set => ingredient = value;
-        }
+
+ }
 
         private Double Rating;
 
@@ -118,7 +120,8 @@ namespace MenuPlanner.Client.Pages
         private void UpdateIngredientToMenu(MenuIngredient menuIngredient)
         {
             ingredient = new Ingredient();
-            StateHasChanged();
+            ingredients = new SearchResponseModel<Ingredient>();
+           StateHasChanged();
         }
 
         private void SetRating()
