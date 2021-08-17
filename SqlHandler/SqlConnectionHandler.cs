@@ -38,9 +38,7 @@ namespace SqlHandler
                     break;
                 case SqlServerType.SqLite:
                     return HandleSqLite<T>(services, credentials.Server);
-                    break;
-                case SqlServerType.MariaDb: return HandleMariaDb<T>(services,credentials);
-                    break;
+                 case SqlServerType.MariaDb: return HandleMariaDb<T>(services,credentials);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
