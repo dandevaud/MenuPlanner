@@ -165,7 +165,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
 
         private void HandleChangedMenuIngredient(Menu menu, Menu entityInDatabase)
         {
-            var changedIngredients = menu.Ingredients.Where(i => entityInDatabase.Ingredients.Any(mi => mi.Id.Equals(i.Id)))
+            var changedIngredients = menu.Ingredients.Where(i => entityInDatabase.Ingredients.Any(mi => mi.Id.Equals(i.Id) && !mi.Id.Equals(Guid.Empty)))
                 .Where(mi =>
                     !mi.ContentEquals(entityInDatabase.Ingredients.SingleOrDefault(i => i.Id.Equals(mi.Id)))).ToList();
 
