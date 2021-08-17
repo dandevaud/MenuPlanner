@@ -30,30 +30,32 @@ namespace SqlHandler
             return services;
         }
 
-        private void SetDbConnection<T>(IServiceCollection services,SqlCredentials credentials) where T:DbContext
+        private IServiceCollection SetDbConnection<T>(IServiceCollection services,SqlCredentials credentials) where T:DbContext
         {
             switch (credentials.Type)
             {
                 case SqlServerType.MySql:
                     break;
                 case SqlServerType.SqLite:
-                    HandleSqLite<T>(services, credentials.Server);
+                    return HandleSqLite<T>(services, credentials.Server);
                     break;
-                case SqlServerType.MariaDb: HandleMariaDb<T>(services,credentials);
+                case SqlServerType.MariaDb: return HandleMariaDb<T>(services,credentials);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            return services;
         }
 
-        private void HandleSqLite<T>(IServiceCollection services, string dataSource) where T:DbContext
+        private IServiceCollection HandleSqLite<T>(IServiceCollection services, string dataSource) where T:DbContext
         {
             services.AddDbContext<T>(options =>
                 options.UseSqlite($"Data Source={dataSource}").
                     EnableSensitiveDataLogging(Configuration));
+            return services;
         }
 
-        private void HandleMariaDb<T>(IServiceCollection services, SqlCredentials credentials) where T : DbContext
+        private IServiceCollection HandleMariaDb<T>(IServiceCollection services, SqlCredentials credentials) where T : DbContext
         {
            
             var version = credentials.ServerVersion.Split(".");
@@ -66,6 +68,7 @@ namespace SqlHandler
                         EnableSensitiveDataLogging(Configuration)
 
             );
+            return services;
         }
 
        
