@@ -2,7 +2,9 @@
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography.X509Certificates;
+using IdentityServer4.Services;
 using MenuPlanner.Server.Contracts.Blob;
 using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
@@ -17,6 +19,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using SqlHandler;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -51,23 +55,41 @@ namespace MenuPlanner.Server
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<ApplicationUser>(options =>  options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            //services.AddDefaultIdentity<ApplicationUser>(options =>  options.SignIn.RequireConfirmedAccount = true)
+            //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            var identityServer = services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
-                var certificate = new X509Certificate2("certs/aspnetapp-root-cert.pfx", "password");
-                identityServer.AddSigningCredential(certificate);
+            //var identityServer = services.AddIdentityServer()
+            //    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+            //    var certificate = new X509Certificate2("certs/aspnetapp-root-cert.pfx", "password");
+            //    identityServer.AddSigningCredential(certificate);
             
             IoCSetUp(services);
 
 
-            services.AddAuthentication()
-                .AddIdentityServerJwt();
+            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = "Cookies";
+                    options.DefaultChallengeScheme = "oidc";
+                })
+                .AddCookie("Cookies")
+                .AddOpenIdConnect("oidc", options =>
+                {
+                    options.Authority = "https://sts.ddev.ch";
+
+                    options.ClientId = "MenuPlanner_oidc";
+                    options.ClientSecret = Configuration["IdentityServer:Clients:MenuPlanner.Client:Secret"];
+                    options.ResponseType = "token";
+
+                    options.SaveTokens = true;
+                });
 
             services.AddControllersWithViews();
             services.AddRazorPages();
-            
+           
+
+
             // Register the Swagger generator, defining 1 or more Swagger documents
             //services.AddSwaggerGen();
             // Swagger Authorization take from https://stackoverflow.com/a/61899245
@@ -94,6 +116,8 @@ namespace MenuPlanner.Server
             services.AddScoped<IIngredientEntityUpdater, IngredientEntityUpdater>();
             services.AddScoped<ISearchLogic, SearchLogic>();
             services.AddScoped<IPictureHandler, PictureHandler>();
+
+            
         }
 
 
@@ -133,7 +157,7 @@ namespace MenuPlanner.Server
 
             app.UseRouting();
 
-            app.UseIdentityServer();
+           // app.UseIdentityServer();
             app.UseAuthentication();
             app.UseAuthorization();
 

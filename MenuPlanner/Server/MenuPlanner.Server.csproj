@@ -29,7 +29,6 @@
         <Folder Include="Areas\Images\" />
         <Folder Include="Databases\" />
         <Folder Include="Models\SQLConnection\" />
-        <Folder Include="wwwroot\" />
     </ItemGroup>
     <ItemGroup>
       <None Include="nuget.config" />
