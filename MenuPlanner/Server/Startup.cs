@@ -95,7 +95,7 @@ namespace MenuPlanner.Server
                     options.ClientId = Configuration["IdentityServer:Clients:MenuPlanner.Client:Id"];
                     options.ClientSecret = Configuration["IdentityServer:Clients:MenuPlanner.Client:Secret"];
                     options.SignInScheme = "Cookies";
-                    //options.UsePkce = true;
+                    options.UsePkce = true;
                     options.ResponseType = "code";
                     options.SaveTokens = true;
                 });
