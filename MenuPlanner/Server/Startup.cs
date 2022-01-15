@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography.X509Certificates;
+using IdentityServer4.Models;
 using IdentityServer4.Services;
 using MenuPlanner.Server.Contracts.Blob;
 using MenuPlanner.Server.Contracts.Logic;
@@ -24,9 +25,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using SqlHandler;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using SqlHandler;
 using SqlHandler.Contracts;
 
 
@@ -93,8 +94,9 @@ namespace MenuPlanner.Server
                     options.Authority = Configuration["IdentityServer:Clients:MenuPlanner.Client:Authority"];
                     options.ClientId = Configuration["IdentityServer:Clients:MenuPlanner.Client:Id"];
                     options.ClientSecret = Configuration["IdentityServer:Clients:MenuPlanner.Client:Secret"];
-                    options.UsePkce = true;
-                    options.ResponseType = "token";
+                    options.SignInScheme = "Cookies";
+                    //options.UsePkce = true;
+                    //options.ResponseType = "token";
                     options.SaveTokens = true;
                 });
 

@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{72608811-069B-453A-A7C2-30940B89D573}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		MenuPlanner\Server\nuget.config = MenuPlanner\Server\nuget.config
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MenuPlanner.ServerTests", "MenuPlanner\MenuPlanner.ServerTests\MenuPlanner.ServerTests.csproj", "{0189DDF9-401B-4ABB-887E-5DAA80081FFE}"
