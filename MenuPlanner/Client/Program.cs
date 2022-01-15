@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using MenuPlanner.Client.Shared;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
@@ -28,7 +29,18 @@ namespace MenuPlanner.Client
                 options.ProviderOptions.ConfigurationEndpoint = "oidc.json";
             });
 
-            await builder.Build().RunAsync();
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.WithOrigins("http://sts.ddev.ch");
+                    });
+            });
+
+           await builder.Build().RunAsync();
+           
+
         }
     }
 }

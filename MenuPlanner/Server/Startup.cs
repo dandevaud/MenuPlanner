@@ -2,6 +2,9 @@
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography.X509Certificates;
 using IdentityServer4.Services;
@@ -38,7 +41,7 @@ namespace MenuPlanner.Server
         }
 
         public IConfiguration Configuration { get; }
-
+       
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -65,7 +68,18 @@ namespace MenuPlanner.Server
             
             IoCSetUp(services);
 
-
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                    builder
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                        .SetIsOriginAllowed((host) => true)
+                        .AllowAnyHeader();
+            });
+            });
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
             services.AddAuthentication(options =>
@@ -76,12 +90,11 @@ namespace MenuPlanner.Server
                 .AddCookie("Cookies")
                 .AddOpenIdConnect("oidc", options =>
                 {
-                    options.Authority = "https://sts.ddev.ch";
-
-                    options.ClientId = "MenuPlanner_oidc";
+                    options.Authority = Configuration["IdentityServer:Clients:MenuPlanner.Client:Authority"];
+                    options.ClientId = Configuration["IdentityServer:Clients:MenuPlanner.Client:Id"];
                     options.ClientSecret = Configuration["IdentityServer:Clients:MenuPlanner.Client:Secret"];
+                    options.UsePkce = true;
                     options.ResponseType = "token";
-
                     options.SaveTokens = true;
                 });
 
@@ -160,6 +173,7 @@ namespace MenuPlanner.Server
            // app.UseIdentityServer();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {

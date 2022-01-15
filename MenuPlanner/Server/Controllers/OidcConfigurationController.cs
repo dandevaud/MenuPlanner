@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace MenuPlanner.Server.Controllers
@@ -9,20 +10,27 @@ namespace MenuPlanner.Server.Controllers
     public class OidcConfigurationController : Controller
     {
         private readonly ILogger<OidcConfigurationController> _logger;
+        private readonly IConfiguration _config;
 
-        public OidcConfigurationController(IClientRequestParametersProvider clientRequestParametersProvider, ILogger<OidcConfigurationController> logger)
+        public OidcConfigurationController(ILogger<OidcConfigurationController> logger, IConfiguration config)
         {
-            ClientRequestParametersProvider = clientRequestParametersProvider;
             _logger = logger;
+            _config = config;
         }
 
-        public IClientRequestParametersProvider ClientRequestParametersProvider { get; }
+        
 
-        [HttpGet("_configuration/{clientId}")]
-        public IActionResult GetClientRequestParameters([FromRoute] string clientId)
+        [HttpGet("oidc.json")]
+        public IActionResult GetOidcConfiguration()
         {
-            var parameters = ClientRequestParametersProvider.GetClientParameters(HttpContext, clientId);
-            return Ok(parameters);
+            var host = Request.Host;
+            var config = $"{{ \n \"authority\": \"{_config["IdentityServer:Clients:MenuPlanner.Client:Authority"]}\", \n" +
+                $"\"client_id\": \"{_config["IdentityServer:Clients:MenuPlanner.Client:Id"]}\", \n" +
+                $"\"redirect_uri\": \"https://{host}/authentication/login-callback\", \n" +
+                $" \"post_logout_redirect_uri\": \"https://{host}/authentication/logout-callback\", \n" +
+                " \"response_type\": \"code\", \n" +
+                "\"scope\": \"openid profile\" \n }";
+            return Ok(config);
         }
     }
 }
