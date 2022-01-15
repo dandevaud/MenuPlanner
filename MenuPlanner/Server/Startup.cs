@@ -96,7 +96,7 @@ namespace MenuPlanner.Server
                     options.ClientSecret = Configuration["IdentityServer:Clients:MenuPlanner.Client:Secret"];
                     options.SignInScheme = "Cookies";
                     //options.UsePkce = true;
-                    //options.ResponseType = "token";
+                    options.ResponseType = "code";
                     options.SaveTokens = true;
                 });
 
