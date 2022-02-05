@@ -31,4 +31,4 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: dandevaud/menuplanner:beta
-          secrets: githubNuget=${{ secrets.NUGETAccessKey }}
+          builder-args: NUGET_SOURCE_PWD=${{ secrets.NUGETAccessKey }}
