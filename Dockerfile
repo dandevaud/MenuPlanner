@@ -4,6 +4,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
+ARG NUGET_SOURCE_PWD
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 WORKDIR /src
@@ -12,8 +13,7 @@ COPY ["MenuPlanner/Client/MenuPlanner.Client.csproj", "MenuPlanner/Client/"]
 COPY ["MenuPlanner/Shared/MenuPlanner.Shared.csproj", "MenuPlanner/Shared/"]
 ARG PAT=githubNuget
 COPY nuget.config ./nuget.config
-RUN sed -i "s/[GITHUBPAT]/${PAT}/g" nuget.config
-RUN sed -i "s/[GITHUBPAT]/${PAT}/g" ./nuget.config
+RUN c:\nuget.exe source update -ConfigFile ./nuget.config -Name githubg -username dandevaud -StorePasswordInClearText -password $env:NUGET_SOURCE_PWD
 RUN dotnet restore "MenuPlanner/Server/MenuPlanner.Server.csproj"
 COPY . .
 WORKDIR "/src/MenuPlanner/Server"
