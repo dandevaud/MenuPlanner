@@ -10,6 +10,8 @@ WORKDIR /src
 COPY ["MenuPlanner/Server/MenuPlanner.Server.csproj", "MenuPlanner/Server/"]
 COPY ["MenuPlanner/Client/MenuPlanner.Client.csproj", "MenuPlanner/Client/"]
 COPY ["MenuPlanner/Shared/MenuPlanner.Shared.csproj", "MenuPlanner/Shared/"]
+ARG PAT=githubNuget
+RUN sed -i "s|</configuration>|<packageSourceCredentials><github><add key=\"Username\" value=\"dandevaud\" /><add key=\"ClearTextPassword\" value=\"${PAT}\" /></github></packageSourceCredentials></configuration>|" nuget.config
 COPY nuget.config ./nuget.config
 RUN dotnet restore "MenuPlanner/Server/MenuPlanner.Server.csproj"
 COPY . .
