@@ -13,8 +13,8 @@ COPY ["MenuPlanner/Client/MenuPlanner.Client.csproj", "MenuPlanner/Client/"]
 COPY ["MenuPlanner/Shared/MenuPlanner.Shared.csproj", "MenuPlanner/Shared/"]
 ARG PAT=githubNuget
 COPY nuget.config ./nuget.config
-RUN nuget.exe source update -ConfigFile ./nuget.config -Name githubg -username dandevaud -StorePasswordInClearText -password $env:NUGET_SOURCE_PWD
-RUN dotnet restore "MenuPlanner/Server/MenuPlanner.Server.csproj"
+RUN sed -i "s/[GITHUBPAT]/$env:NUGET_SOURCE_PWD/" nuget.config
+RUN dotnet restore --configfile "./nuget.config" "MenuPlanner/Server/MenuPlanner.Server.csproj"
 COPY . .
 WORKDIR "/src/MenuPlanner/Server"
 RUN dotnet build "MenuPlanner.Server.csproj" -c Release -o /app/build
