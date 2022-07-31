@@ -63,7 +63,7 @@ namespace MenuPlanner.Client.Controls.IngredientControls
         private async Task OnInputChanged(ChangeEventArgs e)
         {
             filter = e.Value.ToString();
-            GetFilteredIngredients();
+           await GetFilteredIngredients();
         }
 
         
