@@ -13,7 +13,7 @@ COPY ["MenuPlanner/Client/MenuPlanner.Client.csproj", "MenuPlanner/Client/"]
 COPY ["MenuPlanner/Shared/MenuPlanner.Shared.csproj", "MenuPlanner/Shared/"]
 ARG NUGET_SOURCE_PWD
 
-RUN sed -i -r "s/\[GITHUBPAT\]/${NUGET_SOURCE_PWD}/g" ./nuget.config
+RUN sed -i -r "s/\[GITHUBPAT\]/${NUGET_SOURCE_PWD}/g" /nuget.config
 COPY nuget.config ./nuget.config
 RUN dotnet restore --configfile "./nuget.config" "MenuPlanner/Server/MenuPlanner.Server.csproj"
 COPY . .
