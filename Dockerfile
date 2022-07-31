@@ -16,7 +16,7 @@ COPY nuget.config ./nuget.config
 RUN sed -i -r "s/GITHUBPAT/${NUGET_SOURCE_PWD}/g" ./nuget.config
 RUN cat ./nuget.config
 
-RUN dotnet restore --configfile "./nuget.config" "MenuPlanner/Server/MenuPlanner.Server.csproj"
+RUN dotnet restore "MenuPlanner/Server/MenuPlanner.Server.csproj"
 COPY . .
 WORKDIR "/src/MenuPlanner/Server"
 RUN dotnet build "MenuPlanner.Server.csproj" -c Release -o /app/build
