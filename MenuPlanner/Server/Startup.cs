@@ -90,7 +90,7 @@ namespace MenuPlanner.Server
                     options.Authority = Configuration["IdentityServer:Clients:MenuPlanner.Client:Authority"];
                     options.ClientId = Configuration["IdentityServer:Clients:MenuPlanner.Client:Id"];
                     options.ClientSecret = Configuration["IdentityServer:Clients:MenuPlanner.Client:Secret"];
-                    options.SignInScheme = "Cookies";
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     options.ResponseType = "code";
                     options.SaveTokens = true;
                     options.GetClaimsFromUserInfoEndpoint = true;
