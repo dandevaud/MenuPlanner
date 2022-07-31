@@ -29,7 +29,8 @@ namespace MenuPlanner.Server.Controllers
                 $"\"redirect_uri\": \"https://{host}/authentication/login-callback\", \n" +
                 $" \"post_logout_redirect_uri\": \"https://{host}/authentication/logout-callback\", \n" +
                 " \"response_type\": \"code\", \n" +
-                "\"scope\": \"openid profile\" \n }";
+                "\"scope\": \"openid profile MenuPlanner_oidc\" ,\n " +
+                $"\"audience\":\"{_config["IdentityServer:Clients:MenuPlanner.Client:Id"]}\" \n"+"}";
             return Ok(config);
         }
     }

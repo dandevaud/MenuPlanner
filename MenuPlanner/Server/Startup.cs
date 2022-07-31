@@ -2,29 +2,20 @@
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Cryptography.X509Certificates;
-using IdentityServer4.Models;
-using IdentityServer4.Services;
 using MenuPlanner.Server.Contracts.Blob;
 using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
 using MenuPlanner.Server.Logic.Blob;
 using MenuPlanner.Server.Logic.EntityUpdater;
-using MenuPlanner.Server.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using SqlHandler;
@@ -77,27 +68,40 @@ namespace MenuPlanner.Server
                     builder
                         .AllowAnyMethod()
                         .AllowCredentials()
+#if DEBUG
                         .SetIsOriginAllowed((host) => true)
+#else
+                        .WithOrigins("https://*.ddev.ch").SetIsOriginAllowedToAllowWildcardSubdomains()
+#endif
                         .AllowAnyHeader();
             });
             });
-            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
             services.AddAuthentication(options =>
                 {
-                    options.DefaultScheme = "Cookies";
-                    options.DefaultChallengeScheme = "oidc";
+                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultAuthenticateScheme =  CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
                 })
-                .AddCookie("Cookies")
-                .AddOpenIdConnect("oidc", options =>
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddOpenIdConnect(options =>
                 {
                     options.Authority = Configuration["IdentityServer:Clients:MenuPlanner.Client:Authority"];
                     options.ClientId = Configuration["IdentityServer:Clients:MenuPlanner.Client:Id"];
-                    options.ClientSecret = Configuration["IdentityServer:Clients:MenuPlanner.Client:Secret"];
-                    options.SignInScheme = "Cookies";
-                    //options.UsePkce = true;
+                    options.ClientSecret = Configuration["IdentityServer:Clients:MenuPlanner.Client:Secret"];                    
                     options.ResponseType = "code";
                     options.SaveTokens = true;
+                    options.GetClaimsFromUserInfoEndpoint = true;
+                    options.UseTokenLifetime = false;
+                    options.Scope.Add("openid");
+                    options.Scope.Add("profile");
+                })
+                .AddJwtBearer("bearer",options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.Authority = Configuration["IdentityServer:Clients:MenuPlanner.Client:Authority"];
+                    options.Audience = Configuration["IdentityServer:Clients:MenuPlanner.Client:Id"];
                 });
 
             services.AddControllersWithViews();
@@ -169,12 +173,13 @@ namespace MenuPlanner.Server
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Menu Planner API V1");
             });
+            app.UseAuthentication();
 
             app.UseRouting();
 
-           // app.UseIdentityServer();
-            app.UseAuthentication();
             app.UseAuthorization();
+            // app.UseIdentityServer();
+
             app.UseCors();
 
             app.UseEndpoints(endpoints =>

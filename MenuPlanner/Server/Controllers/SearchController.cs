@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MenuPlanner.Server.Controllers
 {
     /// <summary>Search API Controller --&gt; handles all Searches for Menus and Ingredients</summary>
-    [Authorize]
+    [Authorize(AuthenticationSchemes ="bearer")]
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]

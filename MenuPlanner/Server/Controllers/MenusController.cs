@@ -5,11 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using IdentityServer4.Extensions;
 using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
-using MenuPlanner.Server.Logic;
-using MenuPlanner.Server.Logic.EntityUpdater;
+using MenuPlanner.Shared.Extension;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.models.Search;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MenuPlanner.Server.Controllers
 {
     /// <summary>Menu API Controller --&gt; handle all CRUD actions for the Menus</summary>
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "bearer")]
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
