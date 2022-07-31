@@ -20,5 +20,9 @@ namespace MenuPlanner.Shared.Extension
                 collection.Add(item);
             }
         }
+        public static bool IsNullOrEmpty<T>(this ICollection<T> collection)
+        {
+            return collection == null || collection.Count == 0;
+        }
     }
 }

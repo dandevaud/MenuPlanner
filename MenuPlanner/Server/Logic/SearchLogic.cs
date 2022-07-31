@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Extensions;
 using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Shared.models;
@@ -16,6 +15,8 @@ using MenuPlanner.Shared.models.Search;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using MenuPlanner.Shared.Extension;
+using Duende.IdentityServer.Extensions;
 
 namespace MenuPlanner.Server.Logic
 {

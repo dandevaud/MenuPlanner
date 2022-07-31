@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Extensions;
+using Duende.IdentityServer.Extensions;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Extension.EntityFramework;
 using MenuPlanner.Shared.models;
