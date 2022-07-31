@@ -4,11 +4,12 @@
     <TargetFramework>net6.0</TargetFramework>
       <OutputType>Exe</OutputType>
       <PackageId>ch.ddev.common.SqlHandler</PackageId>
-      <Version>1.1.0</Version>
+      <Version>1.1.1</Version>
       <Authors>dandevaud</Authors>
       <Company>GitHub</Company>
       <PackageDescription>HandlesSql</PackageDescription>
       <RepositoryUrl>https://github.com/dandevaud/MenuPlanner</RepositoryUrl>
+      <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
