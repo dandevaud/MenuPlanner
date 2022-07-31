@@ -2,24 +2,23 @@
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
-using System.Security.Cryptography.X509Certificates;
 using MenuPlanner.Server.Contracts.Blob;
 using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
 using MenuPlanner.Server.Logic.Blob;
 using MenuPlanner.Server.Logic.EntityUpdater;
-using MenuPlanner.Server.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SqlHandler;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using SqlHandler;
 using SqlHandler.Contracts;
 
 
@@ -34,7 +33,7 @@ namespace MenuPlanner.Server
         }
 
         public IConfiguration Configuration { get; }
-
+       
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -51,23 +50,66 @@ namespace MenuPlanner.Server
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<ApplicationUser>(options =>  options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            //services.AddDefaultIdentity<ApplicationUser>(options =>  options.SignIn.RequireConfirmedAccount = true)
+            //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            var identityServer = services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
-                var certificate = new X509Certificate2("certs/aspnetapp-root-cert.pfx", "password");
-                identityServer.AddSigningCredential(certificate);
+            //var identityServer = services.AddIdentityServer()
+            //    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+            //    var certificate = new X509Certificate2("certs/aspnetapp-root-cert.pfx", "password");
+            //    identityServer.AddSigningCredential(certificate);
             
             IoCSetUp(services);
 
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                    builder
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+#if DEBUG
+                        .SetIsOriginAllowed((host) => true)
+#else
+                        .WithOrigins("https://*.ddev.ch").SetIsOriginAllowedToAllowWildcardSubdomains()
+#endif
+                        .AllowAnyHeader();
+            });
+            });
 
-            services.AddAuthentication()
-                .AddIdentityServerJwt();
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultAuthenticateScheme =  CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                })
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddOpenIdConnect(options =>
+                {
+                    options.Authority = Configuration["IdentityServer:Clients:MenuPlanner.Client:Authority"];
+                    options.ClientId = Configuration["IdentityServer:Clients:MenuPlanner.Client:Id"];
+                    options.ClientSecret = Configuration["IdentityServer:Clients:MenuPlanner.Client:Secret"];
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.ResponseType = "code";
+                    options.SaveTokens = true;
+                    options.GetClaimsFromUserInfoEndpoint = true;
+                    options.UseTokenLifetime = false;
+                    options.Scope.Add("openid");
+                    options.Scope.Add("profile");
+                })
+                .AddJwtBearer("bearer",options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.Authority = Configuration["IdentityServer:Clients:MenuPlanner.Client:Authority"];
+                    options.Audience = Configuration["IdentityServer:Clients:MenuPlanner.Client:Id"];
+                });
 
             services.AddControllersWithViews();
             services.AddRazorPages();
-            
+           
+
+
             // Register the Swagger generator, defining 1 or more Swagger documents
             //services.AddSwaggerGen();
             // Swagger Authorization take from https://stackoverflow.com/a/61899245
@@ -94,6 +136,8 @@ namespace MenuPlanner.Server
             services.AddScoped<IIngredientEntityUpdater, IngredientEntityUpdater>();
             services.AddScoped<ISearchLogic, SearchLogic>();
             services.AddScoped<IPictureHandler, PictureHandler>();
+
+            
         }
 
 
@@ -130,12 +174,14 @@ namespace MenuPlanner.Server
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Menu Planner API V1");
             });
+            app.UseAuthentication();
 
             app.UseRouting();
 
-            app.UseIdentityServer();
-            app.UseAuthentication();
             app.UseAuthorization();
+            // app.UseIdentityServer();
+
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {

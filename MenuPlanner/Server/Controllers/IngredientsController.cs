@@ -3,25 +3,22 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Extensions;
 using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
 using MenuPlanner.Server.Logic.EntityUpdater;
+using MenuPlanner.Shared.Extension;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.models.Search;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace MenuPlanner.Server.Controllers
 {
     /// <summary>Ingredients API Controller --&gt; Handles CRUD actions for all ingredients</summary>
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "bearer")]
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
