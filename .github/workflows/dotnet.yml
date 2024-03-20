@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  GITHUBPAT: ${{ secrets.NUGETACCESSKEY }}
+
 jobs:
   build:
 
@@ -17,8 +20,6 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
-    - name: Add dependencies
-      run: dotnet nuget add source -u dandevaud -p ${{ secrets.NUGETACCESSKEY }} --name github-ci "https://nuget.pkg.github.com/dandevaud/index.json"
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
