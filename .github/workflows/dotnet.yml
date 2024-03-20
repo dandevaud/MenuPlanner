@@ -18,7 +18,7 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Add dependencies
-      run: dotnet nuget add source -u dandevaud -p ${{ secrets.NUGETACCESSKEY }} --name github "https://nuget.pkg.github.com/dandevaud/index.json"
+      run: dotnet nuget add source -u dandevaud -p ${{ secrets.NUGETACCESSKEY }} --name github-ci "https://nuget.pkg.github.com/dandevaud/index.json"
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
