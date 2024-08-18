@@ -1,10 +1,10 @@
-﻿// <copyright file="DbContextMock.cs" company="Alessandro Marra & Daniel Devaud">
+﻿// <copyright file="MockDbSetUp.cs" company="Alessandro Marra & Daniel Devaud">
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
 using System;
 using System.Collections.Generic;
-using Castle.Core.Internal;
+using Duende.IdentityServer.Extensions;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.models.enums;
