@@ -20,6 +20,13 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 8.0.x
+    - name: Replace nuget.config entry
+      uses: jacobtomlison/gha-find-replace@v3
+      with:
+        include: "nuget.config"
+        find: "GITHUBPAT"
+        replace:  ${{ secrets.NUGETACCESSKEY }}
+        regex: false
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
