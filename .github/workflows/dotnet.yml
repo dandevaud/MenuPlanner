@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  GITHUBPAT: ${{ secrets.NUGETACCESSKEY }}
+
 jobs:
   build:
 
@@ -17,6 +20,13 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 8.0.x
+    - name: Replace nuget.config entry
+      uses: jacobtomlinson/gha-find-replace@v3
+      with:
+        include: "nuget.config"
+        find: "GITHUBPAT"
+        replace:  ${{ secrets.NUGETACCESSKEY }}
+        regex: false
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
