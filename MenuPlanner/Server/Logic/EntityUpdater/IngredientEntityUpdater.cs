@@ -1,4 +1,4 @@
-﻿// <copyright file="IngredientsController.cs" company="Alessandro Marra & Daniel Devaud">
+﻿// <copyright file="IngredientEntityUpdater.cs" company="Alessandro Marra & Daniel Devaud">
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Transactions;
 using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Shared.models;
@@ -18,7 +17,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
     public class IngredientEntityUpdater : EntityUpdater, IIngredientEntityUpdater
     {
         private readonly MenuPlannerContext _context;
-        
+
 
         public IngredientEntityUpdater(MenuPlannerContext dbContext) : base(dbContext)
         {
@@ -83,7 +82,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
 
                 //remove Child Ingredients from removed Parents
                 var toRemove = ingredient.ParentIngredients.Select(pi => pi.Id).ToList().Except(provided.ParentIngredients.Select(ppi => ppi.Id).ToList()).ToList();
-                 foreach(Guid i in toRemove)
+                foreach (Guid i in toRemove)
                 {
                     var entry = await _context.Ingredients.FindAsync(i);
                     var entity = _context.Ingredients.Update(entry);
@@ -99,7 +98,8 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             {
                 updatedList = new List<Ingredient>();
                 var list = ingredient.ParentIngredients.Select(i => i.Id).ToList();
-                foreach(Guid uapi in list){
+                foreach (Guid uapi in list)
+                {
                     updatedList = await AddIngredientToChildIngredientOfParent(ingredient, uapi, updatedList);
                 };
             }
@@ -112,9 +112,9 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             var ingredientInDB = await _context.FindAsync<Ingredient>(parentIngGuid);
             var entity = _context.Entry(ingredientInDB);
             await entity.Collection(i => i.ChildIngredients).LoadAsync();
-            var contextIngredientParent = entity.Entity;
-            contextIngredientParent.ChildIngredients.Add(ingredient);
-            updatedList.Add(contextIngredientParent);
+            entity.Entity.ChildIngredients.Add(ingredient);
+            entity.State = EntityState.Modified;
+            updatedList.Add(entity.Entity);
             return updatedList;
         }
     }
