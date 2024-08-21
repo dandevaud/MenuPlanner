@@ -1,4 +1,4 @@
-﻿// <copyright file="IngredientsController.cs" company="Alessandro Marra & Daniel Devaud">
+﻿// <copyright file="MenuEntityUpdater.cs" company="Alessandro Marra & Daniel Devaud">
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
@@ -6,17 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper.Internal;
 using MenuPlanner.Server.Contracts.Blob;
 using MenuPlanner.Server.Contracts.Logic;
 using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Extension.EntityFramework;
-using MenuPlanner.Server.Logic.Blob;
 using MenuPlanner.Shared.Extension;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.Models;
 using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
 
 namespace MenuPlanner.Server.Logic.EntityUpdater
 {
@@ -28,7 +25,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
         public delegate void DetachEntity(Guid guid);
         private readonly MenuPlannerContext _context;
         private readonly IPictureHandler _pictureHandler;
-        
+
         public MenuEntityUpdater(MenuPlannerContext dbContext, IPictureHandler pictureHandler) : base(dbContext)
         {
             _context = dbContext;
@@ -42,7 +39,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
         /// <param name="entityInDatabase">The entity in database (old Values)</param>
         public async Task UpdateMenuInContext(Menu menu)
         {
-            var entityInDatabase =  await _context.Menus.
+            var entityInDatabase = await _context.Menus.
                 Include(m => m.Images).
                 Include(m => m.Tags).
                 Include(m => m.Ingredients).
@@ -54,26 +51,26 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
                 return;
             }
 
-            
+
             await HandleSubEntities(menu, entityInDatabase);
 
             _context.Entry(entityInDatabase).State = EntityState.Detached;
-            
+
 
             DetachAllUnchangedEntities();
-           
-            
+
+
             _context.Update(entityInDatabase).CurrentValues.SetValues(menu);
-           
+
             menu.Images.ToList().ForEach(i =>
                 {
-                    if (i.Id.Equals(Guid.Empty)||!entityInDatabase.Images.Any(im => im.Id.Equals(i.Id)))
+                    if (i.Id.Equals(Guid.Empty) || !entityInDatabase.Images.Any(im => im.Id.Equals(i.Id)))
                     {
                         entityInDatabase.Images.Add(i);
                     }
                 }
             );
-          
+
             SaveChanges();
             await HandleImages(entityInDatabase);
             SaveChanges();
@@ -128,10 +125,10 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
         {
 
             HandleNewMenuIngredient(menu, entityInDatabase);
-            
+
 
             HandleChangedMenuIngredient(menu, entityInDatabase);
-           
+
 
         }
 
@@ -140,13 +137,13 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             var newIngredients =
                 menu.Ingredients.Where(i => !entityInDatabase.Ingredients.Any(mi => mi.Id.Equals(i.Id))).ToList();
             HandleDuplicateIngredient(newIngredients).ForEach(mi => entityInDatabase.Ingredients.Add(mi));
-            
+
         }
 
         private List<MenuIngredient> HandleDuplicateIngredient(List<MenuIngredient> menuIngredients)
         {
             var duplicates = menuIngredients.Select(mi => mi.Ingredient).GroupBy(i => i.Name).Where(g => g.Count() > 1).SelectMany(g => g).ToList();
-            menuIngredients.ForAll(mi =>
+            menuIngredients.ForEach(mi =>
             {
                 if (_context.ChangeTracker.Entries<Ingredient>().Any(i => i.Entity.Id.Equals(mi.Ingredient.Id)))
                 {
@@ -198,11 +195,11 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             {
                 if (!_pictureHandler.ImageExists(menu.Id, menuImage))
                 {
-                   menuImage.Path = await _pictureHandler.SaveImage(menu.Id, menuImage);
+                    menuImage.Path = await _pictureHandler.SaveImage(menu.Id, menuImage);
                 }
             }
 
-            
+
         }
 
         private async Task CreateMenuInContext(Menu menu)
@@ -210,7 +207,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             await _context.Ingredients.LoadAsync();
             menu.Ingredients = HandleDuplicateIngredient(menu.Ingredients.ToList());
             await _context.Menus.AddAsync(menu);
-          
+
             SaveChanges();
             var images = menu.Images;
             await SaveImages(menu, images);
@@ -223,7 +220,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
         {
             foreach (var image in images)
             {
-               image.Path = await _pictureHandler.SaveImage(menu.Id, image);
+                image.Path = await _pictureHandler.SaveImage(menu.Id, image);
             }
         }
 
@@ -239,7 +236,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
                 return;
             }
             await LoadMenuSubEntities(menu);
-            menu.Ingredients.ToList().ForEach(mi => RemoveSubEntities<MenuIngredient>(_context.MenuIngredients,null).Invoke(mi.Id));
+            menu.Ingredients.ToList().ForEach(mi => RemoveSubEntities<MenuIngredient>(_context.MenuIngredients, null).Invoke(mi.Id));
             menu.Images.ToList().ForEach(i => RemoveSubEntities<Image>(_context.Images, null).Invoke(i.Id));
             menu.Comments.ToList().ForEach(i => RemoveSubEntities<Comment>(_context.Comments, null).Invoke(i.Id));
             _pictureHandler.DeleteImage(menu.Id, Guid.Empty);
@@ -270,11 +267,11 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
         {
             return (Guid guid) =>
             {
-                
-                    var entry = _context.ChangeTracker.Entries<T>()
-                        .FirstOrDefault(ent => ent.Entity.Id.Equals(guid));
-                    entry?.DetachUnchanged();
-              
+
+                var entry = _context.ChangeTracker.Entries<T>()
+                    .FirstOrDefault(ent => ent.Entity.Id.Equals(guid));
+                entry?.DetachUnchanged();
+
             };
         }
         private async Task DeleteRemovedEntitiesFromMenu<T>(ICollection<T> entities, Func<T, Guid> selector, ProvidedContains providedContains, RemoveFromContext<T> removeFromContext)
@@ -288,7 +285,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
                 await removeFromContext(id);
             }
 
-           
+
         }
 
         /// <summary>
@@ -307,7 +304,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
 
         }
 
-        
+
 
     }
 }

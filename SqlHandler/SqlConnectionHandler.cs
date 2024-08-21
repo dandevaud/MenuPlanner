@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="SqlConnectionHandler.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,10 +14,10 @@ namespace SqlHandler
     public class SqlConnectionHandler : ISqlConnectionHandler
     {
 
-        public IConfiguration Configuration { get; set;}
+        public IConfiguration Configuration { get; set; }
 
-       
-      
+
+
         public SqlCredentials GetCredentialsFromConfiguration(string fork)
         {
             var sqlCredentials = Configuration.GetSection(fork).Get<SqlCredentials>();
@@ -22,15 +26,15 @@ namespace SqlHandler
         }
 
 
-        public IServiceCollection HandleSQLServers<T>(IServiceCollection services, SqlCredentials credentials) where T:DbContext
+        public IServiceCollection HandleSQLServers<T>(IServiceCollection services, SqlCredentials credentials) where T : DbContext
         {
-           SetDbConnection<T>(services,credentials);
-          
-           
+            SetDbConnection<T>(services, credentials);
+
+
             return services;
         }
 
-        private IServiceCollection SetDbConnection<T>(IServiceCollection services,SqlCredentials credentials) where T:DbContext
+        private IServiceCollection SetDbConnection<T>(IServiceCollection services, SqlCredentials credentials) where T : DbContext
         {
             switch (credentials.Type)
             {
@@ -38,37 +42,42 @@ namespace SqlHandler
                     break;
                 case SqlServerType.SqLite:
                     return HandleSqLite<T>(services, credentials.Server);
-                 case SqlServerType.MariaDb: return HandleMariaDb<T>(services,credentials);
+                case SqlServerType.MariaDb: return HandleMariaDb<T>(services, credentials);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
             return services;
         }
 
-        private IServiceCollection HandleSqLite<T>(IServiceCollection services, string dataSource) where T:DbContext
+        private IServiceCollection HandleSqLite<T>(IServiceCollection services, string dataSource) where T : DbContext
         {
             services.AddDbContext<T>(options =>
+            {
                 options.UseSqlite($"Data Source={dataSource}").
-                    EnableSensitiveDataLogging(Configuration));
+                    EnableSensitiveDataLogging(Configuration);
+                options.UseLazyLoadingProxies();
+            });
             return services;
         }
 
         private IServiceCollection HandleMariaDb<T>(IServiceCollection services, SqlCredentials credentials) where T : DbContext
         {
-           
-            var version = credentials.ServerVersion.Split(".");
-             services.AddDbContext<T>(options =>
-                
-                    options.UseMySql(
-                        $"server={credentials.Server}; port={credentials.Port}; database={credentials.Database}; user={credentials.User}; password={credentials.Password}",
-                        new MySqlServerVersion(new Version(Convert.ToInt32(version[0]), Convert.ToInt32(version[0]),
-                            Convert.ToInt32(version[0])))).
-                        EnableSensitiveDataLogging(Configuration)
 
-            );
+            var version = credentials.ServerVersion.Split(".");
+            services.AddDbContext<T>(options =>
+            {
+                options.UseMySql(
+                    $"server={credentials.Server}; port={credentials.Port}; database={credentials.Database}; user={credentials.User}; password={credentials.Password}",
+                    new MySqlServerVersion(new Version(Convert.ToInt32(version[0]), Convert.ToInt32(version[0]),
+                        Convert.ToInt32(version[0])))).
+                    EnableSensitiveDataLogging(Configuration);
+                options.UseLazyLoadingProxies();
+            }
+
+           );
             return services;
         }
 
-       
+
     }
 }

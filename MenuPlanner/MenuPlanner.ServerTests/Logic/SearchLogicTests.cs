@@ -55,8 +55,8 @@ namespace MenuPlanner.Server.Logic.Tests
                 .ToList();
             await menuList;
 
-            expected.ForEach(m => Assert.Contains(m, menuList.Result.Result));
-            Assert.IsEmpty(menuList.Result.Result.FindAll(m => notExpected.Contains(m)));
+            expected.ForEach(m => Assert.That(m, Contains.Value(menuList.Result.Result)));
+            Assert.That(menuList.Result.Result.FindAll(m => notExpected.Contains(m)), Is.Empty);
         }
 
         /// <summary>
@@ -81,8 +81,8 @@ namespace MenuPlanner.Server.Logic.Tests
                 .Where(i => i.Name.Equals("Rind"))
                 .ToList();
 
-            expected.ForEach(i => Assert.Contains(i, ingredientList.Result.Result));
-            Assert.IsEmpty(ingredientList.Result.Result.FindAll(i => notExpected.Contains(i)));
+            expected.ForEach(i => Assert.That(i, Contains.Value(ingredientList.Result.Result)));
+            Assert.That(ingredientList.Result.Result.FindAll(i => notExpected.Contains(i)), Is.Empty);
         }
 
         /// <summary>
@@ -107,8 +107,8 @@ namespace MenuPlanner.Server.Logic.Tests
                 .Where(i => i.Name.Equals("Rind"))
                 .ToList();
 
-            expected.ForEach(i => Assert.Contains(i, ingredientList.Result.Result));
-            Assert.IsEmpty(ingredientList.Result.Result.FindAll(i => notExpected.Contains(i)));
+            expected.ForEach(i => Assert.That(i, Contains.Value(ingredientList.Result.Result)));
+            Assert.That(ingredientList.Result.Result.FindAll(i => notExpected.Contains(i)), Is.Empty);
         }
 
     }
