@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MenuPlanner.Server.Logic;
-using MenuPlanner.Server.Logic.Blob;
 using MenuPlanner.Server.Logic.EntityUpdater;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.models.enums;
@@ -28,7 +26,7 @@ namespace MenuPlanner.ServerTests.Logic
         {
             mockDb = new MockDbSetUp();
 
-           // controller = new MenuEntityUpdater(mockDb.SetUpDBContext().Object, new PictureHandler());
+            // controller = new MenuEntityUpdater(mockDb.SetUpDBContext().Object, new PictureHandler());
         }
 
         /// <summary>
@@ -44,8 +42,8 @@ namespace MenuPlanner.ServerTests.Logic
 
             await controller.UpdateMenuInContext(menu);
 
-            Assert.AreEqual(menu.Id, existingMenu.Id);
-            Assert.AreEqual(mockDb.Menus.Find(i => i.Id == menu.Id).Name, newMenuName);
+            Assert.That(menu.Id, Is.EqualTo(existingMenu.Id));
+            Assert.That(mockDb.Menus.Find(i => i.Id == menu.Id).Name, Is.EqualTo(newMenuName));
         }
 
         /// <summary>
@@ -81,9 +79,9 @@ namespace MenuPlanner.ServerTests.Logic
 
             var foundMenuIngredient = mockDb.MenuIngredients.Find(i => i.Id == menuIngredient.Id);
 
-            expected.ForEach(i => Assert.Contains(i, menu.Ingredients.ToList()));
-            Assert.IsEmpty(menu.Ingredients.ToList().FindAll(i => notExpected.Contains(i)));
-            Assert.NotNull(foundMenuIngredient);
+            expected.ForEach(i => Assert.That(i, Contains.Value(menu.Ingredients.ToList())));
+            Assert.That(menu.Ingredients.ToList().FindAll(i => notExpected.Contains(i)), Is.Empty);
+            Assert.That(foundMenuIngredient, Is.Not.Null);
         }
 
     }

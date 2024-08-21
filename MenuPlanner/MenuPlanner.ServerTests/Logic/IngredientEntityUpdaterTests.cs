@@ -4,7 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using MenuPlanner.Server.Logic;
 using MenuPlanner.Server.Logic.EntityUpdater;
 using MenuPlanner.Shared.models;
 using NUnit.Framework;
@@ -37,8 +36,8 @@ namespace MenuPlanner.ServerTests.Logic
 
             await controller.CheckIfIngredientExistsAndUpdateOrAdd(pouletDuplicate);
 
-            Assert.AreNotEqual(pouletDuplicate.Id, newGuid);
-            Assert.AreEqual(mockDb.Ingredients.Find(i => i.Name.Equals("Poulet")).Id, pouletDuplicate.Id);
+            Assert.That(pouletDuplicate.Id, Is.Not.EqualTo(newGuid));
+            Assert.That(mockDb.Ingredients.Find(i => i.Name.Equals("Poulet")).Id, Is.EqualTo(pouletDuplicate.Id));
         }
 
         /// <summary>
@@ -53,8 +52,8 @@ namespace MenuPlanner.ServerTests.Logic
 
             await controller.CheckIfIngredientExistsAndUpdateOrAdd(poulet2);
 
-            Assert.AreEqual(poulet2.Id, newGuid);
-            mockDb.Ingredients.ForEach(i => Assert.AreNotEqual(i.Id, poulet2.Id));
+            Assert.That(poulet2.Id, Is.EqualTo(newGuid));
+            mockDb.Ingredients.ForEach(i => Assert.That(i.Id, Is.Not.EqualTo(poulet2.Id)));
         }
     }
 }
