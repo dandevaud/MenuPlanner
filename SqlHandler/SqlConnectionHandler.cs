@@ -34,22 +34,24 @@ namespace SqlHandler
             return services;
         }
 
-        private IServiceCollection SetDbConnection<T>(IServiceCollection services, SqlCredentials credentials) where T : DbContext
+        private void SetDbConnection<T>(IServiceCollection services, SqlCredentials credentials) where T : DbContext
         {
             switch (credentials.Type)
             {
                 case SqlServerType.MySql:
                     break;
                 case SqlServerType.SqLite:
-                    return HandleSqLite<T>(services, credentials.Server);
-                case SqlServerType.MariaDb: return HandleMariaDb<T>(services, credentials);
+                    HandleSqLite<T>(services, credentials.Server);
+                    break;
+                case SqlServerType.MariaDb:
+                    HandleMariaDb<T>(services, credentials);
+                    break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(credentials.Type.ToString());
             }
-            return services;
         }
 
-        private IServiceCollection HandleSqLite<T>(IServiceCollection services, string dataSource) where T : DbContext
+        private void HandleSqLite<T>(IServiceCollection services, string dataSource) where T : DbContext
         {
             services.AddDbContext<T>(options =>
             {
@@ -57,10 +59,9 @@ namespace SqlHandler
                     EnableSensitiveDataLogging(Configuration);
                 options.UseLazyLoadingProxies();
             });
-            return services;
         }
 
-        private IServiceCollection HandleMariaDb<T>(IServiceCollection services, SqlCredentials credentials) where T : DbContext
+        private void HandleMariaDb<T>(IServiceCollection services, SqlCredentials credentials) where T : DbContext
         {
 
             var version = credentials.ServerVersion.Split(".");
@@ -75,7 +76,6 @@ namespace SqlHandler
             }
 
            );
-            return services;
         }
 
 

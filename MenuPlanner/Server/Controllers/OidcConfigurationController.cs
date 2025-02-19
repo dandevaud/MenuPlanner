@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+﻿// <copyright file="OidcConfigurationController.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace MenuPlanner.Server.Controllers
 {
@@ -9,16 +11,14 @@ namespace MenuPlanner.Server.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class OidcConfigurationController : Controller
     {
-        private readonly ILogger<OidcConfigurationController> _logger;
         private readonly IConfiguration _config;
 
-        public OidcConfigurationController(ILogger<OidcConfigurationController> logger, IConfiguration config)
+        public OidcConfigurationController(IConfiguration config)
         {
-            _logger = logger;
             _config = config;
         }
 
-        
+
 
         [HttpGet("oidc.json")]
         public IActionResult GetOidcConfiguration()
@@ -29,8 +29,8 @@ namespace MenuPlanner.Server.Controllers
                 $"\"redirect_uri\": \"https://{host}/authentication/login-callback\", \n" +
                 $" \"post_logout_redirect_uri\": \"https://{host}/authentication/logout-callback\", \n" +
                 " \"response_type\": \"code\", \n" +
-                "\"scope\": \"openid profile MenuPlanner_oidc\" ,\n " +
-                $"\"audience\":\"{_config["IdentityServer:Clients:MenuPlanner.Client:Id"]}\" \n"+"}";
+                "\"scope\": \"openid profile\" ,\n " +
+                $"\"audience\":\"{_config["IdentityServer:Clients:MenuPlanner.Client:Id"]}\" \n" + "}";
             return Ok(config);
         }
     }
