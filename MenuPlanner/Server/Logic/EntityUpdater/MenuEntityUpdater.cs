@@ -12,7 +12,6 @@ using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Extension.EntityFramework;
 using MenuPlanner.Shared.Extension;
 using MenuPlanner.Shared.models;
-using MenuPlanner.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace MenuPlanner.Server.Logic.EntityUpdater
@@ -36,7 +35,6 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
 
         /// <summary>Updates the menu in the Database.</summary>
         /// <param name="menu">The menu provided (new values)</param>
-        /// <param name="entityInDatabase">The entity in database (old Values)</param>
         public async Task UpdateMenuInContext(Menu menu)
         {
             var entityInDatabase = await _context.Menus.
@@ -263,17 +261,6 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             };
         }
 
-        private DetachEntity DetachEntityFromContext<T>(DbSet<T> dbSet) where T : Identifier
-        {
-            return (Guid guid) =>
-            {
-
-                var entry = _context.ChangeTracker.Entries<T>()
-                    .FirstOrDefault(ent => ent.Entity.Id.Equals(guid));
-                entry?.DetachUnchanged();
-
-            };
-        }
         private async Task DeleteRemovedEntitiesFromMenu<T>(ICollection<T> entities, Func<T, Guid> selector, ProvidedContains providedContains, RemoveFromContext<T> removeFromContext)
         {
             var toDelete = entities
@@ -294,8 +281,6 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
         /// <param name="foundMenu">The menu to Load the entities from</param>
         private async Task LoadMenuSubEntities(Menu foundMenu)
         {
-            //await _context.Entry(foundMenu).Collection(m => m.Images).LoadAsync();
-            //await _context.Entry(foundMenu).Collection(m => m.Ingredients).LoadAsync();
             var toLoad = foundMenu.Ingredients.ToList();
             foreach (var mi in toLoad)
             {

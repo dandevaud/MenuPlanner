@@ -1,11 +1,15 @@
-﻿using System;
+﻿// <copyright file="EnumControls.razor.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Internal;
 
 namespace MenuPlanner.Client.Controls.MenuControls.EnumControls
 {
-    public partial class EnumControls<TEnum> where TEnum : struct,Enum
+    public partial class EnumControls<TEnum> where TEnum : struct, Enum
     {
         [Parameter] public TEnum ProvidedEnum { get; set; }
 
@@ -15,7 +19,9 @@ namespace MenuPlanner.Client.Controls.MenuControls.EnumControls
         [Parameter] public EventCallback<TEnum> RemoveEnum { get; set; }
 
 
+#pragma warning disable EF1001 // Internal EF Core API usage.
         public bool IsHidden(TEnum timeOfDay) => typeof(TEnum).IsDefaultValue(timeOfDay);
+#pragma warning restore EF1001 // Internal EF Core API usage.
 
         public bool IsChecked(TEnum timeOfDay)
         {

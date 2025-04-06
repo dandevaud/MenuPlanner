@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="EntityUpdater.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Duende.IdentityServer.Extensions;
@@ -13,7 +17,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
     {
         private readonly MenuPlannerContext _context;
 
-        public EntityUpdater(MenuPlannerContext context)
+        protected EntityUpdater(MenuPlannerContext context)
         {
             _context = context;
         }
@@ -22,10 +26,10 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
         {
             lock (_context)
             {
-               
-                    DetachAllUnchangedEntities();
-                    if (!_context.ChangeTracker.Entries().IsNullOrEmpty())
-                    {
+
+                DetachAllUnchangedEntities();
+                if (!_context.ChangeTracker.Entries().IsNullOrEmpty())
+                {
                     _context.SaveChanges();
                 }
             }
@@ -53,7 +57,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
 
         public async Task<bool> DeleteEntity<T>(Guid id) where T : Entity
         {
-            
+
             var ent = await _context.FindAsync<T>(id);
             if (ent == null) return false;
             _context.Remove<T>(ent);

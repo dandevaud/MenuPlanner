@@ -1,16 +1,18 @@
-﻿using System;
+﻿// <copyright file="Program.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
+using System;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using MenuPlanner.Client.Shared;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MenuPlanner.Client
 {
-    public class Program
+    public static class Program
     {
         public static async Task Main(string[] args)
         {
@@ -18,11 +20,11 @@ namespace MenuPlanner.Client
 
             builder.RootComponents.Add<App>("#app");
 
-            
+
             //https://chrissainty.com/avoiding-accesstokennotavailableexception-when-using-blazor-webassembly-hosted-template-with-individual-user-accounts/
             builder.Services.AddHttpClient<PublicClient>(client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
 
-            
+
             // Supply HttpClient instances that include access tokens when making requests to the server project
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("MenuPlanner.ServerAPI"));
             builder.Services.AddScoped<CustomAuthorizationMessageHandler>();
@@ -49,8 +51,8 @@ namespace MenuPlanner.Client
                     });
             });
 
-           await builder.Build().RunAsync();
-           
+            await builder.Build().RunAsync();
+
 
         }
     }

@@ -5,9 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using MenuPlanner.Server.Contracts.Logic;
-using MenuPlanner.Server.Data;
-using MenuPlanner.Server.Logic;
-using MenuPlanner.Server.Logic.EntityUpdater;
 using MenuPlanner.Shared.Extension;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.models.Search;
@@ -24,13 +21,11 @@ namespace MenuPlanner.Server.Controllers
     [ApiController]
     public class IngredientsController : ControllerBase
     {
-        private readonly MenuPlannerContext _context;
         private readonly IIngredientEntityUpdater _ingredientEntityUpdater;
         private readonly ISearchLogic _searchLogic;
 
-        public IngredientsController(MenuPlannerContext context, IIngredientEntityUpdater ingredientEntityUpdater, ISearchLogic searchLogic)
+        public IngredientsController(IIngredientEntityUpdater ingredientEntityUpdater, ISearchLogic searchLogic)
         {
-            _context = context;
             _ingredientEntityUpdater = ingredientEntityUpdater;
             _searchLogic = searchLogic;
 
@@ -48,7 +43,7 @@ namespace MenuPlanner.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Ingredient>> GetIngredient(Guid id)
         {
-            var ingredients = await _searchLogic.SearchIngredients(new IngredientSearchRequestModel() {Id = id});
+            var ingredients = await _searchLogic.SearchIngredients(new IngredientSearchRequestModel() { Id = id });
             if (ingredients.Result.IsNullOrEmpty())
             {
                 return NotFound();
@@ -63,7 +58,7 @@ namespace MenuPlanner.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutIngredient(Guid id, Ingredient ingredient)
         {
-           
+
             if (id != ingredient.Id)
             {
                 return BadRequest();
@@ -95,7 +90,7 @@ namespace MenuPlanner.Server.Controllers
                 return NoContent();
             }
             return NotFound();
-           
+
         }
     }
 }
