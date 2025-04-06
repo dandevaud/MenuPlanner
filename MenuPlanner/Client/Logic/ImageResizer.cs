@@ -1,7 +1,9 @@
-﻿using System;
+﻿// <copyright file="ImageResizer.cs" company="Alessandro Marra & Daniel Devaud">
+// Copyright (c) Alessandro Marra & Daniel Devaud.
+// </copyright>
+
 using System.IO;
 using System.Threading.Tasks;
-using MenuPlanner.Client.Controls.MenuControls;
 using Microsoft.AspNetCore.Components.Forms;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -18,16 +20,17 @@ namespace MenuPlanner.Client.Logic
         {
             await using var memoryStream = new MemoryStream();
             using var imageCropTask = SixLabors.ImageSharp.Image.LoadAsync(imageFile.OpenReadStream(long.MaxValue));
-            
+
 
             var imageCrop = await imageCropTask;
-           
-                imageCrop.Mutate(x => x
-                    .Resize(new ResizeOptions(){
-                        Size = new Size(Width,Height),
-                        Mode = ResizeMode.Pad
-                        }));
-           
+
+            imageCrop.Mutate(x => x
+                .Resize(new ResizeOptions()
+                {
+                    Size = new Size(Width, Height),
+                    Mode = ResizeMode.Pad
+                }));
+
 
             await imageCrop.SaveAsync(memoryStream, new JpegEncoder());
 

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MenuPlanner.Server.Contracts.Logic;
-using MenuPlanner.Server.Data;
 using MenuPlanner.Shared.Extension;
 using MenuPlanner.Shared.models;
 using MenuPlanner.Shared.models.Search;
@@ -22,13 +21,11 @@ namespace MenuPlanner.Server.Controllers
     [ApiController]
     public class MenusController : ControllerBase
     {
-        private readonly MenuPlannerContext _context;
         private readonly IMenuEntityUpdater _entityUpdater;
         private readonly ISearchLogic _search;
 
-        public MenusController(MenuPlannerContext context, IMenuEntityUpdater entityUpdater, ISearchLogic searchLogic)
+        public MenusController(IMenuEntityUpdater entityUpdater, ISearchLogic searchLogic)
         {
-            _context = context;
             _entityUpdater = entityUpdater;
             _search = searchLogic;
         }
@@ -48,7 +45,7 @@ namespace MenuPlanner.Server.Controllers
             var toReturn = await _search.GetMaxTimes();
             return toReturn;
         }
-            
+
 
         // GET: api/Menus/5
         [HttpGet("{id}")]

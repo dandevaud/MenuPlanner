@@ -10,6 +10,8 @@
 
     <ItemGroup>
         <PackageReference Include="EntityFramework" Version="6.5.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.14" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.14" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.8" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.8" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
@@ -18,9 +20,9 @@
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.4" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
         <PackageReference Include="ch.ddev.common.SqlHandler" Version="1.1.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.1" />
-        <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
-        <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.0" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
+        <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
     </ItemGroup>
     <ItemGroup>
         <None Remove="..\..\.editorconfig" />

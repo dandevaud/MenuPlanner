@@ -26,7 +26,7 @@ namespace MenuPlanner.Client.Pages
 
         private SearchResponseModel<Ingredient> ingredients = new SearchResponseModel<Ingredient>();
         private Ingredient ingredient;
- private Ingredient Ingredient
+        private Ingredient Ingredient
         {
             get
             {
@@ -38,7 +38,7 @@ namespace MenuPlanner.Client.Pages
             }
             set => ingredient = value;
 
- }
+        }
 
         private Double Rating;
 
@@ -121,7 +121,7 @@ namespace MenuPlanner.Client.Pages
         {
             ingredient = new Ingredient();
             ingredients = new SearchResponseModel<Ingredient>();
-           StateHasChanged();
+            StateHasChanged();
         }
 
         private void SetRating()
@@ -140,15 +140,11 @@ namespace MenuPlanner.Client.Pages
 
         public async Task DeleteMenu()
         {
-            bool confirm = true;
-            if (confirm)
-            {
-                var response = await Http.DeleteAsync($"api/Menus/{Id}");
+            var response = await Http.DeleteAsync($"api/Menus/{Id}");
 
-                if (response.IsSuccessStatusCode)
-                {
-                    NavigationManager.NavigateTo("/");
-                }
+            if (response.IsSuccessStatusCode)
+            {
+                NavigationManager.NavigateTo("/");
             }
         }
 

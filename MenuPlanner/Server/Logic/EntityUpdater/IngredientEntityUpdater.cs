@@ -73,22 +73,26 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
             var updatedList = ingredient.ParentIngredients;
             if (ingredient != provided)
             {
-                //By design it is checked if it is the same object --> it is if the ingredient is new --> see else statment
-                await _context.Entry(ingredient)?.Collection(i => i.ChildIngredients).LoadAsync();
-                await _context.Entry(ingredient)?.Collection(i => i.ParentIngredients).LoadAsync();
+                var entryToLoad = _context.Entry(ingredient);
+                if (entryToLoad != null)
+                {
+                    //By design it is checked if it is the same object --> it is if the ingredient is new --> see else statment
+                    await entryToLoad.Collection(i => i.ChildIngredients).LoadAsync();
+                    await entryToLoad.Collection(i => i.ParentIngredients).LoadAsync();
+                }
 
-                var updatedAddedParentIngredients = provided.ParentIngredients.Select(ppi => ppi.Id).ToList()
-                    .Except(ingredient.ParentIngredients.Select(ipi => ipi.Id).ToList()).ToList();
+                var updatedAddedParentIngredients = provided.ParentIngredients.Select(ppi => ppi.Id)
+                    .Except(ingredient.ParentIngredients.Select(ipi => ipi.Id)).ToList();
 
                 //remove Child Ingredients from removed Parents
-                var toRemove = ingredient.ParentIngredients.Select(pi => pi.Id).ToList().Except(provided.ParentIngredients.Select(ppi => ppi.Id).ToList()).ToList();
+                var toRemove = ingredient.ParentIngredients.Select(pi => pi.Id).Except(provided.ParentIngredients.Select(ppi => ppi.Id)).ToList();
                 foreach (Guid i in toRemove)
                 {
                     var entry = await _context.Ingredients.FindAsync(i);
                     var entity = _context.Ingredients.Update(entry);
                     await entity.Collection(pi => pi.ChildIngredients).LoadAsync();
                     entity.Entity.ChildIngredients.Remove(ingredient);
-                };
+                }
                 foreach (Guid uapi in updatedAddedParentIngredients)
                 {
                     updatedList = await AddIngredientToChildIngredientOfParent(ingredient, uapi, updatedList);
@@ -101,7 +105,7 @@ namespace MenuPlanner.Server.Logic.EntityUpdater
                 foreach (Guid uapi in list)
                 {
                     updatedList = await AddIngredientToChildIngredientOfParent(ingredient, uapi, updatedList);
-                };
+                }
             }
 
             ingredient.ParentIngredients = updatedList;

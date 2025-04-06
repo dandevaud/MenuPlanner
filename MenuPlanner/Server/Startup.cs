@@ -1,4 +1,4 @@
-﻿// <copyright file="IngredientsController.cs" company="Alessandro Marra & Daniel Devaud">
+﻿// <copyright file="Startup.cs" company="Alessandro Marra & Daniel Devaud">
 // Copyright (c) Alessandro Marra & Daniel Devaud.
 // </copyright>
 
@@ -8,7 +8,6 @@ using MenuPlanner.Server.Data;
 using MenuPlanner.Server.Logic;
 using MenuPlanner.Server.Logic.Blob;
 using MenuPlanner.Server.Logic.EntityUpdater;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -33,14 +32,13 @@ namespace MenuPlanner.Server
         }
 
         public IConfiguration Configuration { get; }
-       
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            ISqlConnectionHandler sqlConnection = new SqlConnectionHandler() {Configuration = Configuration};
+            ISqlConnectionHandler sqlConnection = new SqlConnectionHandler() { Configuration = Configuration };
             services = sqlConnection.HandleSQLServers<MenuPlannerContext>(services, sqlConnection.GetCredentialsFromConfiguration("Data"));
-            services = sqlConnection.HandleSQLServers<ApplicationDbContext>(services, sqlConnection.GetCredentialsFromConfiguration("Auth"));
 
             //Added to handle the EF Reference Loop in Ingredient Model taken from https://stackoverflow.com/a/58155532
             services.AddControllers().AddNewtonsoftJson(o =>
@@ -50,14 +48,7 @@ namespace MenuPlanner.Server
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            //services.AddDefaultIdentity<ApplicationUser>(options =>  options.SignIn.RequireConfirmedAccount = true)
-            //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            //var identityServer = services.AddIdentityServer()
-            //    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
-            //    var certificate = new X509Certificate2("certs/aspnetapp-root-cert.pfx", "password");
-            //    identityServer.AddSigningCredential(certificate);
-            
             IoCSetUp(services);
 
             services.AddCors(options =>
@@ -65,22 +56,22 @@ namespace MenuPlanner.Server
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                    builder
-                        .AllowAnyMethod()
-                        .AllowCredentials()
+                        builder
+                            .AllowAnyMethod()
+                            .AllowCredentials()
 #if DEBUG
-                        .SetIsOriginAllowed((host) => true)
+                            .SetIsOriginAllowed((host) => true)
 #else
                         .WithOrigins("https://*.ddev.ch").SetIsOriginAllowedToAllowWildcardSubdomains()
 #endif
-                        .AllowAnyHeader();
-            });
+                            .AllowAnyHeader();
+                    });
             });
 
             services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultAuthenticateScheme =  CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
                 })
@@ -98,7 +89,7 @@ namespace MenuPlanner.Server
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
                 })
-                .AddJwtBearer("bearer",options =>
+                .AddJwtBearer("bearer", options =>
                 {
                     options.RequireHttpsMetadata = false;
                     options.Authority = Configuration["IdentityServer:Clients:MenuPlanner.Client:Authority"];
@@ -107,12 +98,7 @@ namespace MenuPlanner.Server
 
             services.AddControllersWithViews();
             services.AddRazorPages();
-           
 
-
-            // Register the Swagger generator, defining 1 or more Swagger documents
-            //services.AddSwaggerGen();
-            // Swagger Authorization take from https://stackoverflow.com/a/61899245
             services.AddSwaggerGen(c =>
             {
                 c.OperationFilter<AuthorizeCheckOperationFilter>();
@@ -137,7 +123,7 @@ namespace MenuPlanner.Server
             services.AddScoped<ISearchLogic, SearchLogic>();
             services.AddScoped<IPictureHandler, PictureHandler>();
 
-            
+
         }
 
 
@@ -149,7 +135,7 @@ namespace MenuPlanner.Server
                 app.UseDeveloperExceptionPage();
                 app.UseMigrationsEndPoint();
                 app.UseWebAssemblyDebugging();
-                
+
             }
             else
             {
@@ -157,7 +143,7 @@ namespace MenuPlanner.Server
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
                 app.UseHttpsRedirection();
-                
+
             }
 
             app.UseHttpsRedirection();
@@ -179,7 +165,6 @@ namespace MenuPlanner.Server
             app.UseRouting();
 
             app.UseAuthorization();
-            // app.UseIdentityServer();
 
             app.UseCors();
 
